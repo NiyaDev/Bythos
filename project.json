@@ -1,0 +1,20 @@
+{
+  "langrev": "1",
+  "warnings": [ "no-unused" ],
+  "dependency-search-paths": [ "../" ],
+  "dependencies": [ "spng", "sdl3", "opengl" ],
+  "linked-libraries": [ "GL", "SDL3" ],
+  "authors": [ "NiyaDev" ],
+  "version": "0.1.0",
+  "sources": [ "src/**" ],
+  "test-sources": [ "test/**" ],
+  "build-dir": "build",
+  "output": "build",
+  "targets": {
+    "bythos": {
+      "type": "static-lib",
+    },
+  },
+  "cpu": "generic",
+  "opt": "O0"
+}

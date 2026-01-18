@@ -1,0 +1,11 @@
+{
+  "provides" : "bythos",
+  "linklib-dir" : "linked-libs",
+  "targets" : {
+    "linux-x64" : {
+      "link-args" : [],
+      "dependencies" : ["sdl3"],
+      "linked-libraries" : [ "GL", "SDL3", "bythos" ]
+    },
+  }
+}

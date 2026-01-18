@@ -1,0 +1,23 @@
+
+module bythos::vector;
+
+alias Vec2f = float[<2>];
+alias Vec2i = int[<2>];
+
+extern fn float Vec2f.angle_rad(self, Vec2f v2) @extern("vector2_angle_rad");
+extern fn float Vec2f.angle_deg(self, Vec2f v2) @extern("vector2_angle_deg");
+extern fn Vec2f Vec2f.lerp(self, Vec2f v2, float amount) @extern("vector2_lerp");
+extern fn Vec2f Vec2f.reflect(self, Vec2f normal) @extern("vector2_reflect");
+extern fn Vec2f Vec2f.rotate_rad(self, float angle) @extern("vector2_rotate_rad");
+extern fn Vec2f Vec2f.rotate_deg(self, float angle) @extern("vector2_rotate_deg");
+extern fn Vec2f Vec2f.move_towards(self, Vec2f target, float max_distance) @extern("vector2_move_toward");
+extern fn Vec2f Vec2f.invert(self) @extern("vector2_invert");
+extern fn Vec2f Vec2f.clamp(self, Vec2f min, Vec2f max) @extern("vector2_clamp");
+extern fn Vec2f Vec2f.clamp_mag(self, float min, float max) @extern("vector2_clamp_mag");
+
+
+alias Vec3f = float[<3>];
+alias Vec3i = int[<3>];
+
+extern fn Color Vec3f.color(self) @extern("vector3_color");
+
