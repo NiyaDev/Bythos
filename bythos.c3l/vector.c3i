@@ -1,12 +1,12 @@
 
 module bythos::vector;
 
+
 alias Vec2f = float[<2>];
 alias Vec2i = int[<2>];
 
 extern fn float Vec2f.angle_rad(self, Vec2f v2) @extern("vector2_angle_rad");
 extern fn float Vec2f.angle_deg(self, Vec2f v2) @extern("vector2_angle_deg");
-extern fn Vec2f Vec2f.lerp(self, Vec2f v2, float amount) @extern("vector2_lerp");
 extern fn Vec2f Vec2f.reflect(self, Vec2f normal) @extern("vector2_reflect");
 extern fn Vec2f Vec2f.rotate_rad(self, float angle) @extern("vector2_rotate_rad");
 extern fn Vec2f Vec2f.rotate_deg(self, float angle) @extern("vector2_rotate_deg");
@@ -20,4 +20,27 @@ alias Vec3f = float[<3>];
 alias Vec3i = int[<3>];
 
 extern fn Color Vec3f.color(self) @extern("vector3_color");
+extern fn float Vec3f.angle_rad(self, Vec3f v2) @extern("vector3_angle_rad");
+extern fn float Vec3f.angle_deg(self, Vec3f v2) @extern("vector3_angle_deg");
+extern fn Vec3f Vec3f.project(self, Vec3f v2) @extern("vector3_project");
+extern fn Vec3f Vec3f.reject(self, Vec3f v2) @extern("vector3_reject");
+extern fn void Vec3f.orthonormalize(&self, Vec3f* v2) @extern("vector3_orthonormalize");
+extern fn Vec3f Vec3f.rotate_quaternion(self, Quaternionf q) @extern("vector3_rotate_q");
+extern fn Vec3f Vec3f.rotate(self, Vec3f dist, float rot) @extern("vector3_rotate");
+extern fn Vec3f Vec3f.move_towards(self, Vec3f target, float max_distance) @extern("vector3_move_towards");
+extern fn Vec3f Vec3f.min(self, Vec3f v2) @extern("vector3_min");
+extern fn Vec3f Vec3f.max(self, Vec3f v2) @extern("vector3_max");
+extern fn Vec3f Vec3f.invert(self) @extern("vector3_invert");
+extern fn bool float.close(self, float f2, float amount) @extern("float_close");
+extern fn bool Vec3f.close(self, Vec3f v2, float amount) @extern("vector3_close");
+
+
+alias Vec4f = float[<4>];
+alias Vec4i = int[<4>];
+
+extern fn Color Vec4f.color(self) @extern("vector4_color");
+extern fn Vec4f Vec4f.move_towards(self, Vec4f target, float max_distance) @extern("vector4_move_towards");
+extern fn Vec4f Vec4f.invert(self) @extern("vector4_invert");
+extern fn Vec4f Vec4f.min(self, Vec4f v2) @extern("vector4_min");
+extern fn Vec4f Vec4f.max(self, Vec4f v2) @extern("vector4_max");
 
