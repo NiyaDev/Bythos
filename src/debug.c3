@@ -15,7 +15,7 @@ fn void fatal(String err, args...) @export("debug_fatal") {
 
   printing = true;
   String o = string::tformat("[%s] - %s %s", "FATAL".color({230,41,55,255}), err, args);
-  io::print(o);
+  io::printn(o);
   printing = false;
 
   os::exit(1);
@@ -25,7 +25,7 @@ fn void error(String err, args...) @export("debug_error") {
 
   printing = true;
   String o = string::tformat("[%s] - %s %s", "ERROR".color(color::RED), err, args);
-  io::print(o);
+  io::printn(o);
   printing = false;
 
   recentText = o;
@@ -36,7 +36,7 @@ fn void warning(String err, args...) @export("debug_warning") {
 
   printing = true;
   String o = string::tformat("[%s] - %s %s", "WARN".color(color::ORANGE), err, args);
-  io::print(o);
+  io::printn(o);
   printing = false;
 
   recentText = o;
@@ -47,7 +47,7 @@ fn void info(String err, args...) @export("debug_info") {
 
   printing = true;
   String o = string::tformat("[%s] - %s %s", "INFO".color(color::GRAY), err, args);
-  io::print(o);
+  io::printn(o);
   printing = false;
 }
 

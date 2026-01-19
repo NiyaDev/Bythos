@@ -1,9 +1,9 @@
 
 module bythos::texture;
 import std::io;
-import bythos::debug;
 import spng;
 import opengl::gl;
+import bythos;
 
 
 struct Texture {
@@ -151,5 +151,20 @@ fn void char[].reverse(self, usz width, usz height, int bytesPerPixel) {
     mem::copy(bot, row, stride);
   }
   free(row);
+}
+
+fn void Texture.draw(&self,
+    Rectangle dst = {},
+    Rectangle src = {},
+    Color tint = color::WHITE) {
+  // Calculating size
+  Vec2f newSize = {
+    dst.w <= 0 ? self.width  : dst.w,
+    dst.h <= 0 ? self.height : dst.h,
+  };
+  Vec2f scale = {
+    newSize.x / (float)bythos::bythos.renderWidth,
+    newSize.y / (float)bythos::bythos.renderHeight,
+  };
 }
 
