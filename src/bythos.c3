@@ -83,30 +83,85 @@ fn bool should_close() @export("bythos_shouldclose") {
   // Poll events
   while (sdl3::poll_event(&bythos.event)) {
     switch (bythos.event.type) {
-      case QUIT: return true;
+      case FIRST: break;
+
+      case QUIT:
+      case TERMINATING:
+      case WINDOW_CLOSE_REQUESTED:
+      case WINDOW_DESTROYED:
+        return true;
+
+      case LOW_MEMORY:
+      case WILL_ENTER_BACKGROUND:
+      case DID_ENTER_BACKGROUND:
+      case WILL_ENTER_FOREGROUND:
+      case DID_ENTER_FOREGROUND:
+        break;
+
+      case LOCALE_CHANGED:
+      case SYSTEM_THEME_CHANGED:
+        break;
+
+      case DISPLAY_ORIENTATION:
+      case DISPLAY_ADDED:
+      case DISPLAY_REMOVED:
+      case DISPLAY_MOVED:
+      case DISPLAY_DESKTOP_MODE_CHANGED:
+      case DISPLAY_CURRENT_MODE_CHANGED:
+      case DISPLAY_CONTENT_SCALE_CHANGED:
+      case DISPLAY_USABLE_BOUNDS_CHANGED:
+        break;
+
+      case WINDOW_SHOWN:
+      case WINDOW_HIDDEN:
+      case WINDOW_EXPOSED:
+        break;
+
+      case WINDOW_MOVED:
+      case WINDOW_RESIZED:
+      case WINDOW_PIXEL_SIZE_CHANGED:
+      case WINDOW_METAL_VIEW_RESIZED:
+      case WINDOW_MINIMIZED:
+      case WINDOW_MAXIMIZED:
+      case WINDOW_RESTORED:
+      case WINDOW_MOUSE_ENTER:
+      case WINDOW_MOUSE_LEAVE:
+      case WINDOW_FOCUS_GAINED:
+      case WINDOW_FOCUS_LOST:
+      case WINDOW_HIT_TEST:
+      case WINDOW_ICCPROF_CHANGED:
+      case WINDOW_DISPLAY_CHANGED:
+      case WINDOW_DISPLAY_SCALE_CHANGED:
+      case WINDOW_SAFE_AREA_CHANGED:
+      case WINDOW_OCCLUDED:
+      case WINDOW_ENTER_FULLSCREEN:
+      case WINDOW_LEAVE_FULLSCREEN:
+      case WINDOW_HDR_STATE_CHANGED:
+        break;
 
       case KEY_DOWN:
       case KEY_UP:
         break;
       //  keybinds::add_queue(event.key);
 
-      case WINDOW_SHOWN: break;
-      case WINDOW_EXPOSED: break;
-      case WINDOW_MOVED: break;
-      case WINDOW_PIXEL_SIZE_CHANGED: break;
-      case WINDOW_MINIMIZED: break;
-      case WINDOW_RESTORED: break;
-      case WINDOW_MOUSE_ENTER: break;
-      case WINDOW_MOUSE_LEAVE: break;
-      case WINDOW_FOCUS_GAINED: break;
-      case WINDOW_FOCUS_LOST: break;
-      case WINDOW_SAFE_AREA_CHANGED: break;
-      case WINDOW_OCCLUDED: break;
+      case TEXT_EDITING:
+      case TEXT_INPUT:
+        break;
+      
+      case KEYMAP_CHANGED:
+      case KEYBOARD_ADDED:
+      case KEYBOARD_REMOVED:
+      case TEXT_EDITING_CANDIDATES:
+      case SCREEN_KEYBOARD_SHOWN:
+      case SCREEN_KEYBOARD_HIDDEN:
+        break;
+
+      case 
+
 
       case MOUSE_MOTION:
-        Vec2f temp = {bythos.event.motion.x, bythos.event.motion.y};
         bythos.mouse.delta = {bythos.event.motion.xrel, bythos.event.motion.yrel};
-        bythos.mouse.position = temp;
+        bythos.mouse.position = {bythos.event.motion.x, bythos.event.motion.y};
       case MOUSE_BUTTON_DOWN:
         bythos.mouse.buttons[bythos.event.button.button-1] = true;
       case MOUSE_BUTTON_UP:

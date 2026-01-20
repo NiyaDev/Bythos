@@ -46,5 +46,5 @@ fn Vec4f Rectangle.v4(self) @export("rect_v4")
   => self.f.xyzw;
 
 fn bool Rectangle.within(&self, Vec2f rhs) @export("rect_within")
-  => ((rhs.x >= self.x && rhs.x < = self.x + self.w) && (rhs.y >= self.y && rhs.y < = self.y + self.h));
+  => ((rhs.x >= self.x && rhs.x <= self.x + self.w) && (rhs.y >= self.y && rhs.y <= self.y + self.h));
 
