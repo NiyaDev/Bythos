@@ -1,0 +1,27 @@
+
+module bythos::texture;
+
+
+struct Texture {
+  uint id;
+  uint width, height;
+  int mipmaps;
+  int format;
+}
+enum TilingLayout {
+  THREE_THREE,
+  ONE_THREE,
+  THREE_ONE,
+}
+enum ImageType {
+  UNKNOWN,
+  PNG,
+  PPM,
+}
+
+extern fn Texture load(String filename) @extern("texture_load");
+extern fn Texture load_from_memory(char[] data, ImageType type = PNG) @extern("texture_loadfrommem");
+extern fn Texture new(int width, int height) @extern("texture_new");
+extern fn void Texture.clean(&self) @extern("texture_clean");
+extern fn void Texture.draw(&self, Rectangle dst = {}, Rectangle src = {}, Color tint = color::WHITE) @extern("texture_draw");
+

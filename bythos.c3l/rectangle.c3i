@@ -1,0 +1,32 @@
+
+module bythos::rectangle;
+
+
+union Rectangle {
+  struct { float x, y, w, h; }
+  float[<4>] f;
+}
+
+extern fn bool Rectangle.equals(self, Rectangle rhs) @operator(==) @extern("rect_equals");
+
+extern fn Rectangle Rectangle.add(self, Rectangle rhs) @operator(+) @extern("rect_add");
+extern fn Rectangle Rectangle.add_v2(self, Vec2f rhs) @operator_s(+) @extern("rect_addv2");
+extern fn Rectangle Rectangle.add_v4(self, Vec4f rhs) @operator_s(+) @extern("rect_addv4");
+
+extern fn Rectangle Rectangle.sub(self, Rectangle rhs) @operator(-) @extern("rect_sub");
+extern fn Rectangle Rectangle.sub_v2(self, Vec2f rhs) @operator_s(-) @extern("rect_subv2");
+extern fn Rectangle Rectangle.sub_v4(self, Vec4f rhs) @operator_s(-) @extern("rect_subv4");
+
+extern fn Rectangle Rectangle.mul(self, Rectangle rhs) @operator(*) @extern("rect_mul");
+extern fn Rectangle Rectangle.mul_v2(self, Vec2f rhs) @operator_s(*) @extern("rect_mulv2");
+extern fn Rectangle Rectangle.mul_v4(self, Vec4f rhs) @operator_s(*) @extern("rect_mulv4");
+
+extern fn Rectangle Rectangle.div(self, Rectangle rhs) @operator(/) @extern("rect_div");
+extern fn Rectangle Rectangle.div_v2(self, Vec2f rhs) @operator_s(/) @extern("rect_divv2");
+extern fn Rectangle Rectangle.div_v4(self, Vec4f rhs) @operator_s(/) @extern("rect_divv4");
+
+extern fn Vec2f Rectangle.v2(self) @extern("rect_v2");
+extern fn Vec4f Rectangle.v4(self) @extern("rect_v4");
+
+extern fn bool Rectangle.within(&self, Vec2f rhs) @extern("rect_within");
+

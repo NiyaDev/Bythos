@@ -9,3 +9,8 @@
 #### [1/19/25]
 - Finished basic SDL3 and OpenGL integration.
 
+#### [1/21/25]
+- Added all bindings for Textures, Rectangles, and core functions.
+- Made framework for Materials, Shaders, and Meshes.
+- Re-wrote default texture generation to be simpler.
+

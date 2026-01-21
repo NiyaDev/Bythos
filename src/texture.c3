@@ -17,7 +17,6 @@ enum TilingLayout {
   ONE_THREE,
   THREE_ONE,
 }
-
 enum ImageType {
   UNKNOWN,
   PNG,

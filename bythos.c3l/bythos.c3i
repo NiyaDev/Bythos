@@ -1,2 +1,10 @@
+
 module bythos;
+
+
+struct Bythos {}
+
+extern fn void init() @extern("bythos_init");
+extern fn bool should_close() @extern("bythos_shouldclose");
+extern fn void draw() @extern("bythos_draw");
 

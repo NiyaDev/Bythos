@@ -102,6 +102,7 @@ fn bool should_close() @export("bythos_shouldclose") {
       case SYSTEM_THEME_CHANGED:
         break;
 
+      // Display
       case DISPLAY_ORIENTATION:
       case DISPLAY_ADDED:
       case DISPLAY_REMOVED:
@@ -112,6 +113,7 @@ fn bool should_close() @export("bythos_shouldclose") {
       case DISPLAY_USABLE_BOUNDS_CHANGED:
         break;
 
+      // Window
       case WINDOW_SHOWN:
       case WINDOW_HIDDEN:
       case WINDOW_EXPOSED:
@@ -139,6 +141,7 @@ fn bool should_close() @export("bythos_shouldclose") {
       case WINDOW_HDR_STATE_CHANGED:
         break;
 
+      // Keyboard
       case KEY_DOWN:
       case KEY_UP:
         break;
@@ -156,9 +159,7 @@ fn bool should_close() @export("bythos_shouldclose") {
       case SCREEN_KEYBOARD_HIDDEN:
         break;
 
-      case 
-
-
+      // Mouse
       case MOUSE_MOTION:
         bythos.mouse.delta = {bythos.event.motion.xrel, bythos.event.motion.yrel};
         bythos.mouse.position = {bythos.event.motion.x, bythos.event.motion.y};
@@ -169,7 +170,91 @@ fn bool should_close() @export("bythos_shouldclose") {
       case MOUSE_WHEEL:
         bythos.mouse.scrollwheel = bythos.event.wheel.y;
 
-      case SENSOR_UPDATE: break;
+      case MOUSE_ADDED:
+      case MOUSE_REMOVED:
+        break;
+
+      // Joystick
+      case JOYSTICK_AXIS_MOTION:
+      case JOYSTICK_BALL_MOTION:
+      case JOYSTICK_HAT_MOTION:
+      case JOYSTICK_BUTTON_DOWN:
+      case JOYSTICK_BUTTON_UP:
+      case JOYSTICK_ADDED:
+      case JOYSTICK_REMOVED:
+      case JOYSTICK_BATTERY_UPDATED:
+      case JOYSTICK_UPDATE_COMPLETE:
+        break;
+
+      // Gamepad
+      case GAMEPAD_AXIS_MOTION:
+      case GAMEPAD_BUTTON_DOWN:
+      case GAMEPAD_BUTTON_UP:
+      case GAMEPAD_ADDED: 
+      case GAMEPAD_REMOVED:
+      case GAMEPAD_REMAPPED:
+      case GAMEPAD_TOUCHPAD_DOWN:
+      case GAMEPAD_TOUCHPAD_MOTION:
+      case GAMEPAD_TOUCHPAD_UP:
+      case GAMEPAD_SENSOR_UPDATE:
+      case GAMEPAD_UPDATE_COMPLETE:
+      case GAMEPAD_STEAM_HANDLE_UPDATED:
+        break;
+
+      // Touch
+      case FINGER_DOWN:
+      case FINGER_UP:
+      case FINGER_MOTION:
+      case FINGER_CANCELED:
+      case PINCH_BEGIN:
+      case PINCH_UPDATE:
+      case PINCH_END:
+        break;
+      
+      // Clipboard
+      case CLIPBOARD_UPDATE:
+        break;
+
+      // File drop
+      case DROP_FILE:
+      case DROP_TEXT:
+      case DROP_BEGIN:
+      case DROP_COMPLETE:
+      case DROP_POSITION:
+        break;
+
+      // Audio device events
+      case AUDIO_DEVICE_ADDED:
+      case AUDIO_DEVICE_REMOVED:
+      case AUDIO_DEVICE_FORMAT_CHANGED:
+        break;
+
+      case SENSOR_UPDATE:
+        break;
+
+      // Pen
+      case PEN_PROXIMITY_IN:
+      case PEN_PROXIMITY_OUT:
+      case PEN_DOWN:
+      case PEN_UP:
+      case PEN_BUTTON_DOWN:
+      case PEN_BUTTON_UP:
+      case PEN_MOTION:
+      case PEN_AXIS:
+        break;
+
+      // Camera hotplug
+      case CAMERA_DEVICE_ADDED:
+      case CAMERA_DEVICE_REMOVED:
+      case CAMERA_DEVICE_APPROVED:
+      case CAMERA_DEVICE_DENIED:
+        break;
+
+      // Render
+      case RENDER_TARGETS_RESET:
+      case RENDER_DEVICE_RESET:
+      case RENDER_DEVICE_LOST:
+        break;
 
       default: debug::info("Unhandled event.", bythos.event.type);
     }

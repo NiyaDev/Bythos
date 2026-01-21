@@ -1,12 +1,20 @@
 
 ### General
 - Tests
-  - Textures
   - Move the default generation to it's own file.
 
+### Structures
 - Texture
   - Screenshot
   - Test to make sure it all works
-  - Bindings
-
+  - Unit Tests
+- Material
+  - All functions
+  - Unit Tests
+- Shader
+  - All functions
+  - Unit Tests
+- Mesh
+  - All functions
+  - Unit Tests
 

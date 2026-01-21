@@ -40,37 +40,3 @@ fn void color() @test {
   }
 }
 
-import std::io;
-fn void testing() @test {
-  File f = file::open("resources/texture.ppm", "wb")!!;
-  f.write_byte('P')!!;
-  f.write_byte('6')!!;
-  f.write_byte('\n')!!;
-
-  f.write_byte('2')!!;
-  f.write_byte(' ')!!;
-  f.write_byte('2')!!;
-  f.write_byte('\n')!!;
-
-  f.write_byte('2')!!;
-  f.write_byte('5')!!;
-  f.write_byte('5')!!;
-  f.write_byte('\n')!!;
-
-  f.write_byte(0xB2)!!;
-  f.write_byte(0x00)!!;
-  f.write_byte(0xFF)!!;
-  f.write_byte(0x00)!!;
-  f.write_byte(0x00)!!;
-  f.write_byte(0x00)!!;
-
-  f.write_byte(0x00)!!;
-  f.write_byte(0x00)!!;
-  f.write_byte(0x00)!!;
-  f.write_byte(0xB2)!!;
-  f.write_byte(0x00)!!;
-  f.write_byte(0xFF)!!;
-
-  f.close()!!;
-}
-
