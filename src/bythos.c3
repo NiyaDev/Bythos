@@ -272,6 +272,6 @@ fn void draw() @export("bythos_draw") {
 
   // Debug
 
-  sdl3::gl_swap_window(bythos.window);
+  
 }
 
