@@ -14,3 +14,11 @@
 - Made framework for Materials, Shaders, and Meshes.
 - Re-wrote default texture generation to be simpler.
 
+#### [1/22/26]
+- Finished most mesh functions.
+
+#### [1/23/26]
+- Finished most shader functions and started working on set_uniform, but had trouble with implementation.
+- Finished Camera.
+
+

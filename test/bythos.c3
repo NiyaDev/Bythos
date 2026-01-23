@@ -1,5 +1,6 @@
 
 //import bythos;
+import std::io;
 import sdl3;
 
 
@@ -8,6 +9,8 @@ fn void basic() @test {
   defer bythos::clean();
 
   Mesh m = mesh::new(CUBE);
+  m.material.shader = shader::compile();
+  io::printfn("%d",m.material.shader.id);
 
   while (!bythos::should_close()) {
     bythos::draw();
