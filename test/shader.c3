@@ -5,7 +5,7 @@ import bythos;
 
 
 fn void set_uniforms() @test {
-  Shader s = shader::compile();
+  //Shader s = shader::compile();
 
   /*
   shader::set_uniform{int}  (&s, "test", 0);

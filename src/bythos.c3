@@ -35,8 +35,8 @@ fn void init() @export("bythos_init") {
   // Init SDL3
   if (!sdl3::init(sdl3::INIT_VIDEO | sdl3::INIT_AUDIO))
     { debug::fatal("Failed to initialize SDL3.", sdl3::get_error()); }
-  sdl3::gl_set_attribute(GLAttr.CONTEXT_MAJOR_VERSION, 3);
-  sdl3::gl_set_attribute(GLAttr.CONTEXT_MINOR_VERSION, 3);
+  sdl3::gl_set_attribute(GLAttr.CONTEXT_MAJOR_VERSION, 4);
+  sdl3::gl_set_attribute(GLAttr.CONTEXT_MINOR_VERSION, 1);
   sdl3::gl_set_attribute(GLAttr.CONTEXT_PROFILE_MASK, sdl3::CONTEXT_PROFILE_CORE);
 
   // Create window
@@ -59,6 +59,8 @@ fn void init() @export("bythos_init") {
   gl::enable(gl::GL_BLEND);
   gl::blendFunc(gl::GL_SRC_ALPHA, gl::GL_ONE_MINUS_SRC_ALPHA);
 
+  gl::viewport(0,0, 1280, 720);
+
   // Default shaders
   // Framebuffer
   // Load defaults
@@ -72,6 +74,16 @@ fn void clean() @export("bythos_clean") {
   bythos.event = {};
 
   // Rest of cleanup
+}
+fn void draw() @export("bythos_draw") {
+  gl::clearColor(0.5,0.5,0.5,1);
+  gl::clear(gl::GL_COLOR_BUFFER_BIT | gl::GL_DEPTH_BUFFER_BIT);
+
+  bythos.mouse.scrollwheel = 0;
+
+  // Debug
+
+  
 }
 fn bool should_close() @export("bythos_shouldclose") {
   // Calculate deltatime
@@ -263,15 +275,5 @@ fn bool should_close() @export("bythos_shouldclose") {
   // Default exit key
 
   return false;
-}
-fn void draw() @export("bythos_draw") {
-  gl::clearColor(0.5,0.5,0.5,1);
-  gl::clear(gl::GL_COLOR_BUFFER_BIT | gl::GL_DEPTH_BUFFER_BIT);
-
-  bythos.mouse.scrollwheel = 0;
-
-  // Debug
-
-  
 }
 

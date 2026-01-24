@@ -2,9 +2,11 @@
 module bythos::mesh;
 import std::io;
 import std::collections;
+import std::math;
 import opengl::gl;
 import bythos::vector;
 import bythos::material;
+import bythos::camera;
 import bythos::debug;
 
 
@@ -166,8 +168,9 @@ fn void Mesh.clean(&self) @export("mesh_cleanmesh") {
 
 fn void Mesh.upload(&self) {
   gl::genVertexArrays(1, &self.vao);
-  gl::bindVertexArray(self.vao);
   gl::genBuffers(1, &self.vbo);
+
+  gl::bindVertexArray(self.vao);
   gl::bindBuffer(gl::GL_ARRAY_BUFFER, self.vbo);
   gl::bufferData(gl::GL_ARRAY_BUFFER, self.vertices.len * Vertex.sizeof, self.vertices, gl::GL_STATIC_DRAW);
   
@@ -194,12 +197,22 @@ fn void Mesh.draw(&self,
     Vec3f rotation = {0,0,0}) @export("mesh_draw") {
   if (self.material.shader.id != 0) {
     gl::useProgram(self.material.shader.id);
+
+    // Set uniforms
+    self.material.shader.set_uniform("view", &&camera::get_matrix());
+    self.material.shader.set_uniform("model",
+      &&MATRIX4F_IDENTITY
+        .translate(position)
+        //.rotate_x(rotation.x)
+        //.rotate_y(rotation.y)
+        //.rotate_z(rotation.z)
+        .scale(scale));
   }
 
-  // Set uniforms
   // Texture
   // Draw
   gl::bindVertexArray(self.vao);
+  //gl::drawElements(gl::GL_TRIANGLES, 6, gl::GL_UNSIGNED_INT, null);
   gl::drawArrays(gl::GL_TRIANGLES, 0, self.vertices.len);
 }
 

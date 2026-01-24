@@ -21,4 +21,6 @@
 - Finished most shader functions and started working on set_uniform, but had trouble with implementation.
 - Finished Camera.
 
+#### [1/24/26]
+- Still trying to fix nothing rendering but it's all broken and i don't know why.
 

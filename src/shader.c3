@@ -2,8 +2,11 @@
 module bythos::shader;
 import std::io;
 import std::collections;
+import std::math;
 import opengl::gl;
 import bythos::debug;
+import bythos::vector;
+import bythos::texture;
 
 
 struct Shader {
@@ -76,6 +79,37 @@ fn Shader compile(char[] v = {}, char[] f = {}) @export("shader_compile") {
 fn void Shader.clean(&self) @export("shader_clean") {
   gl::deleteProgram(self.id);
   self.locs.free();
+}
+fn void Shader.set_uniform(&self, String key, any v) @export("shader_setuniform") {
+  uint loc;
+  if (self.locs.has_key(key)) {
+    loc = self.locs[key]!!;
+  } else {
+    loc = gl::getUniformLocation(self.id, key);
+    self.locs[key] = loc;
+  }
+
+  switch (v.type) {
+    case int:
+      gl::programUniform1i(self.id, loc, *(int*)v);
+    case float:
+      gl::programUniform1f(self.id, loc, *(float*)v);
+    case Vec2f:
+      Vec2f v2 = *(Vec2f*)v;
+      gl::programUniform2f(self.id, loc, v2.x, v2.y);
+    case Vec3f:
+      Vec3f v2 = *(Vec3f*)v;
+      gl::programUniform3f(self.id, loc, v2.x, v2.y, v2.z);
+    case Vec4f:
+      Vec4f v2 = *(Vec4f*)v;
+      gl::programUniform4f(self.id, loc, v2.x, v2.y, v2.z, v2.w);
+    case Matrix4f:
+      gl::programUniformMatrix4fv(self.id, loc, 1, gl::GL_FALSE, (float*)v);
+    case Texture:
+      gl::programUniform1i(self.id, loc, ((Texture*)v).id);
+    default:
+      debug::error("Attempted to set uniform with unimplemented type.", v.type);
+  }
 }
 
 
@@ -156,35 +190,4 @@ const char[] FB_FRAGMENT =
   "  FragColor = texture(texture0, TexCoords);\n"
   "}\n";
 
-
-//module bythos::shader <Type>;
-//fn void Shader.set_uniform(&self, String key, Type t) <Type> @export("shader_setuniform") {
-/*
-fn void set_uniform(Shader* self, String key, Type t) <Type> {
-  uint loc;
-  if (self.locs.has_key(key)) {
-    loc = self.locs[key]!!;
-  } else {
-    loc = gl::getUniformLocation(self.id, key);
-    self.locs[key] = loc;
-  }
-
-  switch (Type.nameof) {
-    case "int":
-      gl::programUniform1i(self.id, loc, t);
-    case "float":
-      gl::programUniform1f(self.id, loc, t);
-    case "float[<2>]":
-      gl::programUniform2f(self.id, loc, t.x, t.y);
-    case "float[<3>]":
-      gl::programUniform3f(self.id, loc, t.x, t.y, t.z);
-    case "float[<4>]":
-      gl::programUniform4f(self.id, loc, t.x, t.y, t.z, t.w);
-    case "Matrix4x4{float}":
-      gl::programUniformMatrix4fv(self.id, loc, &t);
-    case "Texture":
-      gl::programUniformi(self.id, loc, t.id);
-  }
-}
-*/
 
