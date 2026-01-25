@@ -24,3 +24,6 @@
 #### [1/24/26]
 - Still trying to fix nothing rendering but it's all broken and i don't know why.
 
+#### [1/25/26]
+- Finally got it working and it was stupid. Forgot the Perspective matrix and then to transpose it.
+

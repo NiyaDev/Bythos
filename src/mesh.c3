@@ -199,14 +199,17 @@ fn void Mesh.draw(&self,
     gl::useProgram(self.material.shader.id);
 
     // Set uniforms
-    self.material.shader.set_uniform("view", &&camera::get_matrix());
-    self.material.shader.set_uniform("model",
-      &&MATRIX4F_IDENTITY
+    Matrix4f view = camera::get_matrix();
+    self.material.shader.set_uniform("view", &view);
+    Matrix4f model = MATRIX4F_IDENTITY
         .translate(position)
-        //.rotate_x(rotation.x)
-        //.rotate_y(rotation.y)
-        //.rotate_z(rotation.z)
-        .scale(scale));
+        .rotate_z(rotation.z)
+        .rotate_y(rotation.y)
+        .rotate_x(rotation.x)
+        .scale(scale)
+        .transpose();
+
+    self.material.shader.set_uniform("model",&model);
   }
 
   // Texture

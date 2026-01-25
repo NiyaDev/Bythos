@@ -23,7 +23,7 @@ struct Bythos {
   struct framebuffer {
     uint fb, rb;
     Texture tex;
-    //Mesh quad;
+    Mesh quad;
   }
 }
 
@@ -31,6 +31,12 @@ Bythos bythos;
 
 fn void init() @export("bythos_init") {
   int res;
+
+  // Set defaults
+  bythos.screenWidth  = 1280;
+  bythos.screenHeight =  720;
+  bythos.renderWidth  = 1280;
+  bythos.renderHeight =  720;
 
   // Init SDL3
   if (!sdl3::init(sdl3::INIT_VIDEO | sdl3::INIT_AUDIO))
@@ -40,7 +46,10 @@ fn void init() @export("bythos_init") {
   sdl3::gl_set_attribute(GLAttr.CONTEXT_PROFILE_MASK, sdl3::CONTEXT_PROFILE_CORE);
 
   // Create window
-  bythos.window = sdl3::create_window("BYTHOS", 1280, 720, sdl3::WINDOW_OPENGL);
+  bythos.window = sdl3::create_window(
+    "BYTHOS",
+    bythos.screenWidth, bythos.screenHeight,
+    sdl3::WINDOW_OPENGL);
   if (bythos.window == null)
     { debug::fatal("Failed to create SDL3 window.", sdl3::get_error()); }
 
@@ -59,8 +68,6 @@ fn void init() @export("bythos_init") {
   gl::enable(gl::GL_BLEND);
   gl::blendFunc(gl::GL_SRC_ALPHA, gl::GL_ONE_MINUS_SRC_ALPHA);
 
-  gl::viewport(0,0, 1280, 720);
-
   // Default shaders
   // Framebuffer
   // Load defaults
@@ -78,6 +85,7 @@ fn void clean() @export("bythos_clean") {
 fn void draw() @export("bythos_draw") {
   gl::clearColor(0.5,0.5,0.5,1);
   gl::clear(gl::GL_COLOR_BUFFER_BIT | gl::GL_DEPTH_BUFFER_BIT);
+  gl::viewport(0, 0, bythos.screenWidth, bythos.screenHeight);
 
   bythos.mouse.scrollwheel = 0;
 
