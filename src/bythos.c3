@@ -1,5 +1,6 @@
 
 module bythos;
+import std::math;
 import sdl3;
 import opengl::gl;
 import bythos::debug;
@@ -15,6 +16,8 @@ struct Bythos {
   uint screenWidth, screenHeight;
   uint renderWidth, renderHeight;
 
+  Shader def_2d, def_3d;
+
   struct mouse {
     Vec2f position, delta;
     bool[5] buttons, buttonsHeld, buttonsUp;
@@ -22,7 +25,6 @@ struct Bythos {
   }
   struct framebuffer {
     uint fb, rb;
-    Texture tex;
     Mesh quad;
   }
 }
@@ -69,7 +71,50 @@ fn void init() @export("bythos_init") {
   gl::blendFunc(gl::GL_SRC_ALPHA, gl::GL_ONE_MINUS_SRC_ALPHA);
 
   // Default shaders
+  bythos.def_2d = shader::compile(shader::DEFAULT_VERTEX_2D, shader::DEFAULT_FRAGMENT_2D);
+  bythos.def_2d.set_uniform("screensize",
+    &&(Vec2f){
+      (float)bythos.renderWidth,
+      (float)bythos.renderHeight
+    });
+  bythos.def_3d = shader::compile(shader::DEFAULT_VERTEX_3D, shader::DEFAULT_FRAGMENT_3D);
+  bythos.def_3d.set_uniform("projection", &&matrix::perspective{float}(
+    70 * (math::PI / 180),
+    (float)bythos.renderWidth / (float)bythos.renderHeight,
+    0.1, 100).transpose());
+
   // Framebuffer
+  bythos.framebuffer.quad = mesh::new(PLANE);
+  bythos.framebuffer.quad.material.shader = shader::compile(shader::FB_VERTEX, shader::FB_FRAGMENT);
+  bythos.framebuffer.quad.material.shader.set_uniform("screenTexture", &&0);
+
+  gl::genFramebuffers(1, &bythos.framebuffer.fb);
+  gl::bindFramebuffer(gl::GL_FRAMEBUFFER, bythos.framebuffer.fb);
+
+//*
+  bythos.framebuffer.quad.material.texture = texture::new(bythos.renderWidth, bythos.renderHeight);
+  gl::framebufferTexture2D(
+    gl::GL_FRAMEBUFFER,
+    gl::GL_COLOR_ATTACHMENT0,
+    gl::GL_TEXTURE_2D,
+    bythos.framebuffer.quad.material.texture.id,
+    0);
+
+  gl::genRenderbuffers(1, &bythos.framebuffer.rb);
+  gl::bindRenderbuffer(gl::GL_RENDERBUFFER, bythos.framebuffer.rb);
+  gl::renderbufferStorage(
+    gl::GL_RENDERBUFFER,
+    gl::GL_DEPTH24_STENCIL8,
+    bythos.renderWidth, bythos.renderHeight);
+  gl::framebufferRenderbuffer(
+    gl::GL_FRAMEBUFFER,
+    gl::GL_DEPTH_STENCIL_ATTACHMENT,
+    gl::GL_RENDERBUFFER,
+    bythos.framebuffer.rb);
+  if (gl::checkFramebufferStatus(gl::GL_FRAMEBUFFER) != gl::GL_FRAMEBUFFER_COMPLETE)
+    { debug::fatal("Failed to initialize framebuffer."); }
+  gl::bindFramebuffer(gl::GL_FRAMEBUFFER, 0);
+//*/
   // Load defaults
   // Keybinds
 }
@@ -78,14 +123,17 @@ fn void clean() @export("bythos_clean") {
   bythos.context = null;
   sdl3::destroy_window(bythos.window);
   bythos.window = null;
-  bythos.event = {};
+  bythos.event = {}; 
 
   // Rest of cleanup
 }
 fn void draw() @export("bythos_draw") {
+  gl::bindFramebuffer(gl::GL_FRAMEBUFFER, bythos.framebuffer.fb);
+  gl::enable(gl::GL_DEPTH_TEST);
+  gl::viewport(0, 0, bythos.renderWidth, bythos.renderHeight);
+
   gl::clearColor(0.5,0.5,0.5,1);
   gl::clear(gl::GL_COLOR_BUFFER_BIT | gl::GL_DEPTH_BUFFER_BIT);
-  gl::viewport(0, 0, bythos.screenWidth, bythos.screenHeight);
 
   bythos.mouse.scrollwheel = 0;
 
@@ -93,6 +141,8 @@ fn void draw() @export("bythos_draw") {
 
   
 }
+ 
+
 fn bool should_close() @export("bythos_shouldclose") {
   // Calculate deltatime
   double currentFrame = (double)sdl3::get_ticks() / 1000;

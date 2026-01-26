@@ -2,18 +2,14 @@
 import std::math;
 import std::io;
 import sdl3;
+import opengl::gl;
 
 
 fn void basic() @test {
   bythos::init();
   defer bythos::clean();
 
-  Mesh m = mesh::new(TRI);
-  m.material.shader = shader::compile(shader::DEFAULT_VERTEX_3D,shader::DEFAULT_FRAGMENT_3D);
-  Matrix4f mat = matrix::perspective{float}(
-      70 * math::PI / 180,
-      1280 / 720, 0.1, 100).transpose();
-  m.material.shader.set_uniform("projection", &mat);
+  Mesh m = mesh::new(CUBE);
 
   float y = 1;
   Vec3f pos;
@@ -28,6 +24,14 @@ fn void basic() @test {
       y = 0;
       io::printfn("reset");
     }
+
+    gl::bindFramebuffer(gl::GL_FRAMEBUFFER, 0);
+    gl::disable(gl::GL_DEPTH_TEST);
+    gl::clearColor(0,0.5,0,1);
+    gl::clear(gl::GL_COLOR_BUFFER_BIT);
+    gl::viewport(0, 0, bythos.screenWidth, bythos.screenHeight);
+
+    bythos.framebuffer.quad.draw();
 
     sdl3::gl_swap_window(bythos.window);
   }

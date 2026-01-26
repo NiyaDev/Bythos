@@ -1,13 +1,19 @@
 
 module bythos::material;
-import bythos::texture;
-import bythos::color;
-import bythos::shader;
+import bythos;
 
 
 struct Material {
   Shader shader;
   Texture texture;
   Color color;
+}
+
+fn Material new() {
+  return {
+    bythos::bythos.def_3d,
+    {},
+    color::WHITE,
+  };
 }
 

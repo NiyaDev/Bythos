@@ -27,3 +27,6 @@
 #### [1/25/26]
 - Finally got it working and it was stupid. Forgot the Perspective matrix and then to transpose it.
 
+#### [1/26/26]
+- Got rendering working normally and then re-implemented the framebuffer.
+

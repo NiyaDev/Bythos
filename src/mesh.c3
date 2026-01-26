@@ -155,6 +155,8 @@ fn Mesh new(MeshType type) @export("mesh_new") {
       for (int i; i < BASIC_CUBE.len; i++) { output.vertices[i] = BASIC_CUBE[i]; }
   }
 
+  output.material = material::new();
+
   output.upload();
   return output;
 }
@@ -197,6 +199,7 @@ fn void Mesh.draw(&self,
     Vec3f rotation = {0,0,0}) @export("mesh_draw") {
   if (self.material.shader.id != 0) {
     gl::useProgram(self.material.shader.id);
+    gl::bindTexture(gl::GL_TEXTURE_2D, self.material.texture.id);
 
     // Set uniforms
     Matrix4f view = camera::get_matrix();
@@ -212,11 +215,10 @@ fn void Mesh.draw(&self,
     self.material.shader.set_uniform("model",&model);
   }
 
-  // Texture
   // Draw
   gl::bindVertexArray(self.vao);
-  //gl::drawElements(gl::GL_TRIANGLES, 6, gl::GL_UNSIGNED_INT, null);
   gl::drawArrays(gl::GL_TRIANGLES, 0, self.vertices.len);
+  gl::bindVertexArray(0);
 }
 
 
