@@ -151,7 +151,7 @@ fn void char[].reverse(self, usz width, usz height, int bytesPerPixel) {
   }
   free(row);
 }
-
+/*
 fn void Texture.draw(&self,
     Rectangle dst = {},
     Rectangle src = {},
@@ -166,4 +166,4 @@ fn void Texture.draw(&self,
     newSize.y / (float)bythos::bythos.renderHeight,
   };
 }
-
+*/

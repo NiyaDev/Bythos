@@ -30,3 +30,6 @@
 #### [1/26/26]
 - Got rendering working normally and then re-implemented the framebuffer.
 
+#### [1/27/26]
+- Tested changing Bythos so that its a structure that's used, but it got nowhere and is reverted.
+

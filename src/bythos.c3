@@ -32,6 +32,7 @@ struct Bythos {
 Bythos bythos;
 
 fn void init() @export("bythos_init") {
+//fn void init_old() {
   int res;
 
   // Set defaults

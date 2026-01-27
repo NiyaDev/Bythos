@@ -29,11 +29,11 @@ fn void basic() @test {
     gl::disable(gl::GL_DEPTH_TEST);
     gl::clearColor(0,0.5,0,1);
     gl::clear(gl::GL_COLOR_BUFFER_BIT);
-    gl::viewport(0, 0, bythos.screenWidth, bythos.screenHeight);
+    gl::viewport(0, 0, bythos::bythos.screenWidth, bythos::bythos.screenHeight);
 
-    bythos.framebuffer.quad.draw();
+    bythos::bythos.framebuffer.quad.draw();
 
-    sdl3::gl_swap_window(bythos.window);
+    sdl3::gl_swap_window(bythos::bythos.window);
   }
   assert(false, "reached end");
 }
