@@ -22,18 +22,17 @@ fn void basic() @test {
     y += 0.01;
     if (y > 6.28318530718) {
       y = 0;
-      io::printfn("reset");
     }
 
     gl::bindFramebuffer(gl::GL_FRAMEBUFFER, 0);
     gl::disable(gl::GL_DEPTH_TEST);
     gl::clearColor(0,0.5,0,1);
     gl::clear(gl::GL_COLOR_BUFFER_BIT);
-    gl::viewport(0, 0, bythos::bythos.screenWidth, bythos::bythos.screenHeight);
+    gl::viewport(0, 0, bythos::core.window.screen.x, bythos::core.window.screen.y);
 
-    bythos::bythos.framebuffer.quad.draw();
+    bythos::core.window.quad.draw();
 
-    sdl3::gl_swap_window(bythos::bythos.window);
+    sdl3::gl_swap_window(bythos::core.window.sdl);
   }
   assert(false, "reached end");
 }

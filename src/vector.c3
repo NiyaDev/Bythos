@@ -8,6 +8,10 @@ alias Vec2f = float[<2>];
 alias Vec2i = int[<2>];
 
 
+fn float Vec2i.ratio(self) @export("vector2_ration")
+  => (float)self.x / (float)self.y;
+fn float Vec2f.ratio(self) @export("vector2_ration")
+  => self.x / self.y;
 fn float Vec2f.angle_rad(self, Vec2f v2) @export("vector2_angle_rad")
   => math::atan2(v2.y-self.y,v2.x-self.x);
 fn float Vec2f.angle_deg(self, Vec2f v2) @export("vector2_angle_deg") 

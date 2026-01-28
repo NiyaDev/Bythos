@@ -22,7 +22,7 @@ fn void update(Camera* cam = &main) @export("camera_update") {
     float dir;
     if ((cam.rotTarget - cam.rotation) > 0) dir = +1;
     if ((cam.rotTarget - cam.rotation) < 0) dir = -1;
-    cam.rotation += dir * (500 * (float)bythos::bythos.deltaTime);
+    cam.rotation += dir * (500 * (float)bythos::core.time.deltaTime);
   } else {
     cam.rotation = cam.rotTarget;
 

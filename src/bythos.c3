@@ -6,7 +6,7 @@ import opengl::gl;
 import bythos::debug;
 
 
-struct Bythos {
+struct Bythos_old {
   SDL_Window* window;
   SDL_GLContext* context;
   SDL_Event event;
@@ -31,6 +31,7 @@ struct Bythos {
 
 Bythos bythos;
 
+/*
 fn void init() @export("bythos_init") {
 //fn void init_old() {
   int res;
@@ -335,4 +336,4 @@ fn bool should_close() @export("bythos_shouldclose") {
 
   return false;
 }
-
+*/

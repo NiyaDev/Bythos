@@ -9,22 +9,40 @@ import bythos::color;
 String recentText;
 uint timer = 0;
 bool printing = false;
+LogLevel logLevel = ALL;
+
+enum LogLevel {
+  ALL,
+  WARNING,
+  ERROR,
+  NONE,
+}
 
 fn void fatal(String err, args...) @export("debug_fatal") {
   while (printing) thread::sleep_ms(1);
 
   printing = true;
-  String o = string::tformat("[%s] - %s %s", "FATAL".color({230,41,55,255}), err, args);
+  String o;
+  if (args.len > 0)
+    { o = string::tformat("[%s] - %s %s", "FATAL".color({230,41,55,255}), err, args); }
+  else
+    { o = string::tformat("[%s] - %s", "FATAL".color({230,41,55,255}), err); }
   io::printn(o);
   printing = false;
 
-  os::exit(1);
+  unreachable();
+  //os::exit(1);
 }
 fn void error(String err, args...) @export("debug_error") {
+  if (logLevel > ERROR) return;
   while (printing) thread::sleep_ms(1);
 
   printing = true;
-  String o = string::tformat("[%s] - %s %s", "ERROR".color(color::RED), err, args);
+  String o;
+  if (args.len > 0)
+    { o = string::tformat("[%s] - %s %s", "ERROR".color(color::RED), err, args); }
+  else
+    { o = string::tformat("[%s] - %s", "ERROR".color(color::RED), err); }
   io::printn(o);
   printing = false;
 
@@ -32,10 +50,15 @@ fn void error(String err, args...) @export("debug_error") {
   timer = 100;
 }
 fn void warning(String err, args...) @export("debug_warning") {
+  if (logLevel > WARNING) return;
   while (printing) thread::sleep_ms(1);
 
   printing = true;
-  String o = string::tformat("[%s] - %s %s", "WARN".color(color::ORANGE), err, args);
+  String o;
+  if (args.len > 0)
+    { o = string::tformat("[%s]  - %s %s", "WARN".color(color::ORANGE), err, args); }
+  else
+    { o = string::tformat("[%s]  - %s", "WARN".color(color::ORANGE), err); }
   io::printn(o);
   printing = false;
 
@@ -43,10 +66,15 @@ fn void warning(String err, args...) @export("debug_warning") {
   timer = 100;
 }
 fn void info(String err, args...) @export("debug_info") {
+  if (logLevel > ALL) return;
   while (printing) thread::sleep_ms(1);
 
   printing = true;
-  String o = string::tformat("[%s] - %s %s", "INFO".color(color::GRAY), err, args);
+  String o;
+  if (args.len > 0)
+    { o = string::tformat("[%s]  - %s %s", "INFO".color(color::GRAY), err, args); }
+  else
+    { o = string::tformat("[%s]  - %s", "INFO".color(color::GRAY), err); }
   io::printn(o);
   printing = false;
 }

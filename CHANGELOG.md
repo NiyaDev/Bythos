@@ -33,3 +33,8 @@
 #### [1/27/26]
 - Tested changing Bythos so that its a structure that's used, but it got nowhere and is reverted.
 
+#### [1/28/26]
+- Added log level to only display logs of an equal severity or higher. Set to ALL by default.
+- Re-wrote Bythos structure to compartmentalize more data and re-wrote and organized bythos functions.
+- Started fixing PPM loading.
+

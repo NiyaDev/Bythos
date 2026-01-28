@@ -80,7 +80,6 @@ fn Texture load_from_memory(char[] data, ImageType type = PNG) @export("texture_
 
       // Decode image data and reverse
       img = mem::new_array(char, imgSize);
-      defer free(img);
 
       result = spng::decode_image(ctx, (void*)img, imgSize, (int)Format.RGBA8, 0);
       if (result != 0) {
@@ -89,10 +88,14 @@ fn Texture load_from_memory(char[] data, ImageType type = PNG) @export("texture_
       }
       img.reverse(output.width, output.height, 4);
     case PPM:
-      img = data;
+      // TODO: Read PPM properly
+      output.width = 2;
+      output.height = 2;
+      img = data[11..].expand(0xff, 4);
     default:
       debug::error("Invalid filetype.");
   }
+  io::printfn("%s",img);
 
   // Gen OpenGL texture
   gl::genTextures(1, &output.id);
@@ -107,9 +110,10 @@ fn Texture load_from_memory(char[] data, ImageType type = PNG) @export("texture_
     gl::GL_RGBA, gl::GL_UNSIGNED_BYTE, img);
   gl::generateMipmap(gl::GL_TEXTURE_2D);
   if (output.id == 0) {
-    debug::error("Failed to uplad image to OpenGL.");
+    debug::error("Failed to upload image to OpenGL.");
     return load_from_memory(def, PPM);
   }
+  free(img);
 
   return output;
 }
@@ -121,7 +125,7 @@ fn Texture new(int width, int height) @export("texture_new") {
   gl::genTextures(1, &output.id);
   gl::bindTexture(gl::GL_TEXTURE_2D, output.id);
   
-  gl::texParameteri(gl::GL_TEXTURE_2D, gl::GL_TEXTURE_MIN_FILTER, gl::GL_NEAREST);//Might be gl::GL_LINEAR
+  gl::texParameteri(gl::GL_TEXTURE_2D, gl::GL_TEXTURE_MIN_FILTER, gl::GL_NEAREST);
   gl::texParameteri(gl::GL_TEXTURE_2D, gl::GL_TEXTURE_MAG_FILTER, gl::GL_NEAREST);
 
   gl::texImage2D(
@@ -137,6 +141,20 @@ fn void Texture.clean(&self) @export("texture_clean") {
   self.id = 0;
   self.width = 0;
   self.height = 0;
+}
+fn char[] char[].expand(self, char value, int offset) {
+  char[] output = mem::new_array(char, self.len + (self.len / offset) + 1);
+  io::printfn("%d",output.len);
+  int count = 1;
+  int target = 0;
+  for (int i; i < output.len; i++) {
+    if (count == offset)
+      { output[i] = value; count = 1; }
+    else
+      { output[i] = self[target++]; count++; }
+  }
+  output[output.len-1] = value;
+  return output;
 }
 fn void char[].reverse(self, usz width, usz height, int bytesPerPixel) {
   usz stride = width * bytesPerPixel;

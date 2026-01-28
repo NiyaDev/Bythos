@@ -11,8 +11,8 @@ struct Material {
 
 fn Material new() {
   return {
-    bythos::bythos.def_3d,
-    {},
+    bythos::core.def_3d,
+    bythos::core.def_tex,
     color::WHITE,
   };
 }
