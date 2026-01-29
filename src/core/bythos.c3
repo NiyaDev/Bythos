@@ -6,6 +6,9 @@ import opengl::gl;
 
 
 const String BYTHOS_VERSION @export("version") = "0.1.0-Foundation";
+const usz MAX_MOUSE_BUTTONS =   8;
+const usz MAX_KEYBOARD_KEYS = 512;
+const usz MAX_KEY_QUEUE     =  16;
 Bythos core;
 
 struct Bythos {
@@ -26,11 +29,23 @@ struct Bythos {
   Texture def_tex;
 
   struct input {
-    //struct keyboard {}
+    struct keyboard {
+      String exitKey;
+
+      bool[MAX_KEYBOARD_KEYS] currentKeyState;
+      bool[MAX_KEYBOARD_KEYS] previousKeyState;
+      bool[MAX_KEYBOARD_KEYS] repeatKeyState;
+
+      int[MAX_KEY_QUEUE] keyPressedQueue;
+      int[MAX_KEY_QUEUE] charPressedQueue;
+    }
     struct mouse {
-      Vec2f position, delta;
+      Vec2f currentPosition;
+      Vec2f previousPosition;
+      Vec2f delta;
       float currentWheel, previousWheel;
-      bool[5] currentState, previousState;
+      bool[MAX_MOUSE_BUTTONS] currentState;
+      bool[MAX_MOUSE_BUTTONS] previousState;
 
       bool isHidden;
       bool isLocked;
@@ -141,7 +156,19 @@ fn void draw() @export("bythos_draw") {
 
   gl::clearColor(0.5,0.5,0.5,1);
   gl::clear(gl::GL_COLOR_BUFFER_BIT | gl::GL_DEPTH_BUFFER_BIT);
-
-  core.input.mouse.previousWheel = core.input.mouse.currentWheel;
-  core.input.mouse.currentWheel = 0;
 }
+
+fn void draw_end() @export("bythos_drawend") {
+  gl::bindFramebuffer(gl::GL_FRAMEBUFFER, 0);
+  gl::disable(gl::GL_DEPTH_TEST);
+  gl::clearColor(0,0.5,0,1);
+  gl::clear(gl::GL_COLOR_BUFFER_BIT);
+  gl::viewport(0, 0, 1280, 720);
+  
+  core.window.quad.draw();
+  sdl3::gl_swap_window(core.window.sdl);
+}
+
+fn Vec2f get_mouse_delta() @export("bythos_mousedelta")
+  => core.input.mouse.delta;
+

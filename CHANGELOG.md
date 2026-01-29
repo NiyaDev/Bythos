@@ -38,3 +38,9 @@
 - Re-wrote Bythos structure to compartmentalize more data and re-wrote and organized bythos functions.
 - Started fixing PPM loading.
 
+#### [1/29/26]
+- Fixed bindings for Bythos, Color, Debug, Rectangle, Texture, and Vector.
+- Added bindings for Mesh with temp material binding.
+- Started on Re-implementing Keyboard input and keybinds.
+- Re-added mouse position and proper delta calculation.
+

@@ -1,5 +1,6 @@
 
 module bythos;
+import std::io;
 import sdl3;
 
 
@@ -9,7 +10,16 @@ fn bool should_close() @export("bythos_shouldclose") {
   core.time.deltaTime = currentFrame - core.time.lastFrame;
   core.time.lastFrame = currentFrame;
 
-  // Update keybinds
+  // Update keys
+  core.input.keyboard.keyPressedQueue = {};
+  core.input.keyboard.charPressedQueue = {};
+
+  core.input.mouse.previousWheel = core.input.mouse.currentWheel;
+  core.input.mouse.currentWheel = 0;
+
+  core.input.mouse.previousPosition = core.input.mouse.currentPosition;
+  //core.input.mouse.currentPosition = {0,0};
+
 
   // Poll events
   while (sdl3::poll_event(&core.window.event)) {
@@ -92,8 +102,9 @@ fn bool should_close() @export("bythos_shouldclose") {
 
       // Mouse
       case MOUSE_MOTION:
-        core.input.mouse.delta = {core.window.event.motion.xrel, core.window.event.motion.yrel};
-        core.input.mouse.position = {core.window.event.motion.x, core.window.event.motion.y};
+        if (!core.input.mouse.isLocked) {
+          core.input.mouse.currentPosition = {core.window.event.motion.x, core.window.event.motion.y};
+        }
       case MOUSE_BUTTON_DOWN:
         core.input.mouse.currentState[core.window.event.button.button-1] = true;
       case MOUSE_BUTTON_UP:
@@ -191,6 +202,8 @@ fn bool should_close() @export("bythos_shouldclose") {
 
     }
   }
+  core.input.mouse.delta = core.input.mouse.previousPosition - core.input.mouse.currentPosition;
+
   // Default exit key
 
   return false;

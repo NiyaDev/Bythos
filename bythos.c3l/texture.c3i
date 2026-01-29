@@ -1,5 +1,7 @@
 
 module bythos::texture;
+import bythos::rectangle;
+import bythos::color;
 
 
 struct Texture {

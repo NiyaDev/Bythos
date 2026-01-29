@@ -1,5 +1,7 @@
 
 module bythos::vector;
+import std::math;
+import bythos::color;
 
 
 alias Vec2f = float[<2>];

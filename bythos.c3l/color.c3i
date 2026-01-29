@@ -1,5 +1,6 @@
 
 module bythos::color;
+import bythos::vector;
 
 alias Color = char[<4>];
 
@@ -30,7 +31,6 @@ const Color BLANK				= {  0,   0,   0,   0};
 const Color MAGENTA			= {255,   0, 255, 255};
 const Color PALETTE_30	= { 48,  56,  67, 255};
 
-extern fn bool Color.equals(self, Color rhs) @operator(==) @extern("color_equals");
 
 extern fn uint Color.to_int(self) @extern("color_toint");
 extern fn Color uint.to_color(self) @extern("color_fromint");
