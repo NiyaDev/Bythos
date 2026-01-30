@@ -44,3 +44,6 @@
 - Started on Re-implementing Keyboard input and keybinds.
 - Re-added mouse position and proper delta calculation.
 
+#### [1/30/26]
+- Set up keybinds system and bindings.
+

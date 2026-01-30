@@ -95,7 +95,6 @@ fn Texture load_from_memory(char[] data, ImageType type = PNG) @export("texture_
     default:
       debug::error("Invalid filetype.");
   }
-  io::printfn("%s",img);
 
   // Gen OpenGL texture
   gl::genTextures(1, &output.id);
@@ -144,7 +143,6 @@ fn void Texture.clean(&self) @export("texture_clean") {
 }
 fn char[] char[].expand(self, char value, int offset) {
   char[] output = mem::new_array(char, self.len + (self.len / offset) + 1);
-  io::printfn("%d",output.len);
   int count = 1;
   int target = 0;
   for (int i; i < output.len; i++) {

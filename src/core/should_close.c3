@@ -11,6 +11,11 @@ fn bool should_close() @export("bythos_shouldclose") {
   core.time.lastFrame = currentFrame;
 
   // Update keys
+  for (int i; i < core.input.keyboard.currentKeyState.len; i++) {
+    core.input.keyboard.previousKeyState[i] = core.input.keyboard.currentKeyState[i];
+    //core.input.keyboard.currentKeyState[i] = false;
+    //if (core.input.keyboard.currentKeyState[i] == true) core.input.keyboard.repeatKeyState[i] = true;
+  }
   core.input.keyboard.keyPressedQueue = {};
   core.input.keyboard.charPressedQueue = {};
 
@@ -84,12 +89,28 @@ fn bool should_close() @export("bythos_shouldclose") {
 
       // Keyboard
       case KEY_DOWN:
+        int key = core.window.event.key.scancode;
+        if (key != (int)sdl3::Scancode.UNKNOWN) {
+          // Check if key was up before
+          if (core.input.keyboard.currentKeyState[key] == false)
+            { core.input.keyboard.currentKeyState[key] = true; }
+          if (core.input.keyboard.currentKeyState[key] == core.input.keyboard.previousKeyState[key])
+            { core.input.keyboard.repeatKeyState[key] = true; }
+
+          if (core.input.keyboard.currentKeyState[core.input.keyboard.exitKey] == true)
+            { return true; }
+        }
       case KEY_UP:
-        break;
+        int key = core.window.event.key.scancode;
+        if (key != (int)sdl3::Scancode.UNKNOWN) {
+          core.input.keyboard.currentKeyState[key] = false;
+          core.input.keyboard.repeatKeyState[key] = false;
+        }
       //  keybinds::add_queue(event.key);
 
       case TEXT_EDITING:
       case TEXT_INPUT:
+        io::printfn("%s",core.window.event.edit.text);
         break;
       
       case KEYMAP_CHANGED:
@@ -199,12 +220,14 @@ fn bool should_close() @export("bythos_shouldclose") {
         break;
 
       default: debug::info("Unhandled event.", core.window.event.type);
-
     }
   }
+  for (int i; i < core.input.keyboard.currentKeyState.len; i++) {
+    if (core.input.keyboard.currentKeyState[i] == true
+      && core.input.keyboard.previousKeyState[i] == true)
+        { core.input.keyboard.repeatKeyState[i] = true; }
+  }
   core.input.mouse.delta = core.input.mouse.previousPosition - core.input.mouse.currentPosition;
-
-  // Default exit key
 
   return false;
 }

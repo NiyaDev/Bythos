@@ -1,0 +1,8 @@
+
+module bythos::keybinds;
+
+
+extern fn bool is_pressed(String key) @extern("keybinds_keypressed");
+extern fn bool is_down(String key) @extern("keybinds_keydown");
+extern fn bool is_up(String key) @extern("keybinds_keyup");
+

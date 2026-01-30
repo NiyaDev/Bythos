@@ -10,11 +10,16 @@ fn void basic() @test {
   defer bythos::clean();
 
   Mesh m = mesh::new(CUBE);
+  //keybinds::keybinds.set("test",{sdl3::Scancode.A,sdl3::Scancode.UNKNOWN});
 
   float y = 1;
   Vec3f pos;
 
   while (!bythos::should_close()) {
+    if (keybinds::is_pressed("test")) io::printfn("Pressed");
+    if (keybinds::is_down("test")) io::printfn("Down");
+    if (keybinds::is_up("test")) io::printfn("Up");
+
     bythos::draw();
 
     m.draw(position:pos, rotation:{0,y,0});

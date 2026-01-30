@@ -30,7 +30,7 @@ struct Bythos {
 
   struct input {
     struct keyboard {
-      String exitKey;
+      int exitKey;
 
       bool[MAX_KEYBOARD_KEYS] currentKeyState;
       bool[MAX_KEYBOARD_KEYS] previousKeyState;
@@ -63,6 +63,8 @@ fn void init() @export("bythos_init") {
   // Defaults
   core.window.screen = {1280, 720};
   core.window.render = {1280, 720};
+  core.input.keyboard.exitKey = (int)sdl3::Scancode.ESCAPE;
+  keybinds::keybinds.set("test",{sdl3::Scancode.A,sdl3::Scancode.UNKNOWN});
 
   // Init SDL3
   debug::info("Initializing SDL3.");
