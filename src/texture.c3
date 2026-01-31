@@ -1,6 +1,7 @@
 
 module bythos::texture;
 import std::io;
+import std::collections;
 import spng;
 import opengl::gl;
 import bythos;
@@ -22,27 +23,30 @@ enum ImageType {
   PNG,
   PPM,
 }
+fn ImageType to_type(String type) {
+  String[] split = type.tsplit(".");
+  switch (split[split.len-1]) {
+    case "png": return PNG;
+    case "ppm": return PPM;
+    default:    return UNKNOWN;
+  }
+}
 
 char[] def = $embed("../resources/texture.ppm");
 
 
 fn Texture load(String filename) @export("texture_load") {
+  debug::info("Loading Texture.", filename);
+
   File? file = file::open(filename, "rb");
-  if (catch file) debug::fatal("Failed to load image file", filename);
+  if (catch file)
+    { debug::fatal("Failed to load image file", filename); }
 
   char[] data = mem::new_array(char, file::get_size(filename)!!);
   file.read(data)!!;
   defer free(data);
-
-  ImageType type;
-  String[] split = filename.split(mem, ".");
-  switch (split[split.len-1]) {
-    case "png": type = PNG;
-    case "ppm": type = PPM;
-    default:    type = UNKNOWN;
-  }
   
-  return load_from_memory(data, type);
+  return load_from_memory(data, to_type(filename));
 }
 fn Texture load_from_memory(char[] data, ImageType type = PNG) @export("texture_loadfrommem") {
   Texture output;
@@ -57,49 +61,74 @@ fn Texture load_from_memory(char[] data, ImageType type = PNG) @export("texture_
       usz imgSize;
 
       result = spng::set_png_buffer(ctx, data, data.len);
-      if (result != 0) {
-        debug::error("Failed to set png buffer.");
-        return load_from_memory(def, PPM);
-      }
+      if (result != 0)
+        { debug::error("Failed to set png buffer."); return {}; }
 
       result = spng::decoded_image_size(ctx, (int)Format.RGBA8, &imgSize);
-      if (result != 0) {
-        debug::error("Failed to get decoded size.");
-        return load_from_memory(def, PPM);
-      }
+      if (result != 0)
+        { debug::error("Failed to get decoded size."); return {}; }
 
       // Copy width and height
       Ihdr ihdr;
       result = spng::get_ihdr(ctx, &ihdr);
-      if (result != 0) {
-        debug::error("Get ihdr failed.", spng::strerror(result));
-        return load_from_memory(def, PPM);
-      }
-      output.width = ihdr.width;
+      if (result != 0)
+        { debug::error("Get ihdr failed.", spng::strerror(result)); return {}; }
+      output.width  = ihdr.width;
       output.height = ihdr.height;
 
       // Decode image data and reverse
       img = mem::new_array(char, imgSize);
 
       result = spng::decode_image(ctx, (void*)img, imgSize, (int)Format.RGBA8, 0);
-      if (result != 0) {
-        debug::error("Failed to decode image.");
-        return load_from_memory(def, PPM);
-      }
+      if (result != 0)
+        { debug::error("Failed to decode image."); free(img); return {}; }
+
       img.reverse(output.width, output.height, 4);
     case PPM:
-      // TODO: Read PPM properly
-      output.width = 2;
-      output.height = 2;
-      img = data[11..].expand(0xff, 4);
+      usz p;
+
+      // Read magic numbers
+      if (data[0:3] != "P6\n")
+        { debug::error("PPM has invalid data."); return {}; }
+      p += 3;
+
+      List{char} builder;
+      String out;
+
+      // Width
+      for (int i = (int)p; data[i] != ' '; i++)
+        { builder.push(data[i]); p++; }
+      out = (String)builder.to_tarray();
+      output.width = out.to_int()!!;
+      builder.clear();
+      p++;
+
+      // Height
+      for (int i = (int)p; data[i] != '\n'; i++)
+        { builder.push(data[i]); p++; }
+      out = (String)builder.to_tarray();
+      output.height = out.to_int()!!;
+      builder.clear();
+      p++;
+
+      // value scale
+      for (int i = (int)p; data[i] != '\n'; i++)
+        { builder.push(data[i]); p++; }
+      out = (String)builder.to_tarray();
+      //output.height = out.to_int()!!;
+      builder.clear();
+      p++;
+
+      // Read data
+      img = data[p..].expand(0xff, 4);
     default:
       debug::error("Invalid filetype.");
+      return {};
   }
 
   // Gen OpenGL texture
   gl::genTextures(1, &output.id);
   gl::bindTexture(gl::GL_TEXTURE_2D, output.id);
-
   gl::texParameteri(gl::GL_TEXTURE_2D, gl::GL_TEXTURE_MIN_FILTER, gl::GL_NEAREST);
   gl::texParameteri(gl::GL_TEXTURE_2D, gl::GL_TEXTURE_MAG_FILTER, gl::GL_NEAREST);
 
@@ -108,15 +137,16 @@ fn Texture load_from_memory(char[] data, ImageType type = PNG) @export("texture_
     output.width, output.height, 0,
     gl::GL_RGBA, gl::GL_UNSIGNED_BYTE, img);
   gl::generateMipmap(gl::GL_TEXTURE_2D);
-  if (output.id == 0) {
-    debug::error("Failed to upload image to OpenGL.");
-    return load_from_memory(def, PPM);
-  }
+
   free(img);
+  if (output.id == 0)
+    { debug::error("Failed to upload image to OpenGL."); return {}; }
 
   return output;
 }
 fn Texture new(int width, int height) @export("texture_new") {
+  debug::info("Generating annew blank texture.");
+
   Texture output;
   output.width = width;
   output.height = height;
@@ -136,11 +166,30 @@ fn Texture new(int width, int height) @export("texture_new") {
   return output;
 }
 fn void Texture.clean(&self) @export("texture_clean") {
+  debug::info("Cleaning up texture.");
+
   gl::deleteTextures(1, &self.id);
   self.id = 0;
   self.width = 0;
   self.height = 0;
 }
+/*
+fn void Texture.draw(&self,
+    Rectangle dst = {},
+    Rectangle src = {},
+    Color tint = color::WHITE) {
+  // Calculating size
+  Vec2f newSize = {
+    dst.w <= 0 ? self.width  : dst.w,
+    dst.h <= 0 ? self.height : dst.h,
+  };
+  Vec2f scale = {
+    newSize.x / (float)bythos::bythos.renderWidth,
+    newSize.y / (float)bythos::bythos.renderHeight,
+  };
+}
+*/
+
 fn char[] char[].expand(self, char value, int offset) {
   char[] output = mem::new_array(char, self.len + (self.len / offset) + 1);
   int count = 1;
@@ -167,19 +216,4 @@ fn void char[].reverse(self, usz width, usz height, int bytesPerPixel) {
   }
   free(row);
 }
-/*
-fn void Texture.draw(&self,
-    Rectangle dst = {},
-    Rectangle src = {},
-    Color tint = color::WHITE) {
-  // Calculating size
-  Vec2f newSize = {
-    dst.w <= 0 ? self.width  : dst.w,
-    dst.h <= 0 ? self.height : dst.h,
-  };
-  Vec2f scale = {
-    newSize.x / (float)bythos::bythos.renderWidth,
-    newSize.y / (float)bythos::bythos.renderHeight,
-  };
-}
-*/
+

@@ -11,10 +11,13 @@
 - Material
   - All functions
   - Unit Tests
+  - Bindings
 - Shader
   - All functions
   - Unit Tests
+  - Bindings
 - Mesh
   - All functions
   - Unit Tests
+- Bulk?
 

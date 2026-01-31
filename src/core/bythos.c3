@@ -145,6 +145,9 @@ fn void init() @export("bythos_init") {
 fn void clean() @export("bythos_clean") {
   debug::info("Cleaning up Bythos.");
 
+  core.window.quad.clean();
+
+  //unreachable();
   sdl3::gl_destroy_context(core.window.context);
   core.window.context = null;
   sdl3::destroy_window(core.window.sdl);

@@ -161,9 +161,11 @@ fn Mesh new(MeshType type) @export("mesh_new") {
   return output;
 }
 fn void Mesh.clean(&self) @export("mesh_cleanmesh") {
+  if (self.vertices.len > 0)
+    { free(self.vertices); }
+  if (self.indices.len > 0)
+    { free(self.indices); }
   self.delete();
-  free(self.vertices);
-  free(self.indices);
 
   // self.material.clean();
 }

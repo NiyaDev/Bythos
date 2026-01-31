@@ -10,7 +10,7 @@ fn void basic() @test {
   defer bythos::clean();
 
   Mesh m = mesh::new(CUBE);
-  //keybinds::keybinds.set("test",{sdl3::Scancode.A,sdl3::Scancode.UNKNOWN});
+  defer m.clean();
 
   float y = 1;
   Vec3f pos;
@@ -39,7 +39,7 @@ fn void basic() @test {
 
     sdl3::gl_swap_window(bythos::core.window.sdl);
   }
-  assert(false, "reached end");
+  //assert(false, "reached end");
 }
 
 

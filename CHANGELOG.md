@@ -47,3 +47,9 @@
 #### [1/30/26]
 - Set up keybinds system and bindings.
 
+#### [1/31/26]
+- Clean up texture and add info messages.
+- Fix memory leak in general test.
+- Improved mesh cleaning.
+- Removed old Bythos main file.
+
