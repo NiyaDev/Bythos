@@ -39,7 +39,7 @@ fn void basic() @test {
 
     sdl3::gl_swap_window(bythos::core.window.sdl);
   }
-  //assert(false, "reached end");
+  assert(false, "reached end");
 }
 
 

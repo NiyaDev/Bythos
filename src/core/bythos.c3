@@ -1,7 +1,9 @@
 
 module bythos;
+import std::io;
 import std::math;
 import sdl3;
+import spng;
 import opengl::gl;
 
 
@@ -172,6 +174,75 @@ fn void draw_end() @export("bythos_drawend") {
   
   core.window.quad.draw();
   sdl3::gl_swap_window(core.window.sdl);
+}
+
+fn void screenshot(String filename) @export("bythos_screenshot") {
+  char[] data;
+  switch (texture::to_type(filename)) {
+    case PPM:
+      data = mem::new_array(char, 3 * (usz)(core.window.quad.material.texture.width * core.window.quad.material.texture.height));
+      defer free(data);
+      gl::readPixels(
+        0, 0, core.window.quad.material.texture.width, core.window.quad.material.texture.height,
+        gl::GL_RGB, gl::GL_UNSIGNED_BYTE, data);
+
+      data.reverse(core.window.render.x, core.window.render.y, 3);
+
+      File f = file::open(filename, "wb")!!;
+      String ppmInfo = string::tformat(
+        "P6\n%d %d\n%s\n",
+        core.window.quad.material.texture.width,
+        core.window.quad.material.texture.height, 255);
+      f.write(ppmInfo)!!;
+      f.write(data)!!;
+      f.close()!!;
+
+      debug::info("Outputting screenshot as PPM to", filename);
+
+    case PNG:
+      int result;
+      Ctx* ctx = spng::ctx_new((int)CTXFlags.ENCODER);
+      defer spng::ctx_free(ctx);
+
+      result = spng::set_option(ctx, Option.ENCODE_TO_BUFFER, 1);
+      if (result != 0)
+        { debug::error("Failed to set PNG options.", spng::strerror(result)); return; }
+
+      Ihdr ihdr = {
+        core.window.render.x,
+        core.window.render.y,
+        8, (char)ColorType.TRUECOLOR_ALPHA,
+        0, 0, 0,
+      };
+      result = spng::set_ihdr(ctx, &ihdr);
+      if (result != 0)
+        { debug::error("Failed to set ihdr.", spng::strerror(result)); return; }
+
+      data = mem::new_array(char, 4 * (usz)(core.window.quad.material.texture.width * core.window.quad.material.texture.height));
+      defer free(data);
+      gl::readPixels(
+        0, 0, core.window.quad.material.texture.width, core.window.quad.material.texture.height,
+        gl::GL_RGBA, gl::GL_UNSIGNED_BYTE, data);
+
+      data.reverse(core.window.render.x, core.window.render.y, 4);
+
+      result = spng::encode_image(ctx, data, data.len, (int)Format.PNG, (int)EncodeFlags.FINALIZE);
+      if (result != 0)
+        { debug::error("Failed to encode image.", spng::strerror(result)); return; }
+
+      usz size;
+      void* png = spng::get_png_buffer(ctx, &size, &result);
+      if (result != 0)
+        { debug::error("Failed to get png buffer.", spng::strerror(result)); return; }
+
+      file::save(filename, ((char*)png)[:size])!!;
+
+      debug::info("Outputting screenshot as PNG to", filename);
+
+    default:
+      debug::error("Attempted to save screenshot as unknown file type.");
+      return;
+  }
 }
 
 fn Vec2f get_mouse_delta() @export("bythos_mousedelta")

@@ -62,7 +62,7 @@ fn Texture load_from_memory(char[] data, ImageType type = PNG) @export("texture_
 
       result = spng::set_png_buffer(ctx, data, data.len);
       if (result != 0)
-        { debug::error("Failed to set png buffer."); return {}; }
+        { debug::error("Failed to set png buffer.", spng::strerror(result)); return {}; }
 
       result = spng::decoded_image_size(ctx, (int)Format.RGBA8, &imgSize);
       if (result != 0)
@@ -81,7 +81,7 @@ fn Texture load_from_memory(char[] data, ImageType type = PNG) @export("texture_
 
       result = spng::decode_image(ctx, (void*)img, imgSize, (int)Format.RGBA8, 0);
       if (result != 0)
-        { debug::error("Failed to decode image."); free(img); return {}; }
+        { debug::error("Failed to decode image.", spng::strerror(result)); free(img); return {}; }
 
       img.reverse(output.width, output.height, 4);
     case PPM:
@@ -89,7 +89,7 @@ fn Texture load_from_memory(char[] data, ImageType type = PNG) @export("texture_
 
       // Read magic numbers
       if (data[0:3] != "P6\n")
-        { debug::error("PPM has invalid data."); return {}; }
+        { debug::error("PPM has invalid data.", spng::strerror(result)); return {}; }
       p += 3;
 
       List{char} builder;

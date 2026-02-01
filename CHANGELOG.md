@@ -53,3 +53,6 @@
 - Improved mesh cleaning.
 - Removed old Bythos main file.
 
+#### [2/1/26]
+- Added screenshot in both .png and .ppm formats.
+

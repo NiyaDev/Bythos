@@ -8,8 +8,8 @@ extern fn void init() @extern("bythos_init");
 extern fn void clean() @extern("bythos_clean");
 extern fn bool should_close() @extern("bythos_shouldclose");
 extern fn void draw() @extern("bythos_draw");
-
 extern fn void draw_end() @extern("bythos_drawend");
 extern fn Vec2f get_mouse_delta() @extern("bythos_mousedelta");
+extern fn void screenshot(String filename) @extern("bythos_screenshot");
 
 
