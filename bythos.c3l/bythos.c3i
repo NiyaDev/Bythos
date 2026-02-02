@@ -2,8 +2,6 @@
 module bythos;
 
 
-//struct Bythos {}
-
 extern fn void init() @extern("bythos_init");
 extern fn void clean() @extern("bythos_clean");
 extern fn bool should_close() @extern("bythos_shouldclose");
