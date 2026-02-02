@@ -17,3 +17,8 @@ fn Material new() {
   };
 }
 
+fn void Material.clean(&self) @export("material_clean") {
+  self.texture.clean();
+  self.shader.clean();
+}
+

@@ -167,7 +167,7 @@ fn void Mesh.clean(&self) @export("mesh_cleanmesh") {
     { free(self.indices); }
   self.delete();
 
-  // self.material.clean();
+  self.material.clean();
 }
 
 fn void Mesh.upload(&self) {

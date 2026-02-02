@@ -141,22 +141,19 @@ fn void init() @export("bythos_init") {
 
   // Load defaults
   // Keybinds
-
-  debug::info("Reached end");
 }
 fn void clean() @export("bythos_clean") {
   debug::info("Cleaning up Bythos.");
 
   core.window.quad.clean();
 
-  //unreachable();
   sdl3::gl_destroy_context(core.window.context);
   core.window.context = null;
   sdl3::destroy_window(core.window.sdl);
   core.window.sdl = null;
   core.window.event = {};
 }
-fn void draw() @export("bythos_draw") {
+fn void draw_start() @export("bythos_drawstart") {
   gl::bindFramebuffer(gl::GL_FRAMEBUFFER, core.window.framebuffer);
   gl::enable(gl::GL_DEPTH_TEST);
   gl::viewport(0,0, core.window.render.x, core.window.render.y);
@@ -164,7 +161,6 @@ fn void draw() @export("bythos_draw") {
   gl::clearColor(0.5,0.5,0.5,1);
   gl::clear(gl::GL_COLOR_BUFFER_BIT | gl::GL_DEPTH_BUFFER_BIT);
 }
-
 fn void draw_end() @export("bythos_drawend") {
   gl::bindFramebuffer(gl::GL_FRAMEBUFFER, 0);
   gl::disable(gl::GL_DEPTH_TEST);

@@ -56,3 +56,6 @@
 #### [2/1/26]
 - Added screenshot in both .png and .ppm formats.
 
+#### [2/2/26]
+- Added clean function to materials.
+

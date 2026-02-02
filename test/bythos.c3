@@ -20,7 +20,7 @@ fn void basic() @test {
     if (keybinds::is_down("test")) io::printfn("Down");
     if (keybinds::is_up("test")) io::printfn("Up");
 
-    bythos::draw();
+    bythos::draw_start();
 
     m.draw(position:pos, rotation:{0,y,0});
 
@@ -39,7 +39,7 @@ fn void basic() @test {
 
     sdl3::gl_swap_window(bythos::core.window.sdl);
   }
-  assert(false, "reached end");
+  //assert(false, "reached end");
 }
 
 
