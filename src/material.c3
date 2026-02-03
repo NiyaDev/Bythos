@@ -12,13 +12,12 @@ struct Material {
 fn Material new() {
   return {
     bythos::core.def_3d,
-    bythos::core.def_tex,
+    bythos::core.storage.textures["default"]!!,
     color::WHITE,
   };
 }
 
 fn void Material.clean(&self) @export("material_clean") {
-  self.texture.clean();
   self.shader.clean();
 }
 

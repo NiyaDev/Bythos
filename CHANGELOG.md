@@ -59,3 +59,9 @@
 #### [2/2/26]
 - Added clean function to materials.
 
+#### [2/3/26]
+- Added draw_instanced back to mesh.
+- Finished first version of 3d render pipeline.
+- Merged draw_start and draw_end.
+- Started on draw function for textures, but wasn't able to get it to work yet.
+

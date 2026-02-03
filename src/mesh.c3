@@ -213,7 +213,6 @@ fn void Mesh.draw(&self,
         .rotate_x(rotation.x)
         .scale(scale)
         .transpose();
-
     self.material.shader.set_uniform("model",&model);
   }
 
@@ -221,6 +220,59 @@ fn void Mesh.draw(&self,
   gl::bindVertexArray(self.vao);
   gl::drawArrays(gl::GL_TRIANGLES, 0, self.vertices.len);
   gl::bindVertexArray(0);
+}
+fn void Mesh.draw_instanced(&self, Matrix4f[] mats,) {
+  if (self.material.shader.id == 0)
+    { debug::warning("Cannot draw a mesh instanced with no shader."); return; }
+
+  gl::useProgram(self.material.shader.id);
+  gl::bindTexture(gl::GL_TEXTURE_2D, self.material.texture.id);
+  self.material.shader.set_uniform("view", &&camera::get_matrix());
+
+  // Draw each memeber
+  gl::bindVertexArray(self.vao);
+  for (int i; i < mats.len; i++) {
+    self.material.shader.set_uniform("model", &mats[i]);
+    gl::drawArrays(gl::GL_TRIANGLES, 0, self.vertices.len);
+  }
+  gl::bindVertexArray(0);
+}
+
+fn void Mesh.update_positions(&self, Vec3f[] new) @export("mesh_updatepositions") {
+  if (self.vertices.len != new.len)
+    { debug::warning("Attempted to update mesh positions with the wrong number of values."); return; }
+  for (int i; i < new.len; i++)
+    { self.vertices[i].position = new[i]; }
+
+  self.delete();
+  self.upload();
+}
+fn void Mesh.update_normals(&self, Vec3f[] new) @export("mesh_updatenormals") {
+  if (self.vertices.len != new.len)
+    { debug::warning("Attempted to update mesh normals with the wrong number of values."); return; }
+  for (int i; i < new.len; i++)
+    { self.vertices[i].normal = new[i]; }
+
+  self.delete();
+  self.upload();
+}
+fn void Mesh.update_texcoords(&self, Vec2f[] new) @export("mesh_updatetexcoords") {
+  if (self.vertices.len != new.len)
+    { debug::warning("Attempted to update mesh texcoords with the wrong number of values."); return; }
+  for (int i; i < new.len; i++)
+    { self.vertices[i].texCoords = new[i]; }
+
+  self.delete();
+  self.upload();
+}
+fn void Mesh.update_colors(&self, Vec4f[] new) @export("mesh_updatecolors") {
+  if (self.vertices.len != new.len)
+    { debug::warning("Attempted to update mesh colors with the wrong number of values."); return; }
+  for (int i; i < new.len; i++)
+    { self.vertices[i].color = new[i]; }
+
+  self.delete();
+  self.upload();
 }
 
 

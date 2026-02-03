@@ -145,7 +145,7 @@ fn Texture load_from_memory(char[] data, ImageType type = PNG) @export("texture_
   return output;
 }
 fn Texture new(int width, int height) @export("texture_new") {
-  debug::info("Generating annew blank texture.");
+  debug::info("Generating a new blank texture.");
 
   Texture output;
   output.width = width;
@@ -173,7 +173,6 @@ fn void Texture.clean(&self) @export("texture_clean") {
   self.width = 0;
   self.height = 0;
 }
-/*
 fn void Texture.draw(&self,
     Rectangle dst = {},
     Rectangle src = {},
@@ -183,12 +182,73 @@ fn void Texture.draw(&self,
     dst.w <= 0 ? self.width  : dst.w,
     dst.h <= 0 ? self.height : dst.h,
   };
-  Vec2f scale = {
-    newSize.x / (float)bythos::bythos.renderWidth,
-    newSize.y / (float)bythos::bythos.renderHeight,
+
+  // Change texcoords
+  Rectangle newSrc = {
+    src.x, src.y,
+    src.w <= 0 ? self.width  : src.w,
+    src.h <= 0 ? self.height : src.h,
   };
+  Vec2f topLeft  = {
+    newSrc.x  / (float)self.width,
+    1 - (newSrc.y  / (float)self.height),
+  };
+  Vec2f topRight = {
+    (newSrc.x / (float)self.width) + (newSrc.w / (float)self.width),
+    1 - (newSrc.y  / (float)self.height),
+  };
+  Vec2f botLeft  = {
+    newSrc.x  / (float)self.width,
+    1 - ((newSrc.y / (float)self.height) + (newSrc.h / (float)self.height)),
+  };
+  Vec2f botRight = {
+    (newSrc.x / (float)self.width) + (newSrc.w / (float)self.width),
+    1 - ((newSrc.y / (float)self.height) + (newSrc.h / (float)self.height)),
+  }; 
+
+  // Update Vertex info
+  Mesh* mesh = bythos::core.storage.meshes.get_ref("texture")!!;
+  mesh.update_texcoords({topLeft, botLeft, botRight, topLeft, botRight, topRight});
+
+  Vec4f color = tint.normalize();
+  mesh.update_colors({color,color,color,color,color,color});
+
+  // Start shader
+  gl::useProgram(mesh.material.shader.id);
+
+  // Update uniforms
+  Vec2f position = {
+    (dst.x * 2) + newSize.x,
+    (dst.y * 2) + newSize.y,
+  };
+  //Vec2f position = {
+  //  -(float)bythos::core.window.render.x + (dst.x * 2) + newSize.x,
+  //  -(float)bythos::core.window.render.y + (dst.y * 2) + newSize.y,
+  //};
+  mesh.material.shader.set_uniform("position", &position);
+
+  Vec2f scale = {
+    newSize.x / (float)bythos::core.window.render.x,
+    newSize.y / (float)bythos::core.window.render.y,
+  };
+  mesh.material.shader.set_uniform("scale", &scale);
+
+  mesh.material.shader.set_uniform("texOffset", &&(Vec2f){0,0});
+  mesh.material.shader.set_uniform("texScale",  &&(Vec2f){1,1});
+
+  gl::bindTexture(gl::GL_TEXTURE_2D, self.id);
+  gl::disable(gl::GL_DEPTH_TEST);
+
+  // Draw
+  gl::bindVertexArray(mesh.vao);
+  gl::drawArrays(gl::GL_TRIANGLES, 0, mesh.vertices.len);
+  gl::bindVertexArray(0);
+
+  // Reset
+  gl::enable(gl::GL_DEPTH_TEST);
+  mesh.update_texcoords({{0,1}, {0,0}, {1,0}, {0,1}, {1,0}, {1,1}});
+  mesh.update_colors({{1,1,1,1}, {1,1,1,1}, {1,1,1,1}, {1,1,1,1}, {1,1,1,1}, {1,1,1,1}});
 }
-*/
 
 fn char[] char[].expand(self, char value, int offset) {
   char[] output = mem::new_array(char, self.len + (self.len / offset) + 1);

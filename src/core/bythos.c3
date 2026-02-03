@@ -1,6 +1,7 @@
 
 module bythos;
 import std::io;
+import std::collections;
 import std::math;
 import sdl3;
 import spng;
@@ -28,7 +29,7 @@ struct Bythos {
   }
 
   Shader def_2d, def_3d;
-  Texture def_tex;
+  //Texture def_tex;
 
   struct input {
     struct keyboard {
@@ -55,6 +56,11 @@ struct Bythos {
     }
     //struct touch {}
     //struct gamepad {}
+  }
+
+  struct storage {
+    HashMap{String, Texture} textures;
+    HashMap{String, Mesh} meshes;
   }
 }
 
@@ -108,10 +114,13 @@ fn void init() @export("bythos_init") {
   core.def_3d.set_uniform("projection", &&matrix::perspective{float}(
     70 * (math::PI / 180), core.window.render.ratio(), 0.1, 100).transpose());
 
-  // Default Texture
-  debug::info("loading default textures.");
-  core.def_tex = texture::load_from_memory(texture::def, PPM);
-  //core.def_tex = texture::load("resources/texture.png");
+  // Load defaults
+  debug::info("Creating defaults.");
+  core.storage.textures.set("default", texture::load_from_memory(texture::def, PPM));
+  core.storage.meshes.set("default", mesh::new(CUBE));
+  Mesh textureMesh = mesh::new(PLANE);
+  textureMesh.material.shader = core.def_2d;
+  core.storage.meshes.set("texture", textureMesh);
 
   // Framebuffer
   debug::info("Generating framebuffer.");
@@ -139,7 +148,6 @@ fn void init() @export("bythos_init") {
     { debug::fatal("Failed to initialize framebuffer."); }
   gl::bindFramebuffer(gl::GL_FRAMEBUFFER, 0);
 
-  // Load defaults
   // Keybinds
 }
 fn void clean() @export("bythos_clean") {
@@ -147,12 +155,18 @@ fn void clean() @export("bythos_clean") {
 
   core.window.quad.clean();
 
+  core.storage.textures.@each(; String key, Texture tex)
+    { tex.clean(); };
+  core.storage.meshes.@each(; String key, Mesh mesh)
+    { mesh.clean(); };
+
   sdl3::gl_destroy_context(core.window.context);
   core.window.context = null;
   sdl3::destroy_window(core.window.sdl);
   core.window.sdl = null;
   core.window.event = {};
 }
+
 fn void draw_start() @export("bythos_drawstart") {
   gl::bindFramebuffer(gl::GL_FRAMEBUFFER, core.window.framebuffer);
   gl::enable(gl::GL_DEPTH_TEST);
@@ -162,6 +176,30 @@ fn void draw_start() @export("bythos_drawstart") {
   gl::clear(gl::GL_COLOR_BUFFER_BIT | gl::GL_DEPTH_BUFFER_BIT);
 }
 fn void draw_end() @export("bythos_drawend") {
+  gl::bindFramebuffer(gl::GL_FRAMEBUFFER, 0);
+  gl::disable(gl::GL_DEPTH_TEST);
+  gl::clearColor(0,0.5,0,1);
+  gl::clear(gl::GL_COLOR_BUFFER_BIT);
+  gl::viewport(0, 0, 1280, 720);
+  
+  core.window.quad.draw();
+  sdl3::gl_swap_window(core.window.sdl);
+}
+fn void draw() @export("bythos_draw") {
+  // Start drawing
+  gl::bindFramebuffer(gl::GL_FRAMEBUFFER, core.window.framebuffer);
+  gl::enable(gl::GL_DEPTH_TEST);
+  gl::viewport(0,0, core.window.render.x, core.window.render.y);
+
+  gl::clearColor(0.5,0.5,0.5,1);
+  gl::clear(gl::GL_COLOR_BUFFER_BIT | gl::GL_DEPTH_BUFFER_BIT);
+
+  // Render pipeline
+  render::render3d();
+  render::render2d();
+  core.storage.textures["default"]!!.draw(dst:{10,10,32,32});
+
+  // End drawing
   gl::bindFramebuffer(gl::GL_FRAMEBUFFER, 0);
   gl::disable(gl::GL_DEPTH_TEST);
   gl::clearColor(0,0.5,0,1);
