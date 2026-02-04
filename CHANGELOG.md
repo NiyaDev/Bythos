@@ -65,3 +65,9 @@
 - Merged draw_start and draw_end.
 - Started on draw function for textures, but wasn't able to get it to work yet.
 
+#### [2/4/26]
+- Fixed Texture rendering.
+  - Turned out it was an error with the color value not getting to the shader, making it transparent.
+- Started on 2d render pipeline.
+  - Finished the function, but it doesn't seemt to work?
+

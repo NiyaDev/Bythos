@@ -197,7 +197,6 @@ fn void draw() @export("bythos_draw") {
   // Render pipeline
   render::render3d();
   render::render2d();
-  core.storage.textures["default"]!!.draw(dst:{10,10,32,32});
 
   // End drawing
   gl::bindFramebuffer(gl::GL_FRAMEBUFFER, 0);

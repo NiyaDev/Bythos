@@ -150,13 +150,12 @@ const char[] DEFAULT_VERTEX_2D =
   "uniform vec2 texScale;\n"
   "uniform vec4 texColor;\n"
   "void main() {\n"
-  "  vec4 scaled = (vec4(aPos, 1.0f) * vec4(scale.x, scale.y, 1.0f, 1.0f));\n"
-  "  vec4 pixel_pos = (vec4(position.x, -position.y, 0.0f, 0.0f) / vec4(screensize, 1.0f, 1.0f));\n"
-  "  gl_Position = scaled + pixel_pos;\n"
-  "  TexCoord = vec2(aTexCoord.x, aTexCoord.y);\n"
-  //"  Color = aColor;"
-  "  Color = texColor;\n"
+  "  vec2 pixelPos = aPos.xy * scale + position;\n"
+  "  vec2 ndc = (pixelPos / screensize) * 2.0 + 1.0;\n"
+  "  ndc.y = -ndc.y;\n"
+  "  gl_Position = vec4(ndc, 0.0, 1.0);\n"
   "  fragUV = (aTexCoord * texScale) + texOffset;\n"
+  "  Color = texColor;\n"
   "}\n";
 const char[] DEFAULT_FRAGMENT_2D = 
   "#version 330 core\n"
@@ -166,8 +165,6 @@ const char[] DEFAULT_FRAGMENT_2D =
   "in vec4 Color;\n\n"
   "uniform sampler2D texture1;\n\n"
   "void main() {\n"
-  //"  FragColor = mix(texture(texture1, fragUV), Color, 0.75);\n"
-  //"  FragColor = texture(texture1, TexCoord) * Color;\n"
   "  FragColor = texture(texture1, fragUV) * Color;\n"
   "}\n";
 

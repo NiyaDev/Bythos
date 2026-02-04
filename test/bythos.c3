@@ -31,7 +31,11 @@ fn void basic() @test {
     //render::draw_mesh(position:{}, rotation:{0,0,0});
     //render::draw_mesh(position:{1,0,0}, rotation:{0,y,0});
     //render::draw_mesh(position:{-1,0,0}, rotation:{0,-y,0});
-    //for (int i; i < 10000; i++) {
+    //for (int i; i < 10; i++) {
+      render::draw_texture(
+        dst:{100*(float)1,100,64,64},
+        src:{0,0,2,2},
+      );
     //  render::draw_mesh(
     //    position:{(float)(i/100)-50,0,(float)(i%100)-50},
     //    rotation:i/100 < 50 ? {0,-y,0} : (i/100 > 50 ? {0,y,0} : {}),

@@ -24,6 +24,8 @@ struct MeshRenderInfo {
   Shader shaderOverride;
 }
 
+alias Render2DList = List{Pair{String, int}};
+
 fn void draw_mesh(
   String meshName = "default",
   Vec3f position = {},
@@ -35,8 +37,8 @@ fn void draw_mesh(
 
 fn void draw_texture(
   String textureName = "default",
-  Rectangle src = {},
   Rectangle dst = {},
+  Rectangle src = {},
   Vec3f rotation = {},
   Color tint = color::WHITE,
   int priority = 0,
@@ -47,7 +49,6 @@ fn void draw_texture_tiled() @export("render_texturetiled") {}
 fn void draw_font() @export("render_font") {}
 
 fn void render3d() {
-  // 3D
   List{String} entries;
   for (int i; i < renderPipeline3D.len(); i++) {
     String name = renderPipeline3D[i].meshName;
@@ -78,5 +79,43 @@ fn void render3d() {
   entries.free();
   renderPipeline3D.clear();
 }
-fn void render2d() {}
+fn void render2d() {
+  Render2DList entries;
+  for (int i; i < renderPipeline2D.len(); i++) {
+    if (!entries.contains({renderPipeline2D[i].textureName, renderPipeline2D[i].priority}))
+      { entries.push({renderPipeline2D[i].textureName, renderPipeline2D[i].priority}); }
+  }
+
+  for (int p = 5; p > 0; p--) {
+    for (int i; i < entries.len(); i++) {
+      if (entries[i].second == p) {
+        usz count;
+        for (int j; j < renderPipeline2D.len(); j++)
+          { if (entries[i].first == renderPipeline2D[j].textureName) count++; }
+
+        Rectangle[] dst = mem::new_array(Rectangle, count);
+        Rectangle[] src = mem::new_array(Rectangle, count);
+        Color[] tint    = mem::new_array(Color, count);
+        usz index;
+        for (int j; j < renderPipeline2D.len(); j++) {
+          if (entries[i].first == renderPipeline2D[j].textureName) {
+            dst[index]  = renderPipeline2D[j].dst;
+            src[index]  = renderPipeline2D[j].src;
+            tint[index] = renderPipeline2D[j].tint;
+            index++;
+          }
+        }
+        Texture? texture = bythos::core.storage.textures[entries[i].first];
+        if (catch texture)
+          { debug::error("Texture doesn't exist in context.", entries[i].first); continue; }
+        texture.draw_instanced(dst, src, tint);
+        free(dst);
+        free(src);
+        free(tint);
+      }
+    }
+  }
+  //free(entries.entries);
+  renderPipeline2D.clear();
+}
 
