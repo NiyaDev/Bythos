@@ -237,66 +237,34 @@ fn void Texture.draw(&self,
   mesh.update_texcoords({{0,1}, {0,0}, {1,0}, {0,1}, {1,0}, {1,1}});
 }
 fn void Texture.draw_instanced(&self, Rectangle[] dst, Rectangle[] src, Color[] tint) {
-  Vec2f[] position  = mem::new_array(Vec2f, dst.len);
-  Vec2f[] scale     = mem::new_array(Vec2f, dst.len);
-  Vec4f[] texCoords = mem::new_array(Vec4f, dst.len);
-
-  for (int i; i < dst.len; i++) {
-    // Calculating size on screen
-    Vec2f newSize = {
-      dst[i].w <= 0 ? self.width  : dst[i].w,
-      dst[i].h <= 0 ? self.height : dst[i].h,
-    };
-    Vec2f newScale = {
-      newSize.x / (float)bythos::core.window.render.x,
-      newSize.y / (float)bythos::core.window.render.y,
-    };
-
-    // Change texcoords
-    Rectangle newSrc = {
-      src[i].x, src[i].y,
-      src[i].w <= 0 ? self.width  : src[i].w,
-      src[i].h <= 0 ? self.height : src[i].h,
-    };
-    Vec2f topLeft  = {
-      newSrc.x  / (float)self.width,
-      1 - (newSrc.y  / (float)self.height),
-    };
-    Vec2f topRight = {
-      (newSrc.x / (float)self.width) + (newSrc.w / (float)self.width),
-      1 - (newSrc.y  / (float)self.height),
-    };
-    Vec2f botLeft  = {
-      newSrc.x  / (float)self.width,
-      1 - ((newSrc.y / (float)self.height) + (newSrc.h / (float)self.height)),
-    };
-    Vec2f botRight = {
-      (newSrc.x / (float)self.width) + (newSrc.w / (float)self.width),
-      1 - ((newSrc.y / (float)self.height) + (newSrc.h / (float)self.height)),
-    };
-
-    // Uniforms
-    Vec2f pos = {
-      -(float)bythos::core.window.render.x + (dst[i].x * 2) + newSize.x,
-      -(float)bythos::core.window.render.y + (dst[i].y * 2) + newSize.y,
-    };
-    position[i] = pos;
-    scale[i] = newSize;
-    texCoords[i] = {newSrc.x / self.width, newSrc.y / self.height, newSrc.w / self.width, newSrc.h / self.height};
-  }
-
+  Vec2f render = bythos::core.window.render;
   Mesh* mesh = bythos::core.storage.meshes.get_ref("texture")!!;
 
   gl::disable(gl::GL_DEPTH_TEST);
   gl::bindVertexArray(mesh.vao);
   gl::bindTexture(gl::GL_TEXTURE_2D, self.id);
+  gl::useProgram(mesh.material.shader.id);
 
-  for (int i; i < position.len; i++) {
-    mesh.material.shader.set_uniform("position", &position[i]);
-    mesh.material.shader.set_uniform("scale", &scale[i]);
+  for (int i; i < dst.len; i++) {
+    Vec2f newSize = {
+      dst[i].w <= 0 ? self.width  : dst[i].w,
+      dst[i].h <= 0 ? self.height : dst[i].h,
+    };
+    Vec4f texCoords = {
+      src[i].x / self.width,
+      src[i].y / self.height,
+      src[i].w <= 0 ? self.width  : src[i].w / self.width,
+      src[i].h <= 0 ? self.height : src[i].h / self.height,
+    };
+
+    mesh.material.shader.set_uniform("position", &&(Vec2f){
+      -render.x + (dst[i].x * 2) + newSize.x,
+      -render.y + (dst[i].y * 2) + newSize.y,
+    });
+    mesh.material.shader.set_uniform("scale", &newSize);
     mesh.material.shader.set_uniform("texColor", &&tint[i].normalize());
-    mesh.material.shader.set_uniform("texOffset", &&(Vec2f){texCoords[i].x, (1-texCoords[i].w) - texCoords[i].y});
-    mesh.material.shader.set_uniform("texScale", &&(Vec2f){texCoords[i].z, texCoords[i].w});
+    mesh.material.shader.set_uniform("texOffset", &&(Vec2f){texCoords.x, (1-texCoords.w) - texCoords.y});
+    mesh.material.shader.set_uniform("texScale", &&texCoords.zw);
 
     gl::drawArrays(gl::GL_TRIANGLES, 0, mesh.vertices.len);
   }

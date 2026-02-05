@@ -71,3 +71,8 @@
 - Started on 2d render pipeline.
   - Finished the function, but it doesn't seemt to work?
 
+#### [2/5/26]
+- Fixed Texture drawing. It was just the priority thing that was messed up.
+  - Also the shader was never turned on, but that's not important.
+- Re-wrote texture drawing to be slightly more efficient. Drawing meshes still is more efficient overall, though.
+

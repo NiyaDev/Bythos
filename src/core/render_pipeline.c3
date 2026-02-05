@@ -86,7 +86,7 @@ fn void render2d() {
       { entries.push({renderPipeline2D[i].textureName, renderPipeline2D[i].priority}); }
   }
 
-  for (int p = 5; p > 0; p--) {
+  for (int p = 5; p > -5; p--) {
     for (int i; i < entries.len(); i++) {
       if (entries[i].second == p) {
         usz count;
@@ -108,7 +108,9 @@ fn void render2d() {
         Texture? texture = bythos::core.storage.textures[entries[i].first];
         if (catch texture)
           { debug::error("Texture doesn't exist in context.", entries[i].first); continue; }
-        texture.draw_instanced(dst, src, tint);
+        //debug::@benchmark(
+          texture.draw_instanced(dst, src, tint);
+        //);
         free(dst);
         free(src);
         free(tint);

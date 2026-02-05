@@ -3,6 +3,7 @@ module bythos::debug;
 import std::io;
 import std::os;
 import std::thread;
+import std::time;
 import bythos::color;
 
 
@@ -31,7 +32,6 @@ fn void fatal(String err, args...) @export("debug_fatal") {
   printing = false;
 
   unreachable();
-  //os::exit(1);
 }
 fn void error(String err, args...) @export("debug_error") {
   if (logLevel > ERROR) return;
@@ -77,6 +77,12 @@ fn void info(String err, args...) @export("debug_info") {
     { o = string::tformat("[%s]  - %s", "INFO".color(color::GRAY), err); }
   io::printn(o);
   printing = false;
+}
+
+macro void @benchmark(#a) {
+  Time start = time::now();
+  #a;
+  io::printfn("%s",time::now().diff_us(start));
 }
 
 fn String String.color(self, Color color) @export("debug_textcolor")
