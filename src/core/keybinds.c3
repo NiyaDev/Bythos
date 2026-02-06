@@ -11,7 +11,7 @@ struct Keybind {
   Scancode mod;
 }
 
-HashMap{String, Keybind} keybinds;
+HashMap{String, Keybind}* keybinds;
 
 
 fn bool is_pressed(String key) @export("keybinds_keypressed") {

@@ -76,3 +76,9 @@
   - Also the shader was never turned on, but that's not important.
 - Re-wrote texture drawing to be slightly more efficient. Drawing meshes still is more efficient overall, though.
 
+#### [2/6/26]
+- Added unit tests for Textures.
+- Re-did cleanup for Bythos. Now it actually cleans everything up and allows for tests to work.
+- Changed Texture, Mesh, and Keybind Hashmaps to pointers due to stange problem causing the data to corrupt?
+- Added to TODO list.
+

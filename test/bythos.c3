@@ -5,10 +5,10 @@ import sdl3;
 import opengl::gl;
 
 
+//*
 fn void basic() @test {
-  debug::logLevel = NONE;
+  //debug::logLevel = NONE;
   bythos::init();
-  defer bythos::clean();
 
   float y = 1;
   Vec3f pos;
@@ -36,7 +36,8 @@ fn void basic() @test {
 
     bythos::draw();
   }
-  assert(false, "reached end");
+  bythos::clean();
+  //assert(false, "reached end");
 }
-
+//*/
 

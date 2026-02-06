@@ -73,7 +73,7 @@ fn void render3d() {
         index++;
       }
     }
-    bythos::core.storage.meshes[entries[i]]!!.draw_instanced(arr);
+    bythos::core.storage.meshes.get(entries[i])!!.draw_instanced(arr);
     free(arr);
   }
   entries.free();
@@ -105,7 +105,7 @@ fn void render2d() {
             index++;
           }
         }
-        Texture? texture = bythos::core.storage.textures[entries[i].first];
+        Texture? texture = bythos::core.storage.textures.get(entries[i].first);
         if (catch texture)
           { debug::error("Texture doesn't exist in context.", entries[i].first); continue; }
         //debug::@benchmark(
@@ -117,7 +117,6 @@ fn void render2d() {
       }
     }
   }
-  //free(entries.entries);
   renderPipeline2D.clear();
 }
 

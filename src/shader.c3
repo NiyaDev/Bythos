@@ -78,15 +78,15 @@ fn Shader compile(char[] v = {}, char[] f = {}) @export("shader_compile") {
 }
 fn void Shader.clean(&self) @export("shader_clean") {
   gl::deleteProgram(self.id);
-  self.locs.free();
+  self.locs.clear();
 }
 fn void Shader.set_uniform(&self, String key, any v) @export("shader_setuniform") {
   uint loc;
   if (self.locs.has_key(key)) {
-    loc = self.locs[key]!!;
+    loc = self.locs.get(key)!!;
   } else {
     loc = gl::getUniformLocation(self.id, key);
-    self.locs[key] = loc;
+    self.locs.set(key, loc);
   }
 
   switch (v.type) {

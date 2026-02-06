@@ -10,8 +10,6 @@ import bythos;
 struct Texture {
   uint id;
   uint width, height;
-  int mipmaps;
-  int format;
 }
 enum TilingLayout {
   THREE_THREE,
@@ -153,7 +151,6 @@ fn Texture new(int width, int height) @export("texture_new") {
 
   gl::genTextures(1, &output.id);
   gl::bindTexture(gl::GL_TEXTURE_2D, output.id);
-  
   gl::texParameteri(gl::GL_TEXTURE_2D, gl::GL_TEXTURE_MIN_FILTER, gl::GL_NEAREST);
   gl::texParameteri(gl::GL_TEXTURE_2D, gl::GL_TEXTURE_MAG_FILTER, gl::GL_NEAREST);
 
@@ -165,8 +162,8 @@ fn Texture new(int width, int height) @export("texture_new") {
 
   return output;
 }
-fn void Texture.clean(&self) @export("texture_clean") {
-  debug::info("Cleaning up texture.");
+fn void Texture.clean(&self, String name = "") @export("texture_clean") {
+  debug::info("Cleaning up texture", name);
 
   gl::deleteTextures(1, &self.id);
   self.id = 0;
@@ -272,6 +269,9 @@ fn void Texture.draw_instanced(&self, Rectangle[] dst, Rectangle[] src, Color[] 
   gl::bindVertexArray(0);
   gl::enable(gl::GL_DEPTH_TEST);
 }
+
+fn bool Texture.is_loaded(&self) @export("texture_isloaded")
+  => self.id != 0 && self.width != 0 && self.height != 0;
 
 fn char[] char[].expand(self, char value, int offset) {
   char[] output = mem::new_array(char, self.len + (self.len / offset) + 1);

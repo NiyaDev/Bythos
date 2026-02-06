@@ -59,8 +59,8 @@ struct Bythos {
   }
 
   struct storage {
-    HashMap{String, Texture} textures;
-    HashMap{String, Mesh} meshes;
+    HashMap{String, Texture}* textures;
+    HashMap{String, Mesh}* meshes;
   }
 }
 
@@ -72,6 +72,7 @@ fn void init() @export("bythos_init") {
   core.window.screen = {1280, 720};
   core.window.render = {1280, 720};
   core.input.keyboard.exitKey = (int)sdl3::Scancode.ESCAPE;
+  keybinds::keybinds = mem::new(HashMap{String, Keybind});
   keybinds::keybinds.set("test",{sdl3::Scancode.A,sdl3::Scancode.UNKNOWN});
 
   // Init SDL3
@@ -116,6 +117,8 @@ fn void init() @export("bythos_init") {
 
   // Load defaults
   debug::info("Creating defaults.");
+  core.storage.textures = mem::new(HashMap{String, Texture});
+  core.storage.meshes   = mem::new(HashMap{String, Mesh});
   core.storage.textures.set("default", texture::load_from_memory(texture::def, PPM));
   core.storage.meshes.set("default", mesh::new(CUBE));
   Mesh textureMesh = mesh::new(PLANE);
@@ -153,18 +156,33 @@ fn void init() @export("bythos_init") {
 fn void clean() @export("bythos_clean") {
   debug::info("Cleaning up Bythos.");
 
+  // Framebuffer
+  core.window.quad.material.texture.clean("framebuffer");
   core.window.quad.clean();
+  gl::deleteFramebuffers(1, &core.window.framebuffer);
+  gl::deleteRenderbuffers(1, &core.window.renderbuffer);
 
+  // Defaults
   core.storage.textures.@each(; String key, Texture tex)
-    { tex.clean(); };
+    { tex.clean(key); };
+  free(core.storage.textures);
   core.storage.meshes.@each(; String key, Mesh mesh)
     { mesh.clean(); };
+  free(core.storage.meshes);
+  keybinds::keybinds.free();
+  free(keybinds::keybinds);
 
+  // Shaders
+  core.def_2d.clean();
+  core.def_3d.clean();
+
+  // SDL3 and OpenGL
   sdl3::gl_destroy_context(core.window.context);
   core.window.context = null;
   sdl3::destroy_window(core.window.sdl);
   core.window.sdl = null;
   core.window.event = {};
+  sdl3::quit();
 }
 
 fn void draw_start() @export("bythos_drawstart") {
@@ -209,29 +227,29 @@ fn void draw() @export("bythos_draw") {
   sdl3::gl_swap_window(core.window.sdl);
 }
 
-fn void screenshot(String filename) @export("bythos_screenshot") {
+fn char[] screenshot(String filename = "") @export("bythos_screenshot") {
   char[] data;
   switch (texture::to_type(filename)) {
     case PPM:
       data = mem::new_array(char, 3 * (usz)(core.window.quad.material.texture.width * core.window.quad.material.texture.height));
-      defer free(data);
       gl::readPixels(
         0, 0, core.window.quad.material.texture.width, core.window.quad.material.texture.height,
         gl::GL_RGB, gl::GL_UNSIGNED_BYTE, data);
-
       data.reverse(core.window.render.x, core.window.render.y, 3);
-
-      File f = file::open(filename, "wb")!!;
-      String ppmInfo = string::tformat(
-        "P6\n%d %d\n%s\n",
-        core.window.quad.material.texture.width,
-        core.window.quad.material.texture.height, 255);
-      f.write(ppmInfo)!!;
-      f.write(data)!!;
-      f.close()!!;
-
-      debug::info("Outputting screenshot as PPM to", filename);
-
+      
+      if (filename != "") {
+        debug::info("Outputting screenshot as PPM to", filename);
+        File f = file::open(filename, "wb")!!;
+        String ppmInfo = string::tformat(
+          "P6\n%d %d\n%s\n",
+          core.window.quad.material.texture.width,
+          core.window.quad.material.texture.height, 255);
+        f.write(ppmInfo)!!;
+        f.write(data)!!;
+        f.close()!!;
+      }
+      return data;
+    default:
     case PNG:
       int result;
       Ctx* ctx = spng::ctx_new((int)CTXFlags.ENCODER);
@@ -239,7 +257,7 @@ fn void screenshot(String filename) @export("bythos_screenshot") {
 
       result = spng::set_option(ctx, Option.ENCODE_TO_BUFFER, 1);
       if (result != 0)
-        { debug::error("Failed to set PNG options.", spng::strerror(result)); return; }
+        { debug::error("Failed to set PNG options.", spng::strerror(result)); return {}; }
 
       Ihdr ihdr = {
         core.window.render.x,
@@ -249,7 +267,7 @@ fn void screenshot(String filename) @export("bythos_screenshot") {
       };
       result = spng::set_ihdr(ctx, &ihdr);
       if (result != 0)
-        { debug::error("Failed to set ihdr.", spng::strerror(result)); return; }
+        { debug::error("Failed to set ihdr.", spng::strerror(result)); return {}; }
 
       data = mem::new_array(char, 4 * (usz)(core.window.quad.material.texture.width * core.window.quad.material.texture.height));
       defer free(data);
@@ -261,20 +279,18 @@ fn void screenshot(String filename) @export("bythos_screenshot") {
 
       result = spng::encode_image(ctx, data, data.len, (int)Format.PNG, (int)EncodeFlags.FINALIZE);
       if (result != 0)
-        { debug::error("Failed to encode image.", spng::strerror(result)); return; }
+        { debug::error("Failed to encode image.", spng::strerror(result)); return {}; }
 
       usz size;
       void* png = spng::get_png_buffer(ctx, &size, &result);
       if (result != 0)
-        { debug::error("Failed to get png buffer.", spng::strerror(result)); return; }
-
-      file::save(filename, ((char*)png)[:size])!!;
-
-      debug::info("Outputting screenshot as PNG to", filename);
-
-    default:
-      debug::error("Attempted to save screenshot as unknown file type.");
-      return;
+        { debug::error("Failed to get png buffer.", spng::strerror(result)); return {}; }
+      
+      if (filename != "") {
+        debug::info("Outputting screenshot as PNG to", filename);
+        file::save(filename, png[:size])!!;
+      }
+      return png[:size];
   }
 }
 

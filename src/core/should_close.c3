@@ -35,6 +35,7 @@ fn bool should_close() @export("bythos_shouldclose") {
       case TERMINATING:
       case WINDOW_CLOSE_REQUESTED:
       case WINDOW_DESTROYED:
+        debug::info("fug");
         return true;
 
       case LOW_MEMORY:

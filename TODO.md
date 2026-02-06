@@ -1,14 +1,15 @@
 
 ### General
+- Render pipeline
+  - Texture Tiling
+  - Font
+- Engine Functions
+  - Change screen variables
+    - Size
+    - Fullscreen / Borderless / Windowed
+    - etc
 
 ### Structures
-- Render pipeline
-  - 2D pipeline
-  - 
-  - Texture Tiling / 
-- Texture
-  - Test to make sure it all works
-  - Unit Tests
 - Material
   - All functions
   - Unit Tests
@@ -20,7 +21,50 @@
 - Mesh
   - All functions
   - Unit Tests
-- Bulk?
+- Bounding box
+  - Union of:
+    - Two Vec3f points forming a cube
+    - A Vec3f point and a radius for a circle
+    - A Vec3f point and a radius and a height for Cylinder / Pill
+  - Plus a Vec3f for rotation
+  - Maybe scale?
+  - All functions
+  - Unit Tests
+  - Bindings
+- Font
+  - All functions
+  - Unit Tests
+  - Bindings
+
+### Options
+- Saving / Loading
+
+### Localization
+- Saving / Loading
+
+### Keybinds
+- Saving / Loading
+- Setting bindings
+- Gamepad
+
+### UI
+- Elements
+  - Label
+  - Texture
+  - Button
+  - Container
+    - Horizontal
+    - Vertical
+    - Omnidirectional
+- Animations
+  - Fade in/out
+  - Move
+  - Rotate
+
+### Bulk (Possibly own project)
+- Loading
+- Packing
+- Compression
 
 ### Bugs
 - Camera rotation isn't working.
