@@ -134,10 +134,10 @@ fn void init() @export("bythos_init") {
   gl::genFramebuffers(1, &core.window.framebuffer);
   gl::bindFramebuffer(gl::GL_FRAMEBUFFER, core.window.framebuffer);
 
-  core.window.quad.material.texture = texture::new(core.window.render.x, core.window.render.y);
+  core.window.quad.material.maps[material::DIFFUSE].texture = texture::new(core.window.render.x, core.window.render.y);
   gl::framebufferTexture2D(
     gl::GL_FRAMEBUFFER, gl::GL_COLOR_ATTACHMENT0, gl::GL_TEXTURE_2D,
-    core.window.quad.material.texture.id, 0);
+    core.window.quad.material.maps[material::DIFFUSE].texture.id, 0);
 
   gl::genRenderbuffers(1, &core.window.renderbuffer);
   gl::bindRenderbuffer(gl::GL_RENDERBUFFER, core.window.renderbuffer);
@@ -157,7 +157,7 @@ fn void clean() @export("bythos_clean") {
   debug::info("Cleaning up Bythos.");
 
   // Framebuffer
-  core.window.quad.material.texture.clean("framebuffer");
+  core.window.quad.material.maps[material::DIFFUSE].texture.clean("framebuffer");
   core.window.quad.clean();
   gl::deleteFramebuffers(1, &core.window.framebuffer);
   gl::deleteRenderbuffers(1, &core.window.renderbuffer);
@@ -231,9 +231,11 @@ fn char[] screenshot(String filename = "") @export("bythos_screenshot") {
   char[] data;
   switch (texture::to_type(filename)) {
     case PPM:
-      data = mem::new_array(char, 3 * (usz)(core.window.quad.material.texture.width * core.window.quad.material.texture.height));
+      data = mem::new_array(char, 3 * (usz)(core.window.quad.material.maps[material::DIFFUSE].texture.width * core.window.quad.material.maps[material::DIFFUSE].texture.height));
       gl::readPixels(
-        0, 0, core.window.quad.material.texture.width, core.window.quad.material.texture.height,
+        0, 0,
+        core.window.quad.material.maps[material::DIFFUSE].texture.width,
+        core.window.quad.material.maps[material::DIFFUSE].texture.height,
         gl::GL_RGB, gl::GL_UNSIGNED_BYTE, data);
       data.reverse(core.window.render.x, core.window.render.y, 3);
       
@@ -242,8 +244,8 @@ fn char[] screenshot(String filename = "") @export("bythos_screenshot") {
         File f = file::open(filename, "wb")!!;
         String ppmInfo = string::tformat(
           "P6\n%d %d\n%s\n",
-          core.window.quad.material.texture.width,
-          core.window.quad.material.texture.height, 255);
+          core.window.quad.material.maps[material::DIFFUSE].texture.width,
+          core.window.quad.material.maps[material::DIFFUSE].texture.height, 255);
         f.write(ppmInfo)!!;
         f.write(data)!!;
         f.close()!!;
@@ -269,10 +271,12 @@ fn char[] screenshot(String filename = "") @export("bythos_screenshot") {
       if (result != 0)
         { debug::error("Failed to set ihdr.", spng::strerror(result)); return {}; }
 
-      data = mem::new_array(char, 4 * (usz)(core.window.quad.material.texture.width * core.window.quad.material.texture.height));
+      data = mem::new_array(char, 4 * (usz)(core.window.quad.material.maps[material::DIFFUSE].texture.width * core.window.quad.material.maps[material::DIFFUSE].texture.height));
       defer free(data);
       gl::readPixels(
-        0, 0, core.window.quad.material.texture.width, core.window.quad.material.texture.height,
+        0, 0,
+        core.window.quad.material.maps[material::DIFFUSE].texture.width,
+        core.window.quad.material.maps[material::DIFFUSE].texture.height,
         gl::GL_RGBA, gl::GL_UNSIGNED_BYTE, data);
 
       data.reverse(core.window.render.x, core.window.render.y, 4);

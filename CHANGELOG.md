@@ -82,3 +82,10 @@
 - Changed Texture, Mesh, and Keybind Hashmaps to pointers due to stange problem causing the data to corrupt?
 - Added to TODO list.
 
+#### [2/7/26]
+- Started on Material functions.
+  - Loading is started, but not functional.
+  - Unit tests are prepared.
+- Re-wrote Material and Mesh structures to be closer to raylib.
+  - Changed all references to old structure in bythos.
+

@@ -170,6 +170,7 @@ fn void Texture.clean(&self, String name = "") @export("texture_clean") {
   self.width = 0;
   self.height = 0;
 }
+
 fn void Texture.draw(&self,
     Rectangle dst = {},
     Rectangle src = {},
@@ -270,7 +271,7 @@ fn void Texture.draw_instanced(&self, Rectangle[] dst, Rectangle[] src, Color[] 
   gl::enable(gl::GL_DEPTH_TEST);
 }
 
-fn bool Texture.is_loaded(&self) @export("texture_isloaded")
+fn bool Texture.is_valid(&self) @export("texture_isvalid")
   => self.id != 0 && self.width != 0 && self.height != 0;
 
 fn char[] char[].expand(self, char value, int offset) {

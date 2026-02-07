@@ -40,18 +40,16 @@ const void* VERTEX_COLOR    = (void*)((long)VERTEX_TEXCOORD + Vec2f.sizeof);
 
 fn HashMap{String, Mesh} load(String filename) @export("mesh_load") {
   File? f = file::open(filename, "rb");
-  if (catch f) {
-    debug::error("Failed to open mesh file.", filename);
-    return {};
-  }
+  if (catch f)
+    { debug::warning("Failed to open mesh file.", filename); return {}; }
   
   usz? size = file::get_size(filename);
-  if (catch size) {
-    debug::error("Failed to open mesh file.", filename);
-    return {};
-  }
+  if (catch size)
+    { debug::warning("Failed to open mesh file.", filename); return {}; }
 
   char[] data = mem::new_array(char, size);
+  defer free(data);
+
   return load_from_memory((String)data);
 }
 fn HashMap{String, Mesh} load_from_memory(String data) @export("mesh_loadfrommem") {
@@ -201,7 +199,7 @@ fn void Mesh.draw(&self,
     Vec3f rotation = {0,0,0}) @export("mesh_draw") {
   if (self.material.shader.id != 0) {
     gl::useProgram(self.material.shader.id);
-    gl::bindTexture(gl::GL_TEXTURE_2D, self.material.texture.id);
+    gl::bindTexture(gl::GL_TEXTURE_2D, self.material.maps[material::DIFFUSE].texture.id);
 
     // Set uniforms
     Matrix4f view = camera::get_matrix();
@@ -226,7 +224,7 @@ fn void Mesh.draw_instanced(&self, Matrix4f[] mats,) {
     { debug::warning("Cannot draw a mesh instanced with no shader."); return; }
 
   gl::useProgram(self.material.shader.id);
-  gl::bindTexture(gl::GL_TEXTURE_2D, self.material.texture.id);
+  gl::bindTexture(gl::GL_TEXTURE_2D, self.material.maps[material::DIFFUSE].texture.id);
   self.material.shader.set_uniform("view", &&camera::get_matrix());
 
   // Draw each memeber
