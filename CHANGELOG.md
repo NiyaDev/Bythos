@@ -89,3 +89,7 @@
 - Re-wrote Material and Mesh structures to be closer to raylib.
   - Changed all references to old structure in bythos.
 
+#### [2/8/26]
+- Basic material loader finished?
+  - Needs testing.
+

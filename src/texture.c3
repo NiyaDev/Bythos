@@ -38,7 +38,7 @@ fn Texture load(String filename) @export("texture_load") {
 
   File? file = file::open(filename, "rb");
   if (catch file)
-    { debug::fatal("Failed to load image file", filename); }
+    { debug::fatal("Failed to find image file", filename); }
 
   char[] data = mem::new_array(char, file::get_size(filename)!!);
   file.read(data)!!;
