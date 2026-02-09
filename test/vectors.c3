@@ -90,7 +90,6 @@ fn void vec2f() @test {
   }
 }
 
-
 fn void vec3f() @test {
   { // Arith overloads
     assert((Vec3f)             {10,10,10} == {10,10,10},    "Equivalent failed");
@@ -198,7 +197,7 @@ fn void vec3f() @test {
   }
 }
 
-fn void v4_overloads() @test {
+fn void vec4f() @test {
   { // Arith overloads
     assert((Vec4f)                {10,10,10,10} == {10,10,10,10},     "Equivalent failed");
     assert((Vec4f){10,10,10,10} + {10,10,10,10} == {20,20,20,20},     "Addition failed");

@@ -158,7 +158,7 @@ fn void clean() @export("bythos_clean") {
 
   // Framebuffer
   core.window.quad.material.maps[material::DIFFUSE].texture.clean("framebuffer");
-  core.window.quad.clean();
+  core.window.quad.clean("framebuffer");
   gl::deleteFramebuffers(1, &core.window.framebuffer);
   gl::deleteRenderbuffers(1, &core.window.renderbuffer);
 
@@ -167,7 +167,7 @@ fn void clean() @export("bythos_clean") {
     { tex.clean(key); };
   free(core.storage.textures);
   core.storage.meshes.@each(; String key, Mesh mesh)
-    { mesh.clean(); };
+    { mesh.clean(key); };
   free(core.storage.meshes);
   keybinds::keybinds.free();
   free(keybinds::keybinds);
@@ -225,6 +225,32 @@ fn void draw() @export("bythos_draw") {
   
   core.window.quad.draw();
   sdl3::gl_swap_window(core.window.sdl);
+}
+fn void upload_file(String filename) @export("bythos_uploadfile") {
+  String[] pathSplitPeriod = filename.tsplit(".");
+  String[] pathSplitSlash = pathSplitPeriod[0].tsplit("/");
+  String fileType = pathSplitPeriod[pathSplitPeriod.len-1];
+  String name = pathSplitSlash[pathSplitSlash.len-1];
+
+  switch (fileType) {
+    // Textures
+    case "png":
+    case "ppm":
+      if (core.storage.textures.has_key(name))
+        { debug::warning("Attempted to load a Texture that has either already been loaded, or one that has been loaded under the wrong name."); return; }
+      core.storage.textures.set(name, texture::load(filename));
+      return;
+    // Meshes
+    case "obj":
+      HashMap{String, Mesh} meshes = mesh::load(filename);
+      meshes.@each(; String key, Mesh m) {
+        if (core.storage.meshes.has_key(key))
+          { debug::warning("Attempted to load a Model that has either already been loaded, or one that has been loaded under the wrong name."); return; }
+        core.storage.meshes.set(key, m);
+      };
+    default:
+      debug::warning("Attempted to upload a file in a format that's not accepted.");
+  }
 }
 
 fn char[] screenshot(String filename = "") @export("bythos_screenshot") {

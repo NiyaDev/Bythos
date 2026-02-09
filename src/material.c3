@@ -8,15 +8,12 @@ import bythos;
 struct Material {
   Shader shader;
   MaterialMap[12] maps;
-  //Texture texture;
-  //Vec3f[12] values;
-  //Color color;
 }
 struct MaterialMap {
   Texture texture;
   Vec3f value;
 }
-//enum MaterialValues : usz {
+
 const usz DIFFUSE = 0;
 const usz METALNESS = 1;
 const usz NORMAL = 2;
@@ -28,7 +25,7 @@ const usz CUBEMAP = 7;
 const usz IRRADIANCE = 8;
 const usz PREFILTER = 9;
 const usz BRDF = 10;
-//}
+
 
 fn HashMap{String, Material} load(String filename) @export("material_load") {
   File? f = file::open(filename, "rb");
@@ -62,10 +59,10 @@ fn HashMap{String, Material} load_from_memory(String data, String path = "") @ex
       { if (lines[end].len == 0) break; }
 
     // Iterate through each line
+    String name;
+    Material mat;
+    mat.shader = bythos::core.def_3d;
     for (usz i = start; i < end; i++) {
-      String name;
-      Material mat;
-
       String[] entries = lines[i].tsplit(" ");
       switch (entries[0]) {
         case "newmtl":
@@ -89,9 +86,8 @@ fn HashMap{String, Material} load_from_memory(String data, String path = "") @ex
           mat.maps[DIFFUSE].texture = texture::load(string::tformat("%s%s",path,entries[1]));
       }
       start++;
-
-      if (name != "") output.set(name, mat);
     }
+    if (name != "") output.set(name, mat);
   }
 
   return output;
@@ -106,7 +102,7 @@ fn Material new() @export("material_new") {
   return output;
 }
 fn void Material.clean(&self) @export("material_clean") {
-  if (self.shader.id != 0)
+  if (self.shader.id >= 3)
     { self.shader.clean(); }
   for (int i; i < self.maps.len; i++)
     { if (self.maps[i].texture.id != 0) self.maps[i].texture.clean(); }

@@ -93,3 +93,10 @@
 - Basic material loader finished?
   - Needs testing.
 
+#### [2/9/26]
+- Finished basic material loading.
+  - Tests
+- Fixed basic Mesh loading.
+  - Tests
+  - New problem: Crashes on sdl3::gl_swap_window() for some reason after calling render::draw_mesh().
+

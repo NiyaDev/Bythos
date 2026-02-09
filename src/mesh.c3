@@ -49,10 +49,14 @@ fn HashMap{String, Mesh} load(String filename) @export("mesh_load") {
 
   char[] data = mem::new_array(char, size);
   defer free(data);
+  f.read(data)!!;
 
-  return load_from_memory((String)data);
+  String[] split = filename.tsplit("/");
+  String path = filename.trim_right(split[split.len-1]);
+
+  return load_from_memory((String)data, path);
 }
-fn HashMap{String, Mesh} load_from_memory(String data) @export("mesh_loadfrommem") {
+fn HashMap{String, Mesh} load_from_memory(String data, String path) @export("mesh_loadfrommem") {
   HashMap{String, Mesh} list;
   String[] lines = data.tsplit("\n");
 
@@ -62,15 +66,17 @@ fn HashMap{String, Mesh} load_from_memory(String data) @export("mesh_loadfrommem
   String materialName;
   List{Vertex} vertices;
   List{Indices} indices;
+  HashMap{String, Material} mats;
 
   for (int i; i < lines.len; i++) {
     String[] line = lines[i].tsplit(" ");
     switch (line[0]) {
       case "#": continue;
       case "mtllib": // Material file
-        break;
+        mats = material::load(string::tformat("%s%s", path, line[1]));
       case "usemtl": // Material info
         Mesh* temp = list.get_ref(lastMember)!!;
+        temp.material = mats[line[1]]!!;
         //temp.material.texture = line[1];
       case "o":  // Object
         // If this isn't the first object, save vertices
@@ -158,7 +164,8 @@ fn Mesh new(MeshType type) @export("mesh_new") {
   output.upload();
   return output;
 }
-fn void Mesh.clean(&self) @export("mesh_cleanmesh") {
+fn void Mesh.clean(&self, String name = "") @export("mesh_cleanmesh") {
+  debug::info("Cleaning up mesh", name);
   if (self.vertices.len > 0)
     { free(self.vertices); }
   if (self.indices.len > 0)
