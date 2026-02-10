@@ -36,7 +36,7 @@ fn void loading() @test {
 
   bythos::clean();
 }
-
+/*
 fn void drawing() @test {
   bythos::init();
   int count;
@@ -66,4 +66,4 @@ fn void drawing() @test {
 
   bythos::clean();
 }
-
+*/

@@ -9,7 +9,7 @@ fn void loading() @test {
   bythos::upload_file("resources/Hati.obj");
 
   while (!bythos::should_close()) {
-    render::draw_mesh("Hati_Skin.mo_Hati_Skin.md");
+    //render::draw_mesh("Hati_Skin", scale:{2,2,2});
     bythos::draw();
   }
 

@@ -77,7 +77,6 @@ fn HashMap{String, Mesh} load_from_memory(String data, String path) @export("mes
       case "usemtl": // Material info
         Mesh* temp = list.get_ref(lastMember)!!;
         temp.material = mats[line[1]]!!;
-        //temp.material.texture = line[1];
       case "o":  // Object
         // If this isn't the first object, save vertices
         if (list.len() > 0) {
