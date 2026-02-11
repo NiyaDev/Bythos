@@ -1,6 +1,7 @@
 
 import std::math;
 import std::io;
+import std::collections;
 import sdl3;
 import opengl::gl;
 

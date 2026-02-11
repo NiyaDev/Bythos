@@ -100,3 +100,7 @@
   - Tests
   - New problem: Crashes on sdl3::gl_swap_window() for some reason after calling render::draw_mesh().
 
+#### [2/11/26]
+- Started reworking mesh loading.
+- Added utilities with PathObjects. Maybe rework to use what c3 has internally?
+

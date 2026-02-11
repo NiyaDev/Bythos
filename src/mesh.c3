@@ -14,7 +14,7 @@ struct Mesh {
   Vertex[] vertices;
   Indices[] indices;
 
-  uint vao, vbo;
+  uint vao, vbo, ebo;
 
   Material material;
 }
@@ -51,12 +51,54 @@ fn HashMap{String, Mesh} load(String filename) @export("mesh_load") {
   defer free(data);
   f.read(data)!!;
 
-  String[] split = filename.tsplit("/");
-  String path = filename.trim_right(split[split.len-1]);
+  //String[] split = filename.tsplit("/");
+  //String path = filename.trim_right(split[split.len-1]);
 
-  return load_from_memory((String)data, path);
+  return load_from_memory((String)data, filename.to_pathobj());
 }
-fn HashMap{String, Mesh} load_from_memory(String data, String path) @export("mesh_loadfrommem") {
+fn HashMap{String, Mesh} load_from_memory(String data, PathObject path) @export("mesh_loadfrommem") {
+  HashMap{String, Mesh} output;
+  String[] lines = data.tsplit("\n");
+
+  HashMap{String, Material} materials;
+
+  for (int i; i < lines.len; i++) {
+    String name = "";
+    Mesh m;
+
+    String[] line = lines[i].tsplit(" ");
+    switch (line[0]) {
+      default:
+      case "#": // Comment
+        continue;
+
+      case "mtllib": // Material file
+        if (materials.is_initialized())
+          { debug::warning("Model file contains multiple Material files.", path.full()); continue; }
+        materials = material::load(string::tformat("%s%s", path.dir, line[1]));
+      case "usemtl": // Mesh material
+        Material? mat = materials.get(line[1]);
+        if (catch mat)
+          { debug::warning("Attempted to use a mesh before loading it.", path.full()); continue; }
+        m.material = mat;
+      case "o": // Mesh name
+        if (name != "") {
+          output.set(name, m);
+          name = "";
+          m = {};
+        } else {
+          name = line[1];
+        }
+      case "v": // Vertex
+      case "vn": // Normal
+      case "vt": // Texcoord
+      case "f": // Index
+        continue;
+    }
+  }
+  return output;
+}
+fn HashMap{String, Mesh} load_from_memory_old(String data, String path) @export("mesh_loadfrommem") {
   HashMap{String, Mesh} list;
   String[] lines = data.tsplit("\n");
 
@@ -126,17 +168,19 @@ fn HashMap{String, Mesh} load_from_memory(String data, String path) @export("mes
         String[] anotherSplit1 = line[1].tsplit("/");
         String[] anotherSplit2 = line[2].tsplit("/");
         String[] anotherSplit3 = line[3].tsplit("/");
-        int x = anotherSplit1[0].to_int()!! - (int)maxVertexPos - 1;
-        int y = anotherSplit2[0].to_int()!! - (int)maxVertexPos - 1;
-        int z = anotherSplit3[0].to_int()!! - (int)maxVertexPos - 1;
+        int x = anotherSplit1[0].to_int()!!;// - (int)maxVertexPos - 1;
+        int y = anotherSplit2[0].to_int()!!;// - (int)maxVertexPos - 1;
+        int z = anotherSplit3[0].to_int()!!;// - (int)maxVertexPos - 1;
 
         indices[lastIndices] = {x,y,z};
+        //io::printfn("%s",(Vec3f){x,y,z});
         lastIndices++;
     }
   }
   Mesh* temp = list.get_ref(lastMember)!!;
   temp.vertices = vertices.to_array(mem);
   vertices.free();
+  io::printfn("%s",indices);
   temp.indices = indices.to_array(mem);
   indices.free();
   temp.upload();
@@ -181,6 +225,10 @@ fn void Mesh.upload(&self) {
   gl::bindVertexArray(self.vao);
   gl::bindBuffer(gl::GL_ARRAY_BUFFER, self.vbo);
   gl::bufferData(gl::GL_ARRAY_BUFFER, self.vertices.len * Vertex.sizeof, self.vertices, gl::GL_STATIC_DRAW);
+
+  gl::genBuffers(1, &self.ebo);
+  gl::bindBuffer(gl::GL_ELEMENT_ARRAY_BUFFER, self.ebo);
+  gl::bufferData(gl::GL_ELEMENT_ARRAY_BUFFER, self.indices.len * Indices.sizeof, self.indices, gl::GL_STATIC_DRAW);
   
   gl::vertexAttribPointer(0, 3, gl::GL_FLOAT, gl::GL_FALSE, Vertex.sizeof, VERTEX_POSITION);
   gl::enableVertexAttribArray(0);
@@ -197,6 +245,7 @@ fn void Mesh.upload(&self) {
 fn void Mesh.delete(&self) {
   gl::deleteVertexArrays(1, &self.vao);
   gl::deleteBuffers(1, &self.vbo);
+  gl::deleteBuffers(1, &self.ebo);
 }
 
 fn void Mesh.draw(&self,
@@ -221,8 +270,13 @@ fn void Mesh.draw(&self,
   }
 
   // Draw
-  gl::bindVertexArray(self.vao);
-  gl::drawArrays(gl::GL_TRIANGLES, 0, self.vertices.len);
+  if (self.indices.len == 0) {
+    gl::bindVertexArray(self.vao);
+    gl::drawArrays(gl::GL_TRIANGLES, 0, self.vertices.len);
+  } else {
+    gl::bindBuffer(gl::GL_ELEMENT_ARRAY_BUFFER, self.ebo);
+    gl::drawElements(gl::GL_TRIANGLES, 6, gl::GL_UNSIGNED_INT, null);
+  }
   gl::bindVertexArray(0);
 }
 fn void Mesh.draw_instanced(&self, Matrix4f[] mats,) {
