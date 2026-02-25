@@ -16,9 +16,8 @@ Bythos core;
 
 struct Bythos {
   struct window {
-    SDL_Window* sdl;
-    SDL_GLContext* context;
-    SDL_Event event;
+    Window* sdl;
+    GLContext* context;
 
     Vec2i screen, render;
     uint framebuffer, renderbuffer;
@@ -29,7 +28,6 @@ struct Bythos {
   }
 
   Shader def_2d, def_3d;
-  //Texture def_tex;
 
   struct input {
     struct keyboard {
@@ -59,7 +57,7 @@ struct Bythos {
   }
 
   struct storage {
-    HashMap{String, Texture}* textures;
+    HashMap{String, texture::Texture}* textures;
     HashMap{String, Mesh}* meshes;
   }
 }
@@ -77,28 +75,28 @@ fn void init() @export("bythos_init") {
 
   // Init SDL3
   debug::info("Initializing SDL3.");
-  if (!sdl3::init(sdl3::INIT_VIDEO | sdl3::INIT_AUDIO))
-    { debug::fatal("Failed to initialize SDL3.", sdl3::get_error()); }
-  sdl3::gl_set_attribute(GLAttr.CONTEXT_MAJOR_VERSION, 4);
-  sdl3::gl_set_attribute(GLAttr.CONTEXT_MINOR_VERSION, 1);
-  sdl3::gl_set_attribute(GLAttr.CONTEXT_PROFILE_MASK, sdl3::CONTEXT_PROFILE_CORE);
+  if (!sdl3::init({.video = true, .audio = true}))
+    { debug::fatal("Failed to initialize SDL3.", sdl3::getError()); }
+  sdlgl::setAttribute(GLAttr.CONTEXT_MAJOR_VERSION, 4);
+  sdlgl::setAttribute(GLAttr.CONTEXT_MINOR_VERSION, 1);
+  sdlgl::setAttribute(GLAttr.CONTEXT_PROFILE_MASK, sdlgl::CONTEXT_PROFILE_CORE);
 
   // Create window
-  core.window.sdl = sdl3::create_window(
+  core.window.sdl = sdl3::createWindow(
     "BYTHOS",
     core.window.screen.x, core.window.screen.y,
-    sdl3::WINDOW_OPENGL);
+    {.opengl = true});
   if (core.window.sdl == null)
-    { debug::fatal("Failed to create SDL3 window.", sdl3::get_error()); }
+    { debug::fatal("Failed to create SDL3 window.", sdl3::getError()); }
 
   // Create OpenGL context
   debug::info("Initializing OpenGL.");
-  core.window.context = sdl3::gl_create_context(core.window.sdl);
+  core.window.context = sdlgl::createContext(core.window.sdl);
   if (core.window.context == null)
-    { debug::fatal("Failed to create OpenGL context.", sdl3::get_error()); }
-  if (!sdl3::gl_make_current(core.window.sdl, core.window.context))
-    { debug::fatal("Failed to make GLcontext current.", sdl3::get_error()); }
-  int? result = opengl::init((gl::GLLoadFn)&sdl3::gl_get_proc_address);
+    { debug::fatal("Failed to create OpenGL context.", sdl3::getError()); }
+  if (!sdlgl::makeCurrent(core.window.sdl, core.window.context))
+    { debug::fatal("Failed to make GLcontext current.", sdl3::getError()); }
+  int? result = opengl::init((gl::GLLoadFn)&sdlgl::getProcAddress);
   if (catch result)
     { debug::fatal("Failed to initialize OpenGL functions."); }
 
@@ -117,7 +115,7 @@ fn void init() @export("bythos_init") {
 
   // Load defaults
   debug::info("Creating defaults.");
-  core.storage.textures = mem::new(HashMap{String, Texture});
+  core.storage.textures = mem::new(HashMap{String, texture::Texture});
   core.storage.meshes   = mem::new(HashMap{String, Mesh});
   core.storage.textures.set("default", texture::load_from_memory(texture::def, PPM));
   core.storage.meshes.set("default", mesh::new(CUBE));
@@ -163,7 +161,7 @@ fn void clean() @export("bythos_clean") {
   gl::deleteRenderbuffers(1, &core.window.renderbuffer);
 
   // Defaults
-  core.storage.textures.@each(; String key, Texture tex)
+  core.storage.textures.@each(; String key, texture::Texture tex)
     { tex.clean(key); };
   free(core.storage.textures);
   core.storage.meshes.@each(; String key, Mesh mesh)
@@ -177,11 +175,10 @@ fn void clean() @export("bythos_clean") {
   core.def_3d.clean();
 
   // SDL3 and OpenGL
-  sdl3::gl_destroy_context(core.window.context);
+  sdlgl::destroyContext(core.window.context);
   core.window.context = null;
-  sdl3::destroy_window(core.window.sdl);
+  sdl3::destroyWindow(core.window.sdl);
   core.window.sdl = null;
-  core.window.event = {};
   sdl3::quit();
 }
 
@@ -201,7 +198,7 @@ fn void draw_end() @export("bythos_drawend") {
   gl::viewport(0, 0, 1280, 720);
   
   core.window.quad.draw();
-  sdl3::gl_swap_window(core.window.sdl);
+  sdlgl::swapWindow(core.window.sdl);
 }
 fn void draw() @export("bythos_draw") {
   // Start drawing
@@ -224,7 +221,7 @@ fn void draw() @export("bythos_draw") {
   gl::viewport(0, 0, 1280, 720);
   
   core.window.quad.draw();
-  sdl3::gl_swap_window(core.window.sdl);
+  sdlgl::swapWindow(core.window.sdl);
 }
 fn void upload_file(String filename) @export("bythos_uploadfile") {
   String[] pathSplitPeriod = filename.tsplit(".");
@@ -290,7 +287,7 @@ fn char[] screenshot(String filename = "") @export("bythos_screenshot") {
       Ihdr ihdr = {
         core.window.render.x,
         core.window.render.y,
-        8, (char)ColorType.TRUECOLOR_ALPHA,
+        8, (char)spng::ColorType.TRUECOLOR_ALPHA,
         0, 0, 0,
       };
       result = spng::set_ihdr(ctx, &ihdr);

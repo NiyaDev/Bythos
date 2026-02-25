@@ -7,7 +7,7 @@ import sdl3;
 fn void loading() @test {
   bythos::init();
 
-  Texture t1 = texture::load("resources/texture.ppm");
+  texture::Texture t1 = texture::load("resources/texture.ppm");
   assert(t1.id != 0, "Texture is not uploaded correctly. [%d]", t1.id);
   assert(t1.id == 3, "Texture is not the next texture uploaded. [%d]", t1.id);
   assert(t1.width  == 2, "Texture width incorrect. [%s]", t1.width);
@@ -16,7 +16,7 @@ fn void loading() @test {
   t1.clean();
   assert(!t1.is_valid(), "Texture is claiming it is loaded.");
 
-  Texture t2 = texture::load_from_memory(texture::def, PPM);
+  texture::Texture t2 = texture::load_from_memory(texture::def, PPM);
   assert(t2.id != 0, "Texture is not uploaded correctly. [%d]", t2.id);
   assert(t2.id == 3, "Texture is not the next texture uploaded. [%d]", t2.id);
   assert(t2.width  == 2, "Texture width incorrect. [%s]", t2.width);
@@ -25,7 +25,7 @@ fn void loading() @test {
   t2.clean();
   assert(!t2.is_valid(), "Texture is claiming it is loaded.");
 
-  Texture t3 = texture::new(100,100);
+  texture::Texture t3 = texture::new(100,100);
   assert(t3.id != 0, "Texture is not uploaded correctly. [%d]", t3.id);
   assert(t3.id == 3, "Texture is not the next texture uploaded. [%d]", t3.id);
   assert(t3.width  == 100, "Texture width incorrect. [%s]", t3.width);

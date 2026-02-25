@@ -6,7 +6,7 @@ import sdl3;
 
 fn bool should_close() @export("bythos_shouldclose") {
   // Calculate deltatime
-  double currentFrame = ((double)sdl3::get_ticks() / 1000);
+  double currentFrame = ((double)sdl3::getTicks() / 1000);
   core.time.deltaTime = currentFrame - core.time.lastFrame;
   core.time.lastFrame = currentFrame;
 
@@ -27,8 +27,9 @@ fn bool should_close() @export("bythos_shouldclose") {
 
 
   // Poll events
-  while (sdl3::poll_event(&core.window.event)) {
-    switch (core.window.event.type) {
+  Event event;
+  while (sdl3::pollEvent(&event)) {
+    switch (event.type) {
       case FIRST: break;
 
       case QUIT:
@@ -90,28 +91,28 @@ fn bool should_close() @export("bythos_shouldclose") {
 
       // Keyboard
       case KEY_DOWN:
-        int key = core.window.event.key.scancode;
-        if (key != (int)sdl3::Scancode.UNKNOWN) {
+        Scancode key = event.key.scancode;
+        if (key != UNKNOWN) {
           // Check if key was up before
-          if (core.input.keyboard.currentKeyState[key] == false)
-            { core.input.keyboard.currentKeyState[key] = true; }
-          if (core.input.keyboard.currentKeyState[key] == core.input.keyboard.previousKeyState[key])
-            { core.input.keyboard.repeatKeyState[key] = true; }
+          if (core.input.keyboard.currentKeyState[(int)key] == false)
+            { core.input.keyboard.currentKeyState[(int)key] = true; }
+          if (core.input.keyboard.currentKeyState[(int)key] == core.input.keyboard.previousKeyState[(int)key])
+            { core.input.keyboard.repeatKeyState[(int)key] = true; }
 
           if (core.input.keyboard.currentKeyState[core.input.keyboard.exitKey] == true)
             { return true; }
         }
       case KEY_UP:
-        int key = core.window.event.key.scancode;
-        if (key != (int)sdl3::Scancode.UNKNOWN) {
-          core.input.keyboard.currentKeyState[key] = false;
-          core.input.keyboard.repeatKeyState[key] = false;
+        Scancode key = event.key.scancode;
+        if (key != UNKNOWN) {
+          core.input.keyboard.currentKeyState[(int)key] = false;
+          core.input.keyboard.repeatKeyState[(int)key] = false;
         }
       //  keybinds::add_queue(event.key);
 
       case TEXT_EDITING:
       case TEXT_INPUT:
-        io::printfn("%s",core.window.event.edit.text);
+        io::printfn("%s",event.edit.text);
         break;
       
       case KEYMAP_CHANGED:
@@ -125,14 +126,14 @@ fn bool should_close() @export("bythos_shouldclose") {
       // Mouse
       case MOUSE_MOTION:
         if (!core.input.mouse.isLocked) {
-          core.input.mouse.currentPosition = {core.window.event.motion.x, core.window.event.motion.y};
+          core.input.mouse.currentPosition = {event.motion.x, event.motion.y};
         }
       case MOUSE_BUTTON_DOWN:
-        core.input.mouse.currentState[core.window.event.button.button-1] = true;
+        core.input.mouse.currentState[event.button.button-1] = true;
       case MOUSE_BUTTON_UP:
-        core.input.mouse.currentState[core.window.event.button.button-1] = false;
+        core.input.mouse.currentState[event.button.button-1] = false;
       case MOUSE_WHEEL:
-        core.input.mouse.currentWheel = core.window.event.wheel.y;
+        core.input.mouse.currentWheel = event.wheel.y;
 
       case MOUSE_ADDED:
       case MOUSE_REMOVED:
@@ -220,7 +221,7 @@ fn bool should_close() @export("bythos_shouldclose") {
       case RENDER_DEVICE_LOST:
         break;
 
-      default: debug::info("Unhandled event.", core.window.event.type);
+      default: debug::info("Unhandled event.", event.type);
     }
   }
   for (int i; i < core.input.keyboard.currentKeyState.len; i++) {
