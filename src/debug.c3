@@ -23,12 +23,10 @@ fn void fatal(String err, args...) @export("debug_fatal") {
   while (printing) thread::sleep_ms(1);
 
   printing = true;
-  String o;
   if (args.len > 0)
-    { o = string::tformat("[%s] - %s %s", "FATAL".color({230,41,55,255}), err, args); }
+    { io::printfn("[%s] - %s %s", "FATAL".color({230,41,55,255}), err, args); }
   else
-    { o = string::tformat("[%s] - %s", "FATAL".color({230,41,55,255}), err); }
-  io::printn(o);
+    { io::printfn("[%s] - %s", "FATAL".color({230,41,55,255}), err); }
   printing = false;
 
   unreachable();
@@ -38,12 +36,10 @@ fn void error(String err, args...) @export("debug_error") {
   while (printing) thread::sleep_ms(1);
 
   printing = true;
-  String o;
   if (args.len > 0)
-    { o = string::tformat("[%s] - %s %s", "ERROR".color(color::RED), err, args); }
+    { io::printfn("[%s] - %s %s", "ERROR".color(color::RED), err, args); }
   else
-    { o = string::tformat("[%s] - %s", "ERROR".color(color::RED), err); }
-  io::printn(o);
+    { io::printfn("[%s] - %s", "ERROR".color(color::RED), err); }
   printing = false;
 
   recentText = o;
@@ -54,12 +50,10 @@ fn void warning(String err, args...) @export("debug_warning") {
   while (printing) thread::sleep_ms(1);
 
   printing = true;
-  String o;
   if (args.len > 0)
-    { o = string::tformat("[%s]  - %s %s", "WARN".color(color::ORANGE), err, args); }
+    { io::printfn("[%s]  - %s %s", "WARN".color(color::ORANGE), err, args); }
   else
-    { o = string::tformat("[%s]  - %s", "WARN".color(color::ORANGE), err); }
-  io::printn(o);
+    { io::printfn("[%s]  - %s", "WARN".color(color::ORANGE), err); }
   printing = false;
 
   recentText = o;
@@ -70,12 +64,10 @@ fn void info(String err, args...) @export("debug_info") {
   while (printing) thread::sleep_ms(1);
 
   printing = true;
-  String o;
   if (args.len > 0)
-    { o = string::tformat("[%s]  - %s %s", "INFO".color(color::GRAY), err, args); }
+    { io::printfn("[%s]  - %s %s", "INFO".color(color::GRAY), err, args); }
   else
-    { o = string::tformat("[%s]  - %s", "INFO".color(color::GRAY), err); }
-  io::printn(o);
+    { io::printfn("[%s]  - %s", "INFO".color(color::GRAY), err); }
   printing = false;
 }
 
