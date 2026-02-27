@@ -1,7 +1,7 @@
 
 import std::io;
 import std::math;
-import bythos::vector;
+import bythos;
 
 
 

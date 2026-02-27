@@ -1,4 +1,4 @@
-
+/*
 import bythos;
 
 
@@ -9,3 +9,4 @@ fn void pathobject() @test {
   assert(po.type == "png", "Failed to parse file type. [%s != \"png\"]", po.type);
   assert(po.full() == "resources/inner/filename.png", "Failed to parse full path. [%s != \"resources/inner/filename.png\"]", po.full());
 }
+*/

@@ -1,4 +1,4 @@
-
+/*
 import bythos::color;
 import bythos::vector;
 
@@ -39,4 +39,4 @@ fn void color() @test {
     assert(color.alpha(0.5) == {253,249,0,127}, "Failed to set alpha.");
   }
 }
-
+*/

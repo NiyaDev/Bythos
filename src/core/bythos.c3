@@ -1,5 +1,6 @@
 
 module bythos;
+import std::collections;
 import sdl3;
 
 // Constants
@@ -50,13 +51,21 @@ struct Bythos {
     //struct touch {}
     //struct gamepad {}
   }
-  struct storage {}
+  //struct storage {}
 }
 
 // Functions
-fn Bythos* init() {
+fn Bythos init() @export("bythos_init") {
   debug::info("Initializing Bythos version", VERSION);
+  Bythos core;
 
+  HashMap{String, Option}? options = load_all_options("resources/toml_test.toml");
+  if (try options) {
+    core.screen = {options.as_uint("screen_width"), options.as_uint("screen_height")};
+  } else { // Defaults
+    core.screen = {1280, 720};
+  }
 
+  return core;
 }
 

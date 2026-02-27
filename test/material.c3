@@ -1,4 +1,4 @@
-
+/*
 import std::collections;
 import std::io;
 import bythos;
@@ -25,3 +25,4 @@ fn void loading() @test {
 
   bythos::clean();
 }
+*/

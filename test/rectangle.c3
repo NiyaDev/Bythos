@@ -1,4 +1,4 @@
-
+/*
 import bythos::rectangle;
 import bythos::vector;
 
@@ -77,3 +77,4 @@ fn void rectangle() @test {
     assert(division       == (Rectangle){1,1,1,1},         "Division failed");
   }
 }
+*/

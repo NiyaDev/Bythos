@@ -1,9 +1,8 @@
 
-module bythos::vector;
+module bythos;
 import std::math;
-import bythos::color;
 
-
+// Vector2
 alias Vec2f = float[<2>];
 alias Vec2i = int[<2>];
 
@@ -68,7 +67,7 @@ fn Vec2f Vec2f.clamp_mag(self, float min, float max) @export("vector2_clamp_mag"
 }
 
 
-
+// Vector3
 alias Vec3f = float[<3>];
 alias Vec3i = int[<3>];
 
@@ -166,7 +165,7 @@ fn bool Vec3f.close(self, Vec3f v2, float amount) @export("vector_close")
   => self.x.close(v2.x, amount) && self.y.close(v2.y, amount) && self.z.close(v2.z, amount);
 
 
-
+// Vector4
 alias Vec4f = float[<4>];
 alias Vec4i = int[<4>];
 

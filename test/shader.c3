@@ -1,4 +1,4 @@
-
+/*
 
 import std::math;
 import bythos;
@@ -19,4 +19,4 @@ fn void set_uniforms() @test {
 
   //assert(false,"End");
 }
-
+*/

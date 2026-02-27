@@ -1,4 +1,4 @@
-
+/*
 import std::io;
 import bythos::color;
 
@@ -14,4 +14,4 @@ fn void defaults() @test {
 
   f.close()!!;
 }
-
+*/

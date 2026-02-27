@@ -6,13 +6,23 @@ import sdl3;
 import opengl::gl;
 
 
-//*
+fn void basic() @test {
+  Bythos core;
+  debug::@benchmark(core = init(), "Core Init");
+  assert(false);
+
+  core.@loop() {
+    
+  };
+}
+
+/*
 fn void basic() @test {
   //debug::logLevel = NONE;
   bythos::init();
 
   float y = 1;
-  Vec3f pos;
+  //Vec3f pos;
 
   while (!bythos::should_close()) {
     //if (keybinds::is_pressed("test")) io::printfn("Pressed");
@@ -40,5 +50,5 @@ fn void basic() @test {
   bythos::clean();
   //assert(false, "reached end");
 }
-//*/
+*/
 

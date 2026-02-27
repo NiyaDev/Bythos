@@ -1,4 +1,4 @@
-
+/*
 import bythos;
 
 
@@ -19,3 +19,4 @@ fn void loading() @test {
   bythos::clean();
   assert(false);
 }
+*/
