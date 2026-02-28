@@ -2,6 +2,6 @@
 module bythos;
 
 // Functions
-macro void Bythos.@loop(core; @body()) {
+macro void @loop(; @body()) {
 
 }

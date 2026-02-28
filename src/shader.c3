@@ -1,72 +1,67 @@
 
-module bythos::shader;
+module bythos;
 import std::collections, std::io, std::math;
-import opengl::gl;
-import bythos;
-
 
 struct Shader {
   uint id;
-  HashMap{String, uint} locs;
+  List{uint} locs;
 }
+
+module bythos::shader;
+import std::io;
+import opengl::gl;
+import bythos::debug;
 
 fn Shader load(String v, String f) @export("shader_load") {
-  char[] vs = file::load_temp(v)!!;
-  char[] fs = file::load_temp(f)!!;
+  char[] vs;
+  char[] fs;
+  if (file::exists(v)) vs = file::load_temp(v)!!;
+  if (file::exists(f)) fs = file::load_temp(f)!!; 
 
-  return compile(vs,fs);
+  return compile(vs, fs);
 }
 fn Shader compile(char[] v = {}, char[] f = {}) @export("shader_compile") {
-  int res;
+  int result;
   uint program = gl::createProgram();
 
-  // Vertex
+  //* -- Vertex -- *//
   uint vertexShader = gl::createShader(gl::GL_VERTEX_SHADER);
-  gl::shaderSource(
-    vertexShader, 1,
-    v.len > 0 ? &&((char*)v) : &&((char*)FB_VERTEX),
-    null,
-  );
+  gl::shaderSource(vertexShader, 1, v.len > 0 ? &&((char*)v) : &&((char*)FB_VERTEX), null);
   gl::compileShader(vertexShader);
-  gl::getShaderiv(vertexShader, gl::GL_COMPILE_STATUS, &res);
-  if (res == 0) {
+  gl::getShaderiv(vertexShader, gl::GL_COMPILE_STATUS, &result);
+  if (!result) {
     char[] log = mem::new_array(char, 512);
     gl::getShaderInfoLog(vertexShader, 512, null, (char*)log);
-    debug::error("Failed to compile vertex shader.\n", log);
+    debug::error("SHADER: Failed to compile vertex shader\n", log);
     free(log);
-  } else {
-    gl::attachShader(program, vertexShader);
-  }
+  } else
+    { gl::attachShader(program, vertexShader); }
 
-  // Fragment
+  //* -- Fragment -- *//
   uint fragmentShader = gl::createShader(gl::GL_FRAGMENT_SHADER);
-  gl::shaderSource(
-    fragmentShader, 1,
-    v.len > 0 ? &&((char*)f) : &&((char*)FB_FRAGMENT),
-    null,
-  );
+  gl::shaderSource(fragmentShader, 1, f.len > 0 ? &&((char*)f) : &&((char*)FB_FRAGMENT), null);
   gl::compileShader(fragmentShader);
-  gl::getShaderiv(fragmentShader, gl::GL_COMPILE_STATUS, &res);
-  if (res == 0) {
+  gl::getShaderiv(fragmentShader, gl::GL_COMPILE_STATUS, &result);
+  if (!result) {
     char[] log = mem::new_array(char, 512);
     gl::getShaderInfoLog(fragmentShader, 512, null, (char*)log);
-    debug::error("Failed to compile fragment shader.\n", log);
+    debug::error("SHADER: Failed to compile fragment shader\n", log);
     free(log);
-  } else {
-    gl::attachShader(program, fragmentShader);
-  }
+  } else
+    { gl::attachShader(program, fragmentShader); }
 
-  // Linking
+  //* -- Program -- *//
   gl::linkProgram(program);
-  gl::getProgramiv(program, gl::GL_LINK_STATUS, &res);
-  if (res == 0) {
+  gl::getProgramiv(program, gl::GL_LINK_STATUS, &result);
+  if (!result) {
     char[] log = mem::new_array(char, 512);
     gl::getProgramInfoLog(program, 512, null, (char*)log);
-    debug::error("Failed to link shader.\n", log);
+    debug::error("SHADER: Failed to link shader\n", log);
     free(log);
   }
+  debug::info(string::tformat("SHADER: [ID %d] Shader loaded successfully", program));
 
-  // Cleanup
+  //* -- Cleanup -- *//
   gl::deleteShader(vertexShader);
   gl::deleteShader(fragmentShader);
 
@@ -74,40 +69,11 @@ fn Shader compile(char[] v = {}, char[] f = {}) @export("shader_compile") {
 }
 fn void Shader.clean(&self) @export("shader_clean") {
   gl::deleteProgram(self.id);
-  self.locs.clear();
-}
-fn void Shader.set_uniform(&self, String key, any v) @export("shader_setuniform") {
-  uint loc;
-  if (self.locs.has_key(key)) {
-    loc = self.locs.get(key)!!;
-  } else {
-    loc = gl::getUniformLocation(self.id, key);
-    self.locs.set(key, loc);
-  }
+  self.locs.free();
 
-  switch (v.type) {
-    case int:
-      gl::programUniform1i(self.id, loc, *(int*)v);
-    case float:
-      gl::programUniform1f(self.id, loc, *(float*)v);
-    case Vec2f:
-      Vec2f v2 = *(Vec2f*)v;
-      gl::programUniform2f(self.id, loc, v2.x, v2.y);
-    case Vec3f:
-      Vec3f v2 = *(Vec3f*)v;
-      gl::programUniform3f(self.id, loc, v2.x, v2.y, v2.z);
-    case Vec4f:
-      Vec4f v2 = *(Vec4f*)v;
-      gl::programUniform4f(self.id, loc, v2.x, v2.y, v2.z, v2.w);
-    case Matrix4f:
-      gl::programUniformMatrix4fv(self.id, loc, 1, gl::GL_FALSE, (float*)v);
-    case Texture:
-      gl::programUniform1i(self.id, loc, ((Texture*)v).id);
-    default:
-      debug::error("Attempted to set uniform with unimplemented type.", v.type);
-  }
+  debug::info(string::tformat("SHADER: [ID %s] Cleaned up", self.id));
+  self.id = 0;
 }
-
 
 const char[] DEFAULT_VERTEX_3D = 
   "#version 330 core\n"
@@ -182,5 +148,4 @@ const char[] FB_FRAGMENT =
   "void main() {\n"
   "  FragColor = texture(texture0, TexCoords);\n"
   "}\n";
-
 

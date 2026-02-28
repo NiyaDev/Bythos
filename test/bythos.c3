@@ -7,13 +7,15 @@ import opengl::gl;
 
 
 fn void basic() @test {
-  Bythos core;
-  debug::@benchmark(core = init(), "Core Init");
-  assert(false);
+  debug::@benchmark(bythos::init(), "Core Init");
 
-  core.@loop() {
+
+  bythos::@loop() {
     
   };
+
+  clean();
+  assert(false);
 }
 
 /*
