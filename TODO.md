@@ -1,8 +1,5 @@
 
 ### General
-- Render pipeline
-  - Texture Tiling
-  - Font
 - Engine Functions
   - Change screen variables
     - Size
@@ -18,6 +15,8 @@
   - All functions
   - Unit Tests
   - Bindings
+  - Save/Load from file
+    - Need Bulks for that
 - Mesh
   - All functions
   - Unit Tests

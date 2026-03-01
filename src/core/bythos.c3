@@ -97,15 +97,32 @@ fn void init() @export("bythos_init") {
   gl::enable(gl::GL_BLEND);
   gl::blendFunc(gl::GL_SRC_ALPHA, gl::GL_ONE_MINUS_SRC_ALPHA);
 
-  // Info
+  //* -- Screen Info -- *//
   debug::info("Display device initialized successfully");
   debug::info(string::tformat("  > Display resolution: %d x %d", core.display.x, core.display.y));
   debug::info(string::tformat("  > Screen resolution:  %d x %d", core.screen.x, core.screen.y));
   debug::info(string::tformat("  > Render resolution:  %d x %d", core.render.x, core.render.y));
 
   //* -- Defaults -- *//
-  set_default_shader2d(shader::compile(shader::DEFAULT_VERTEX_2D, shader::DEFAULT_FRAGMENT_2D));
-  set_default_shader3d(shader::compile(shader::DEFAULT_VERTEX_3D, shader::DEFAULT_FRAGMENT_3D));
+  // Shaders
+  //int supported;
+  //gl::getIntegerv(gl::GL_NUM_PROGRAM_BINARY_FORMATS, &supported);
+  
+  //if (!file::exists("resources/shader_2d")) {
+    set_default_shader2d(shader::compile(shader::DEFAULT_VERTEX_2D, shader::DEFAULT_FRAGMENT_2D));
+
+  //  int length;
+  //  int format;
+  //  gl::getProgramiv(core.defaultShader2d.id, gl::GL_PROGRAM_BINARY_LENGTH, &length);
+  //  char[] data = mem::new_array(char, length);
+  //  gl::getProgramBinary(core.defaultShader2d.id, length, null, (GLenum*)&format, data);
+  //  File f = file::open("resources/shader_2d", "wb")!!;
+  //  f.write(data)!!;
+  //  f.close()!!;
+  //  io::printfn("%d",format);
+  //}
+  //if (!file::exists("resources/shader_3d"))
+    { set_default_shader3d(shader::compile(shader::DEFAULT_VERTEX_3D, shader::DEFAULT_FRAGMENT_3D)); }
 }
 fn void clean() @export("bythos_clean") {
   debug::info("Cleaning up Bythos");
