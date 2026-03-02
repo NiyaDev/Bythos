@@ -27,6 +27,10 @@ struct Bythos {
   struct time {
     double deltaTime, lastFrame;
   }
+  struct gpu {
+    String vendor, renderer, version, glsl;
+    int shaderBinaries;
+  }
   struct input {
     struct keyboard {
       int exitKey;
@@ -103,11 +107,23 @@ fn void init() @export("bythos_init") {
   debug::info(string::tformat("  > Screen resolution:  %d x %d", core.screen.x, core.screen.y));
   debug::info(string::tformat("  > Render resolution:  %d x %d", core.render.x, core.render.y));
 
+  //* -- Display Driver Info -- *//
+  core.gpu.vendor   = ((ZString)gl::getString(gl::GL_VENDOR)).str_view();
+  core.gpu.renderer = ((ZString)gl::getString(gl::GL_RENDERER)).str_view();
+  core.gpu.version  = ((ZString)gl::getString(gl::GL_VERSION)).str_view();
+  core.gpu.glsl     = ((ZString)gl::getString(gl::GL_SHADING_LANGUAGE_VERSION)).str_view();
+  gl::getIntegerv(gl::GL_NUM_PROGRAM_BINARY_FORMATS, &core.gpu.shaderBinaries);
+
+  debug::info("OpenGL device information");
+  debug::info(string::tformat("  > Vendor:    %s", core.gpu.vendor));
+  debug::info(string::tformat("  > Renderer:  %s", core.gpu.renderer));
+  debug::info(string::tformat("  > Version:   %s", core.gpu.version));
+  debug::info(string::tformat("  > GLSL:      %s", core.gpu.glsl));
+  if (core.gpu.shaderBinaries)
+    { debug::info("  > Compiled Shader binaries supported"); }
+
   //* -- Defaults -- *//
   // Shaders
-  //int supported;
-  //gl::getIntegerv(gl::GL_NUM_PROGRAM_BINARY_FORMATS, &supported);
-  
   //if (!file::exists("resources/shader_2d")) {
     set_default_shader2d(shader::compile(shader::DEFAULT_VERTEX_2D, shader::DEFAULT_FRAGMENT_2D));
 

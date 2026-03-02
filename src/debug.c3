@@ -64,8 +64,7 @@ fn void info(String err, args...) @export("debug_info") {
 macro void @benchmark(#a, #b) {
   time::Time start = time::now();
   #a;
-  io::print("[INFO]".color(color::GRAY));
-  io::printfn("  - Benchmark: %s - %sus", #b, time::now().diff_us(start));
+  io::printfn("[%s]  - %s: %s - %sus", "INFO".color(color::GRAY), "BENCHMARK".color(color::DARKGREEN), #b, time::now().diff_us(start));
 }
 
 fn String String.color(self, bythos::Color color) @export("debug_textcolor")

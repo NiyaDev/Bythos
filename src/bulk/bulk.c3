@@ -1,5 +1,5 @@
 
-module bulk;
+module bythos::bulk;
 import std::collections, std::io;
 import bythos, utility;
 
@@ -11,7 +11,15 @@ struct BulkEntry {
   String name, type;
   usz length, pointer;
   CompressionType compression;
-  char[] data;
+  BulkData data;
+}
+union BulkData {
+  char[] raw;
+  struct shaderBinary {
+    char[] binary;
+    String vendor, renderer, version, glsl;
+    uint format;
+  }
 }
 
 // Enums
@@ -61,14 +69,4 @@ fn BulkEntry get_entry(String filename, String dataname) @export("bulk_getentry"
 }
 
 // Saving Functions
-fn void BulkTable.save(&self, String filename) @export("bulk_save") {
-  File? file = file::open(filename, "wb");
-  if (catch file) { debug::error("Failed to open file", filename); return; }
-
-  file.write_long(self.len())!!;
-  
-  self.@each(; String key, BulkEntry ent) {
-    
-  };
-}
 

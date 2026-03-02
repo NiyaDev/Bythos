@@ -1,14 +1,13 @@
 
-module bythos::rectangle;
-import bythos::vector;
+module bythos;
 
-
+// Structs
 union Rectangle {
   struct { float x, y, w, h; }
   float[<4>] f;
 }
 
-
+// Functions
 fn bool Rectangle.equals(self, Rectangle rhs) @operator(==) @export("rect_equals")
   => (self.x == rhs.x && self.y == rhs.y && self.w == rhs.w && self.h == rhs.h);
 

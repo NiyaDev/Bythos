@@ -1,11 +1,5 @@
 
-module bythos::texture;
-import std::io;
-import std::collections;
-import spng;
-import opengl::gl;
-import bythos;
-
+module bythos;
 
 struct Texture {
   uint id;
@@ -21,6 +15,16 @@ enum ImageType {
   PNG,
   PPM,
 }
+
+
+module bythos::texture;
+import std::io, std::collections;
+import spng;
+import opengl::gl;
+import bythos;
+
+char[] def = $embed("../resources/texture.ppm");
+
 fn ImageType to_type(String type) {
   String[] split = type.tsplit(".");
   switch (split[split.len-1]) {
@@ -29,9 +33,6 @@ fn ImageType to_type(String type) {
     default:    return UNKNOWN;
   }
 }
-
-char[] def = $embed("../resources/texture.ppm");
-
 
 fn Texture load(String filename) @export("texture_load") {
   debug::info("Loading Texture.", filename);
@@ -205,7 +206,8 @@ fn void Texture.draw(&self,
   }; 
 
   // Update Vertex info
-  Mesh* mesh = bythos::core.storage.meshes.get_ref("texture")!!;
+  //Mesh* mesh = bythos::core.storage.meshes.get_ref("texture")!!;
+  Mesh* mesh = &bythos::core.quad;
   mesh.update_texcoords({topLeft, botLeft, botRight, topLeft, botRight, topRight});
 
   // Start shader

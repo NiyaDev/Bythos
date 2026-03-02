@@ -8,7 +8,7 @@ import opengl::gl;
 
 fn void basic() @test {
   debug::@benchmark(bythos::init(), "Core Init");
-
+  bythos::set_exitkey(sdl3::KEY_ESCAPE);
 
   bythos::@loop() {
     
