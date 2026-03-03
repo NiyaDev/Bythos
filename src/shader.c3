@@ -13,10 +13,8 @@ import opengl::gl;
 import bythos::debug;
 
 fn Shader load(String v, String f) @export("shader_load") {
-  char[] vs;
-  char[] fs;
-  if (file::exists(v)) vs = file::load_temp(v)!!;
-  if (file::exists(f)) fs = file::load_temp(f)!!; 
+  char[] vs = file::exists(v) ? file::load_temp(v)!! : {};
+  char[] fs = file::exists(f) ? file::load_temp(f)!! : {};
 
   return compile(vs, fs);
 }

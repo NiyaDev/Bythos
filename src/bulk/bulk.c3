@@ -15,6 +15,7 @@ struct BulkEntry {
 }
 union BulkData {
   char[] raw;
+  String str;
   struct shaderBinary {
     char[] binary;
     String vendor, renderer, version, glsl;
