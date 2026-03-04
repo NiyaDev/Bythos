@@ -61,7 +61,7 @@ fn HashMap{String, Material} load_from_memory(String data, String path = "") @ex
     // Iterate through each line
     String name;
     Material mat;
-    mat.shader = bythos::core.def_3d;
+    mat.shader = bythos::core.defaultShader3d;
     for (usz i = start; i < end; i++) {
       String[] entries = lines[i].tsplit(" ");
       switch (entries[0]) {
@@ -94,10 +94,10 @@ fn HashMap{String, Material} load_from_memory(String data, String path = "") @ex
 }
 fn Material new() @export("material_new") {
   Material output = {
-    bythos::core.def_3d,
+    bythos::core.defaultShader3d,
     {},
   };
-  output.maps[material::DIFFUSE] = {bythos::core.storage.textures.get("default")!!, {}};
+  output.maps[material::DIFFUSE] = {bythos::core.defaultTexture, {}};
 
   return output;
 }

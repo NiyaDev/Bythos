@@ -1,5 +1,5 @@
 
-module bythos;
+module utility;
 import std::io;
 
 
@@ -19,4 +19,3 @@ fn PathObject String.to_pathobj(&self) {
 fn String PathObject.full(&self) {
   return string::tformat("%s%s.%s", self.dir, self.name, self.type);
 }
-

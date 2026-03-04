@@ -1,6 +1,6 @@
 
 module bythos;
-import std::collections, std::io, std::math;
+import std::collections, std::io;
 
 struct Shader {
   uint id;
@@ -8,7 +8,7 @@ struct Shader {
 }
 
 module bythos::shader;
-import std::io;
+import std::io, std::math;
 import opengl::gl;
 import bythos::debug;
 
@@ -71,6 +71,39 @@ fn void Shader.clean(&self) @export("shader_clean") {
 
   debug::info(string::tformat("SHADER: [ID %s] Cleaned up", self.id));
   self.id = 0;
+}
+
+fn void Shader.set_uniform(&self, String key, any v) @export("shader_setuniform") {
+  //uint loc;
+  //if (self.locs.has_key(key)) {
+  //  loc = self.locs.get(key)!!;
+  //} else {
+  //  loc = gl::getUniformLocation(self.id, key);
+  //  self.locs.set(key, loc);
+  //}
+  uint loc = gl::getUniformLocation(self.id, key);
+
+  switch (v.type) {
+    case int:
+      gl::programUniform1i(self.id, loc, *(int*)v);
+    case float:
+      gl::programUniform1f(self.id, loc, *(float*)v);
+    case Vec2f:
+      Vec2f v2 = *(Vec2f*)v;
+      gl::programUniform2f(self.id, loc, v2.x, v2.y);
+    case Vec3f:
+      Vec3f v2 = *(Vec3f*)v;
+      gl::programUniform3f(self.id, loc, v2.x, v2.y, v2.z);
+    case Vec4f:
+      Vec4f v2 = *(Vec4f*)v;
+      gl::programUniform4f(self.id, loc, v2.x, v2.y, v2.z, v2.w);
+    case Matrix4f:
+      gl::programUniformMatrix4fv(self.id, loc, 1, gl::GL_FALSE, (float*)v);
+    case Texture:
+      gl::programUniform1i(self.id, loc, ((Texture*)v).id);
+    default:
+      debug::error("Attempted to set uniform with unimplemented type.", v.type);
+  }
 }
 
 const char[] DEFAULT_VERTEX_3D = 

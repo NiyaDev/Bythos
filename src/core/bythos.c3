@@ -20,9 +20,11 @@ struct Bythos {
 
   Vec2i display, screen, render;
   uint framebuffer, renderbuffer;
-  //Mesh quad;
+  Mesh quad;
 
   Shader defaultShader2d, defaultShader3d;
+  Texture defaultTexture;
+  Mesh defaultMesh, textureMesh;
 
   struct time {
     double deltaTime, lastFrame;
@@ -119,10 +121,11 @@ fn void init() @export("bythos_init") {
   debug::info(string::tformat("  > Renderer:  %s", core.gpu.renderer));
   debug::info(string::tformat("  > Version:   %s", core.gpu.version));
   debug::info(string::tformat("  > GLSL:      %s", core.gpu.glsl));
-  if (core.gpu.shaderBinaries)
-    { debug::info("  > Compiled Shader binaries supported"); }
+  if (core.gpu.shaderBinaries) { debug::info("  > Compiled Shader binaries supported"); }
 
   //* -- Defaults -- *//
+  // Texture
+  set_default_texture(texture::load_from_memory(texture::def, "PPM"));
   // Shaders
   //if (!file::exists("resources/shader_2d")) {
     set_default_shader2d(shader::compile(shader::DEFAULT_VERTEX_2D, shader::DEFAULT_FRAGMENT_2D));
@@ -139,6 +142,10 @@ fn void init() @export("bythos_init") {
   //}
   //if (!file::exists("resources/shader_3d"))
     { set_default_shader3d(shader::compile(shader::DEFAULT_VERTEX_3D, shader::DEFAULT_FRAGMENT_3D)); }
+  // Meshes
+  set_default_mesh(mesh::new(CUBE));
+  set_default_mesh(mesh::new(PLANE));
+  set_default_texturemesh(mesh::new(PLANE));
 }
 fn void clean() @export("bythos_clean") {
   debug::info("Cleaning up Bythos");
@@ -147,6 +154,8 @@ fn void clean() @export("bythos_clean") {
   // Keybindings
   keybinds.free();
   free(keybinds);
+  // Textures
+  core.defaultTexture.clean();
   // Shaders
   core.defaultShader2d.clean();
   core.defaultShader3d.clean();
