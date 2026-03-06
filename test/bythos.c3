@@ -14,7 +14,7 @@ fn void basic() @test {
     
   };
 
-  clean();
+  debug::@benchmark(clean(), "Core cleanup");
   assert(false);
 }
 

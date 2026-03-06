@@ -94,7 +94,7 @@ fn void init() @export("bythos_init") {
   core.display = {r.w, r.h};
 
   //* -- OpenGL -- *//
-  core.context = sdlgl::createContext(core.window);
+core.context = sdlgl::createContext(core.window);
   if (!core.context) debug::fatal("Failed to create OpenGL context", sdl3::getError());
   if (!sdlgl::makeCurrent(core.window, core.context)) debug::fatal("Failed to make GLContext current", sdl3::getError());
   int? result = opengl::init((gl::GLLoadFn)&sdlgl::getProcAddress);
@@ -143,9 +143,33 @@ fn void init() @export("bythos_init") {
   //if (!file::exists("resources/shader_3d"))
     { set_default_shader3d(shader::compile(shader::DEFAULT_VERTEX_3D, shader::DEFAULT_FRAGMENT_3D)); }
   // Meshes
-  set_default_mesh(mesh::new(CUBE));
-  set_default_mesh(mesh::new(PLANE));
-  set_default_texturemesh(mesh::new(PLANE));
+  core.quad = mesh::new(PLANE);
+  core.quad.material.shader = shader::compile(shader::FB_VERTEX, shader::FB_FRAGMENT);
+  core.quad.material.shader.set_uniform("screenTexture", &&0);
+  //set_default_quad(quad);
+  Mesh cube = mesh::new(CUBE);
+  cube.material.shader = core.defaultShader3d;
+  set_default_mesh(cube);
+  Mesh textureMesh = mesh::new(PLANE);
+  cube.material.shader = core.defaultShader2d;
+  set_default_texturemesh(textureMesh);
+
+  //* -- Framebuffer -- *//
+  gl::genFramebuffers(1, &core.framebuffer);
+  gl::bindFramebuffer(gl::GL_FRAMEBUFFER, core.framebuffer);
+
+  core.quad.material.maps[material::DIFFUSE].texture = texture::new(core.render.x, core.render.y);
+  gl::framebufferTexture2D(gl::GL_FRAMEBUFFER, gl::GL_COLOR_ATTACHMENT0, gl::GL_TEXTURE_2D,
+                           core.quad.material.maps[material::DIFFUSE].texture.id, 0);
+  gl::genRenderbuffers(1, &core.renderbuffer);
+  gl::bindRenderbuffer(gl::GL_RENDERBUFFER, core.renderbuffer);
+  gl::renderbufferStorage(gl::GL_RENDERBUFFER, gl::GL_DEPTH24_STENCIL8,
+                          core.render.x, core.render.y);
+  gl::framebufferRenderbuffer(gl::GL_FRAMEBUFFER,  gl::GL_DEPTH_STENCIL_ATTACHMENT,
+                              gl::GL_RENDERBUFFER, core.renderbuffer);
+  if (gl::checkFramebufferStatus(gl::GL_FRAMEBUFFER) != gl::GL_FRAMEBUFFER_COMPLETE)
+    { debug::fatal("Failed to initialize framebuffer"); }
+  gl::bindFramebuffer(gl::GL_FRAMEBUFFER, 0);
 }
 fn void clean() @export("bythos_clean") {
   debug::info("Cleaning up Bythos");
@@ -159,6 +183,10 @@ fn void clean() @export("bythos_clean") {
   // Shaders
   core.defaultShader2d.clean();
   core.defaultShader3d.clean();
+  // Meshes
+  core.defaultMesh.clean(false);
+  core.textureMesh.clean(false);
+  core.quad.clean();
 
   //* -- SDL3 and OpenGL -- *//
   sdlgl::destroyContext(core.context);

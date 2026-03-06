@@ -19,7 +19,7 @@ alias Indices = uint[<3>];
 
 
 module bythos::mesh;
-import std::collections, std::io;
+import std::collections, std::io, std::math;
 import opengl::gl;
 import bythos, utility;
 
@@ -112,15 +112,16 @@ fn Mesh new(MeshType type) @export("mesh_new") {
 
   return output;
 }
-fn void Mesh.clean(&self, String name = "") @export("mesh_cleanmesh") {
-  debug::info("Cleaning up mesh", name);
+fn void Mesh.clean(&self, bool cleanMat = false) @export("mesh_cleanmesh") {
+  debug::info(string::tformat("MESH: [ID %d] Cleaned up", self.vao));
+
   if (self.vertices.len > 0)
     { free(self.vertices); }
   if (self.indices.len > 0)
     { free(self.indices); }
   self.delete();
-
-  self.material.clean();
+  
+  if (cleanMat) self.material.clean();
 }
 
 fn void Mesh.upload(&self) {
@@ -151,6 +152,54 @@ fn void Mesh.delete(&self) {
   gl::deleteVertexArrays(1, &self.vao);
   gl::deleteBuffers(1, &self.vbo);
   gl::deleteBuffers(1, &self.ebo);
+}
+
+fn void Mesh.draw(&self,
+    Vec3f position = {},
+    Vec3f scale = {1,1,1},
+    Vec3f rotation = {0,0,0}) @export("mesh_draw") {
+  if (self.material.shader.id != 0) {
+    gl::useProgram(self.material.shader.id);
+    gl::bindTexture(gl::GL_TEXTURE_2D, self.material.maps[material::DIFFUSE].texture.id);
+
+    // Set uniforms
+    Matrix4f view = camera::get_matrix();
+    self.material.shader.set_uniform("view", &view);
+    Matrix4f model = MATRIX4F_IDENTITY
+        .translate(position)
+        .rotate_z(rotation.z)
+        .rotate_y(rotation.y)
+        .rotate_x(rotation.x)
+        .scale(scale)
+        .transpose();
+    self.material.shader.set_uniform("model",&model);
+  }
+
+  // Draw
+  if (self.indices.len == 0) {
+    gl::bindVertexArray(self.vao);
+    gl::drawArrays(gl::GL_TRIANGLES, 0, self.vertices.len);
+  } else {
+    gl::bindBuffer(gl::GL_ELEMENT_ARRAY_BUFFER, self.ebo);
+    gl::drawElements(gl::GL_TRIANGLES, 6, gl::GL_UNSIGNED_INT, null);
+  }
+  gl::bindVertexArray(0);
+}
+fn void Mesh.draw_instanced(&self, Matrix4f[] mats,) {
+  if (self.material.shader.id == 0)
+    { debug::warning("Cannot draw a mesh instanced with no shader."); return; }
+
+  gl::useProgram(self.material.shader.id);
+  gl::bindTexture(gl::GL_TEXTURE_2D, self.material.maps[material::DIFFUSE].texture.id);
+  self.material.shader.set_uniform("view", &&camera::get_matrix());
+
+  // Draw each memeber
+  gl::bindVertexArray(self.vao);
+  for (int i; i < mats.len; i++) {
+    self.material.shader.set_uniform("model", &mats[i]);
+    gl::drawArrays(gl::GL_TRIANGLES, 0, self.vertices.len);
+  }
+  gl::bindVertexArray(0);
 }
 
 
