@@ -10,9 +10,13 @@ fn void basic() @test {
   debug::@benchmark(bythos::init(), "Core Init");
   bythos::set_exitkey(sdl3::KEY_ESCAPE);
 
+  Mesh m = mesh::new(CUBE);
+
   bythos::@loop() {
-    
+    m.draw();
   };
+
+  m.clean();
 
   debug::@benchmark(clean(), "Core cleanup");
   assert(false);

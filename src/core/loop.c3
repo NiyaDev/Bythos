@@ -10,6 +10,8 @@ macro void @loop(; @body()) {
   	double currentFrame = ((double)sdl3::getTicks() / 1000);
   	core.time.deltaTime = currentFrame - core.time.lastFrame;
   	core.time.lastFrame = currentFrame;
+  	//if (core.time.deltaTime < 0.001) continue;
+    //io::printfn("%f", core.time.deltaTime);
 
   	//* -- Keys -- *//
   	for (int i; i < core.input.keyboard.currentKeyState.len; i++) {

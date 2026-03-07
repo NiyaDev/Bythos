@@ -75,7 +75,7 @@ fn void init() @export("bythos_init") {
   if (options.has_key("render_resolution")) {
     float res = options.as_float("render_resolution");
     core.render = {(int)(core.screen.x * res), (int)(core.screen.y * res)};
-  } else { core.screen = {1280, 720}; }
+  } else { core.render = core.screen; }
   // Keybinds
   keybinds = mem::new(HashMap{String, Keybind});
   keybinds.set("test", {Scancode.A, Scancode.UNKNOWN});

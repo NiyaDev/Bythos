@@ -1,7 +1,5 @@
 
-module bythos::camera;
-import std::math;
-import bythos;
+module bythos;
 
 
 struct Camera {
@@ -17,7 +15,12 @@ Camera main @export("camera_main") = {
   0, 0,
 };
 
-fn void update(Camera* cam = &main) @export("camera_update") {
+
+module bythos::camera;
+import std::math;
+import bythos;
+
+fn void update(Camera* cam = &bythos::main) @export("camera_update") {
   if ((cam.rotation.close(cam.rotTarget, 5))) {
     float dir;
     if ((cam.rotTarget - cam.rotation) > 0) dir = +1;
@@ -37,10 +40,10 @@ fn void update(Camera* cam = &main) @export("camera_update") {
   }
 }
 
-fn Matrix4f get_matrix(Camera* cam = &main) @export("camera_getmatrix")
+fn Matrix4f get_matrix(Camera* cam = &bythos::main) @export("camera_getmatrix")
   => matrix::look_at{float}(cam.target.rotate(cam.distance, cam.rotation), cam.target, cam.up).transpose();
-fn void rotate(float target, Camera* cam = &main) @export("camera_rotate")
+fn void rotate(float target, Camera* cam = &bythos::main) @export("camera_rotate")
   => cam.target += target;
-fn bool is_rotating(Camera* cam = &main) @export("camera_isrotating")
+fn bool is_rotating(Camera* cam = &bythos::main) @export("camera_isrotating")
   => cam.rotation != cam.rotTarget;
 
