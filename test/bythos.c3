@@ -16,7 +16,7 @@ fn void basic() @test {
     m.draw();
   };
 
-  m.clean();
+  //m.clean();
 
   debug::@benchmark(clean(), "Core cleanup");
   assert(false);

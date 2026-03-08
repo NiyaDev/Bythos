@@ -76,6 +76,7 @@ fn void init() @export("bythos_init") {
     float res = options.as_float("render_resolution");
     core.render = {(int)(core.screen.x * res), (int)(core.screen.y * res)};
   } else { core.render = core.screen; }
+  options.free();
   // Keybinds
   keybinds = mem::new(HashMap{String, Keybind});
   keybinds.set("test", {Scancode.A, Scancode.UNKNOWN});
@@ -94,7 +95,7 @@ fn void init() @export("bythos_init") {
   core.display = {r.w, r.h};
 
   //* -- OpenGL -- *//
-core.context = sdlgl::createContext(core.window);
+  core.context = sdlgl::createContext(core.window);
   if (!core.context) debug::fatal("Failed to create OpenGL context", sdl3::getError());
   if (!sdlgl::makeCurrent(core.window, core.context)) debug::fatal("Failed to make GLContext current", sdl3::getError());
   int? result = opengl::init((gl::GLLoadFn)&sdlgl::getProcAddress);
