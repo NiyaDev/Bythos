@@ -1,15 +1,15 @@
 
 module bythos::debug;
 import std::io, std::os, std::thread, std::time;
-import sdl3;
-import bythos::color;
+import bythos;
 
-
+//* -- Globals -- *//
 String recentText;
 uint timer = 0;
 bool printing = false;
 LogLevel logLevel = ALL;
 
+//* -- Enumerations -- *//
 enum LogLevel {
   ALL,
   WARNING,
@@ -17,6 +17,7 @@ enum LogLevel {
   NONE,
 }
 
+//* -- Functions -- *//
 fn void fatal(String err, args...) @export("debug_fatal") {
   while (printing) thread::sleep_ms(1);
 
@@ -36,7 +37,7 @@ fn void error(String err, args...) @export("debug_error") {
   else              { io::printfn("[%s] - %s",    "ERROR".color(color::RED), err); }
   printing = false;
 
-  recentText = err;
+  //recentText = err;
   timer = 100;
 }
 fn void warning(String err, args...) @export("debug_warning") {
@@ -48,7 +49,7 @@ fn void warning(String err, args...) @export("debug_warning") {
   else              { io::printfn("[%s]  - %s",    "WARN".color(color::ORANGE), err); }
   printing = false;
 
-  recentText = err;
+  //recentText = err;
   timer = 100;
 }
 fn void info(String err, args...) @export("debug_info") {
@@ -61,12 +62,15 @@ fn void info(String err, args...) @export("debug_info") {
   printing = false;
 }
 
+fn String String.color(self, bythos::Color color) @export("debug_textcolor")
+  => string::tformat("\e[38;2;%d;%d;%dm%s\e[0m", color.r, color.g, color.b, self);
+fn void set_log_level(LogLevel level) @export("debug_setloglevel")
+  => logLevel = level;
+
+//* -- Macros -- *//
 macro void @benchmark(#a, #b) {
   time::Time start = time::now();
   #a;
   io::printfn("[%s]  - %s: %s - %sus", "INFO".color(color::GRAY), "BENCHMARK".color(color::DARKGREEN), #b, time::now().diff_us(start));
 }
-
-fn String String.color(self, bythos::Color color) @export("debug_textcolor")
-  => string::tformat("\e[38;2;%d;%d;%dm%s\e[0m", color.r, color.g, color.b, self);
 

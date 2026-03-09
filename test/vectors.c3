@@ -3,15 +3,12 @@ import std::io;
 import std::math;
 import bythos;
 
-
-
 const Matrix4f TRANSFORM_TEST = {
   1,0,0,0,
   0,1,0,0,
   0,0,1,0,
   1,1,1,1,
 };
-
 
 fn void vec2f() @test {
   { // Arith overloads
@@ -278,4 +275,5 @@ fn void vec4f() @test {
     assert((Vec4f){10,10,10,10}.invert() == {0.1,0.1,0.1,0.1}, "Invert failed");
   }
 }
+
 

@@ -2,6 +2,7 @@
 
 clear
 c3c test
+# c3c benchmark
 c3c build
 
 if [ ! -d "bythos.c3l/linked-libs/" ]; then

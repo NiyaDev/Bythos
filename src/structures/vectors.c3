@@ -2,10 +2,9 @@
 module bythos;
 import std::math;
 
-// Vector2
+//* -- Vector2 -- *//
 alias Vec2f = float[<2>];
 alias Vec2i = int[<2>];
-
 
 fn float Vec2i.ratio(self) @export("vector2_ration")
   => (float)self.x / (float)self.y;
@@ -67,10 +66,9 @@ fn Vec2f Vec2f.clamp_mag(self, float min, float max) @export("vector2_clamp_mag"
 }
 
 
-// Vector3
+//* -- Vector3 -- *//
 alias Vec3f = float[<3>];
 alias Vec3i = int[<3>];
-
 
 fn Color Vec3f.color(self) @export("vector3_color") {
   Color result = {0,0,0,255};
@@ -165,7 +163,7 @@ fn bool Vec3f.close(self, Vec3f v2, float amount) @export("vector_close")
   => self.x.close(v2.x, amount) && self.y.close(v2.y, amount) && self.z.close(v2.z, amount);
 
 
-// Vector4
+//* -- Vector4 -- *//
 alias Vec4f = float[<4>];
 alias Vec4i = int[<4>];
 
@@ -186,4 +184,5 @@ fn Vec4f Vec4f.min(self, Vec4f min) @export("vector4_min")
   => {math::min(self.x,min.x), math::min(self.y,min.y), math::min(self.z,min.z), math::min(self.w,min.w)};
 fn Vec4f Vec4f.max(self, Vec4f max) @export("vector4_max")
   => {math::max(self.x,max.x), math::max(self.y,max.y), math::max(self.z,max.z), math::max(self.w,max.w)};
+
 

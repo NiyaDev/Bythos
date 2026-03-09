@@ -2,12 +2,12 @@
 module bythos;
 import std::math;
 
-
+//* -- Types -- *//
 alias Color = char[<4>];
 
+//* -- Functions -- *//
 fn Color Color.multiply(self, float f) @export("color_multiply")
   => (Color){(char)(self.r*f), (char)(self.g*f), (char)(self.b*f), (char)self.a};
-
 fn uint Color.to_int(self) @export("color_toint")
   => self.r << 24 | self.g << 16 | self.b << 8 | self.a;
 fn Color uint.to_color(self) @export("color_fromint")
@@ -33,7 +33,6 @@ fn Vec3f Color.to_hsv(self) @export("color_tohsv") {
 }
 fn Vec4f Color.normalize(self) @export("color_normalize")
 	=> (Vec4f){(float)self.r / 255,	(float)self.g / 255,	(float)self.b / 255,	(float)self.a / 255};
-
 fn Color Color.fade(self, float alpha) @export("color_fade")
   => (Color){self.r,self.g,self.b,(char)(255*alpha)};
 fn Color Color.tint(self, Color tint) @export("color_tint")
