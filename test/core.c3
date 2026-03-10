@@ -8,7 +8,10 @@ fn void window() @test {
   debug::@benchmark("Initialization")
     { bythos::init(); };
 
+  Mesh m = mesh::new(TRI);
+
   bythos::@loop() {
+    m.draw();
   };
 
   bythos::clean();

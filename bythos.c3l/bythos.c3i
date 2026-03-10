@@ -1,27 +1,38 @@
 
 module bythos;
-import sdl3;
-alias Vec2i = int[<2>];
-struct Bythos {
-  Window* window;
-  GLContext* context;
 
-  Vec2i display, screen, render;
-
-  struct time {
-    double deltaTime, lastFrame;
-  }
-  struct gpu {
-    String vendor, renderer, version, glsl;
-    int shaderBinaries;
-  }
-}
 //* -- Bythos -- *//
 extern const String VERSION @extern("version");
-extern Bythos core @extern("core");
+
+extern fn void run_timer()    @extern("bythos_runtimer")    @private;
+extern fn bool parse_events() @extern("bythos_parseevents") @private;
+extern fn void frame_delay()  @extern("bythos_framedelay")  @private;
+extern fn void draw_start()   @extern("bythos_drawstart")   @private;
+extern fn void draw_end()     @extern("bythos_drawend")     @private;
 
 extern fn void init()  @extern("bythos_init");
 extern fn void clean() @extern("bythos_clean");
 
-macro void @loop(; @body()) {@body();}
+macro void @loop(; @body()) {
+  while (true) {
+    //* -- Timing -- *//
+    run_timer();
+
+  	//* -- Events -- *//
+  	if (parse_events()) break;
+
+  	//* -- Body -- *//
+  	draw_start();
+    @body();
+  	draw_end();
+
+  	//* -- Frame delay -- *//
+  	frame_delay();
+  }
+}
+
+//* -- Mesh -- *//
+extern fn Mesh new(MeshType type) @extern("mesh_new");
+extern fn void Mesh.clean(&self)  @extern("mesh_cleanmesh");
+extern fn void Mesh.draw(&self, Vec3f position = {}, Vec3f scale = {1,1,1}, Vec3f rotation = {0,0,0}) @extern("mesh_draw");
 
