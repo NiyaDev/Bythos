@@ -15,8 +15,8 @@ fn void draw_start() {
 fn void draw_end() {
   //gl::bindFramebuffer(gl::GL_FRAMEBUFFER, 0);
   //gl::disable(gl::GL_DEPTH_TEST);
-  //gl::clearColor(0,0.5,0,1);
-  //gl::clear(gl::GL_COLOR_BUFFER_BIT);
+  gl::clearColor(0,0.5,0,1);
+  gl::clear(gl::GL_COLOR_BUFFER_BIT);
   //gl::viewport(0, 0, core.screen.x, core.screen.y);
   
   //core.quad.draw();

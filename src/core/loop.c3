@@ -1,11 +1,12 @@
 
 module bythos;
+import std::io;
 import sdl3;
 
 //* -- Macros -- *//
 macro void @loop(; @body()) {
   while (true) {
-    //* -- Deltatime -- *//
+    //* -- Timing -- *//
     double currentFrame = ((double)sdl3::getTicks() / 1000);
   	core.time.deltaTime = currentFrame - core.time.lastFrame;
   	core.time.lastFrame = currentFrame;
@@ -27,6 +28,10 @@ macro void @loop(; @body()) {
   	draw_start();
     @body();
   	draw_end();
+
+  	if (core.time.deltaTime < core.time.targetFrametime) {
+      sdl3::delay((uint)(core.time.targetFrametime - core.time.deltaTime));
+  	}
   }
 }
 

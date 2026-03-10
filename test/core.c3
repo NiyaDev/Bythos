@@ -1,11 +1,15 @@
 
 import bythos;
+import std::io;
+import sdl3;
 
 //* -- Tests -- *//
 fn void window() @test {
-  bythos::init();
+  debug::@benchmark("Initialization")
+    { bythos::init(); };
 
-  bythos::@loop() {};
+  bythos::@loop() {
+  };
 
   bythos::clean();
   assert(false);

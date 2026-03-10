@@ -68,9 +68,9 @@ fn void set_log_level(LogLevel level) @export("debug_setloglevel")
   => logLevel = level;
 
 //* -- Macros -- *//
-macro void @benchmark(#a, #b) {
+macro void @benchmark(#b; @body()) {
   time::Time start = time::now();
-  #a;
+  @body();
   io::printfn("[%s]  - %s: %s - %sus", "INFO".color(color::GRAY), "BENCHMARK".color(color::DARKGREEN), #b, time::now().diff_us(start));
 }
 

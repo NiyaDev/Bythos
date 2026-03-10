@@ -1,11 +1,27 @@
 
 module bythos;
+import sdl3;
+alias Vec2i = int[<2>];
+struct Bythos {
+  Window* window;
+  GLContext* context;
 
+  Vec2i display, screen, render;
+
+  struct time {
+    double deltaTime, lastFrame;
+  }
+  struct gpu {
+    String vendor, renderer, version, glsl;
+    int shaderBinaries;
+  }
+}
 //* -- Bythos -- *//
 extern const String VERSION @extern("version");
+extern Bythos core @extern("core");
 
 extern fn void init()  @extern("bythos_init");
 extern fn void clean() @extern("bythos_clean");
 
-macro void @loop(; @body()) {}
+macro void @loop(; @body()) {@body();}
 
