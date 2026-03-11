@@ -16,6 +16,7 @@
   - Unit Tests
   - Bindings
   - Save/Load from file
+    - Both text files for compilation and binaries
     - Need Bulks for that
 - Mesh
   - All functions

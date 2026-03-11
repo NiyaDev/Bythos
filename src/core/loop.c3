@@ -202,7 +202,7 @@ fn bool parse_events() @export("bythos_parseevents") {
   	  case RENDER_DEVICE_LOST:
   	    break;
 
-  	  default: debug::info("Unhandled event.", event.type);
+  	  default: //debug::info("Unhandled event.", event.type);
   	}
   }
   return false;

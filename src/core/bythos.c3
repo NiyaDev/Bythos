@@ -1,6 +1,6 @@
 
 module bythos;
-import std::collections, std::io;
+import std::collections, std::io, std::math;
 import sdl3;
 import opengl::gl;
 
@@ -21,6 +21,15 @@ struct Bythos {
 
   Vec2i display, screen, render;
 
+  uint framebuffer, renderbuffer;
+  Mesh quad;
+  Material quadMat;
+
+  Shader defaultShader2d, defaultShader3d;
+  //Texture defaultTexture;
+  Mesh defaultMesh, textureMesh;
+  Material defaultMaterial;
+
   struct time {
     double deltaTime, lastFrame;
     double targetFrametime;
@@ -36,8 +45,10 @@ fn void init() @export("bythos_init") {
   debug::info("Initializing Bythos version", VERSION);
 
   //* -- Loading Options -- *//
-  core.screen = {1280,720};
-  core.render = {1280,720};
+  core.screen = {720,720};
+  core.render = {720,720};
+  //core.screen = {1280,720};
+  //core.render = {1280,720};
   core.time.targetFrametime = 1000 / 60;
 
   //* -- SDL3 -- *//
@@ -61,6 +72,7 @@ fn void init() @export("bythos_init") {
   gl::enable(gl::GL_DEPTH_TEST);
   gl::enable(gl::GL_BLEND);
   gl::blendFunc(gl::GL_SRC_ALPHA, gl::GL_ONE_MINUS_SRC_ALPHA);
+  io::printfn("%s",Vertex.sizeof);
 
   //* -- Screen Info -- *//
   debug::info("Display device initialized successfully");
@@ -81,9 +93,30 @@ fn void init() @export("bythos_init") {
   debug::info(string::tformat("  > Version:   %s", core.gpu.version));
   debug::info(string::tformat("  > GLSL:      %s", core.gpu.glsl));
   if (core.gpu.shaderBinaries) { debug::info("  > Compiled Shader binaries supported"); }
+
+  //* -- Defualts -- *//
+  core.defaultShader2d = shader::compile(shader::DEFAULT_VERTEX_2D, shader::DEFAULT_FRAGMENT_2D);
+  core.defaultShader2d.set_uniform("screensize", &&(Vec2f){(float)core.render.x, (float)core.render.y});
+  core.defaultShader3d = shader::compile(shader::DEFAULT_VERTEX_3D, shader::DEFAULT_FRAGMENT_3D);
+  core.defaultShader3d.set_uniform("projection", &&matrix::perspective{float}(70 * math::PI / 180, (float)core.render.x / (float)core.render.y, 0.1, 100).transpose());
+  debug::info("3D shader: ", core.defaultShader3d.id);
+  core.quad = mesh::new(PLANE);
+  core.quadMat = {shader::compile(shader::FB_VERTEX, shader::FB_FRAGMENT), {}};
+  core.quadMat.shader.set_uniform("screenTexture", &&0);
+  core.defaultMesh = mesh::new(CUBE);
+  core.textureMesh = mesh::new(PLANE);
+  core.defaultMaterial = {core.defaultShader3d, {}};
 }
 fn void clean() @export("bythos_clean") {
   //* -- Freeing defaults -- *//
+  core.defaultShader2d.clean();
+  core.defaultShader3d.clean();
+  core.quad.clean();
+  core.quadMat.clean();
+  core.defaultMesh.clean();
+  core.textureMesh.clean();
+  core.defaultMaterial.clean();
+
   //* -- SDL3 and OpenGL -- *//
   sdlgl::destroyContext(core.context);
   core.context = null;
