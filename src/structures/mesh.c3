@@ -18,7 +18,7 @@ alias Indices = uint[<3>];
 
 
 module bythos::mesh;
-import std::math;
+import std::math, std::io;
 import opengl::gl;
 import bythos;
 
@@ -72,15 +72,14 @@ fn void Mesh.upload(&self) {
   gl::bindVertexArray(self.vao);
   gl::bindBuffer(gl::GL_ARRAY_BUFFER, self.vbo);
   gl::bufferData(gl::GL_ARRAY_BUFFER, self.vertices.len * Vertex.sizeof, self.vertices, gl::GL_STATIC_DRAW);
-  debug::info("",self.vertices.len * Vertex.sizeof);
   
-  gl::vertexAttribPointer(0, 3, gl::GL_FLOAT, gl::GL_FALSE, Vertex.sizeof, VERTEX_POSITION);
+  gl::vertexAttribPointer(0, 3, gl::GL_FLOAT, gl::GL_FALSE, bythos::Vertex.sizeof, (void*)0);
   gl::enableVertexAttribArray(0);
-  gl::vertexAttribPointer(1, 3, gl::GL_FLOAT, gl::GL_FALSE, Vertex.sizeof, VERTEX_NORMAL);
+  gl::vertexAttribPointer(1, 3, gl::GL_FLOAT, gl::GL_FALSE, bythos::Vertex.sizeof, (void*)12);
   gl::enableVertexAttribArray(1);
-  gl::vertexAttribPointer(2, 2, gl::GL_FLOAT, gl::GL_FALSE, Vertex.sizeof, VERTEX_TEXCOORD);
+  gl::vertexAttribPointer(2, 2, gl::GL_FLOAT, gl::GL_FALSE, bythos::Vertex.sizeof, (void*)24);
   gl::enableVertexAttribArray(2);
-  gl::vertexAttribPointer(3, 4, gl::GL_FLOAT, gl::GL_FALSE, Vertex.sizeof, VERTEX_COLOR);
+  gl::vertexAttribPointer(3, 4, gl::GL_FLOAT, gl::GL_FALSE, bythos::Vertex.sizeof, (void*)32);
   gl::enableVertexAttribArray(3);
 
   if (self.indices.len > 0) {
@@ -98,21 +97,16 @@ fn void Mesh.delete(&self) {
   gl::deleteBuffers(1, &self.ebo);
 }
 
+/*
 fn void Mesh.draw(&self, Material mat = bythos::core.defaultMaterial, Vec3f position = {}, Vec3f scale = {1,1,1}, Vec3f rotation = {0,0,0}) @export("mesh_draw") {
   if (mat.shader.id != 0) {
     gl::useProgram(mat.shader.id);
-    debug::info("",mat.shader.id);
     //gl::bindTexture(gl::GL_TEXTURE_2D, mat.maps[material::DIFFUSE].texture.id);
 
     // Set uniforms
-    Matrix4f view = camera::get_matrix();
-    mat.shader.set_uniform("view", &view);
-    Matrix4f model = MATRIX4F_IDENTITY
-        .translate(position)
-        .rotate_z(rotation.z).rotate_y(rotation.y).rotate_x(rotation.x)
-        .scale(scale)
-        .transpose();
-    mat.shader.set_uniform("model",&model);
+    mat.shader.set_uniform("projection", &&matrix::perspective{float}(70 * (math::PI / 180), 1.777, 0.1, 100).transpose());
+    mat.shader.set_uniform("view", &&matrix::look_at{float}({0,5,5}, {0,0,0}, {0,1,0}).transpose());
+    mat.shader.set_uniform("model",&&MATRIX4F_IDENTITY.translate(position).rotate_z(rotation.z).rotate_y(rotation.y).rotate_x(rotation.x).scale(scale).transpose());
   }
 
   //* -- Draw -- *//
@@ -123,7 +117,16 @@ fn void Mesh.draw(&self, Material mat = bythos::core.defaultMaterial, Vec3f posi
     gl::bindBuffer(gl::GL_ELEMENT_ARRAY_BUFFER, self.ebo);
     gl::drawElements(gl::GL_TRIANGLES, self.indices.len * 3, gl::GL_UNSIGNED_INT, null);
   }
-  gl::bindVertexArray(0);
+  //gl::bindVertexArray(0);
+}
+*/
+fn void Mesh.draw(&self, Material mat = bythos::core.defaultMaterial, Vec3f position = {}, Vec3f scale = {1,1,1}, Vec3f rotation = {0,0,0}) @export("mesh_draw") {
+  gl::useProgram(mat.shader.id);
+  gl::uniformMatrix4fv(gl::getUniformLocation(mat.shader.id, "view"),  1, gl::GL_FALSE, (float*)&&matrix::look_at{float}({0,5,5}, {0,0,0}, {0,1,0}).transpose());
+  gl::uniformMatrix4fv(gl::getUniformLocation(mat.shader.id, "model"), 1, gl::GL_FALSE, (float*)&&MATRIX4F_IDENTITY.translate(position).rotate_z(rotation.z).rotate_y(rotation.y).rotate_x(rotation.x).scale(rotation).transpose());
+
+  gl::bindVertexArray(self.vao);
+  gl::drawArrays(gl::GL_TRIANGLES, 0, mesh::BASIC_CUBE.len);
 }
 fn void Mesh.draw_instanced(&self, Matrix4f[] mats, Material mat = bythos::core.defaultMaterial) {
   gl::useProgram(mat.shader.id);

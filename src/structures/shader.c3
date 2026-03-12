@@ -22,13 +22,13 @@ fn Shader load(String v, String f) @export("shader_load") {
 
   return compile(vs, fs);
 }
-fn Shader compile(char[] v = {}, char[] f = {}) @export("shader_compile") {
+fn Shader compile(char[] v, char[] f) @export("shader_compile") {
   int result;
   uint program = gl::createProgram();
 
   //* -- Vertex -- *//
   uint vertexShader = gl::createShader(gl::GL_VERTEX_SHADER);
-  gl::shaderSource(vertexShader, 1, v.len > 0 ? &&((char*)v) : &&((char*)FB_VERTEX), null);
+  gl::shaderSource(vertexShader, 1, &&((char*)v), null);
   gl::compileShader(vertexShader);
   gl::getShaderiv(vertexShader, gl::GL_COMPILE_STATUS, &result);
   if (!result) {
@@ -36,12 +36,11 @@ fn Shader compile(char[] v = {}, char[] f = {}) @export("shader_compile") {
     gl::getShaderInfoLog(vertexShader, 512, null, (char*)log);
     debug::error("SHADER: Failed to compile vertex shader\n", log);
     free(log);
-  } else
-    { gl::attachShader(program, vertexShader); }
+  } else { gl::attachShader(program, vertexShader); }
 
   //* -- Fragment -- *//
   uint fragmentShader = gl::createShader(gl::GL_FRAGMENT_SHADER);
-  gl::shaderSource(fragmentShader, 1, f.len > 0 ? &&((char*)f) : &&((char*)FB_FRAGMENT), null);
+  gl::shaderSource(fragmentShader, 1, &&((char*)f), null);
   gl::compileShader(fragmentShader);
   gl::getShaderiv(fragmentShader, gl::GL_COMPILE_STATUS, &result);
   if (!result) {
@@ -49,8 +48,7 @@ fn Shader compile(char[] v = {}, char[] f = {}) @export("shader_compile") {
     gl::getShaderInfoLog(fragmentShader, 512, null, (char*)log);
     debug::error("SHADER: Failed to compile fragment shader\n", log);
     free(log);
-  } else
-    { gl::attachShader(program, fragmentShader); }
+  } else { gl::attachShader(program, fragmentShader); }
 
   //* -- Program -- *//
   gl::linkProgram(program);
@@ -122,7 +120,6 @@ const char[] DEFAULT_VERTEX_3D =
   "uniform mat4 view;\n"
   "uniform mat4 projection;\n\n"
   "void main() {\n"
-  //"  gl_Position = vec4(aPos.xy, aPos.z, 1.0 + aPos.z);\n"
   "  gl_Position = projection * view * model * vec4(aPos, 1.0f);\n"
   "  TexCoord = vec2(aTexCoord.x, aTexCoord.y);\n"
   "}\n";

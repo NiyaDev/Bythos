@@ -45,10 +45,10 @@ fn void init() @export("bythos_init") {
   debug::info("Initializing Bythos version", VERSION);
 
   //* -- Loading Options -- *//
-  core.screen = {720,720};
-  core.render = {720,720};
-  //core.screen = {1280,720};
-  //core.render = {1280,720};
+  //core.screen = {720,720};
+  //core.render = {720,720};
+  core.screen = {1280,720};
+  core.render = {1280,720};
   core.time.targetFrametime = 1000 / 60;
 
   //* -- SDL3 -- *//
@@ -72,7 +72,6 @@ fn void init() @export("bythos_init") {
   gl::enable(gl::GL_DEPTH_TEST);
   gl::enable(gl::GL_BLEND);
   gl::blendFunc(gl::GL_SRC_ALPHA, gl::GL_ONE_MINUS_SRC_ALPHA);
-  io::printfn("%s",Vertex.sizeof);
 
   //* -- Screen Info -- *//
   debug::info("Display device initialized successfully");
@@ -98,8 +97,7 @@ fn void init() @export("bythos_init") {
   core.defaultShader2d = shader::compile(shader::DEFAULT_VERTEX_2D, shader::DEFAULT_FRAGMENT_2D);
   core.defaultShader2d.set_uniform("screensize", &&(Vec2f){(float)core.render.x, (float)core.render.y});
   core.defaultShader3d = shader::compile(shader::DEFAULT_VERTEX_3D, shader::DEFAULT_FRAGMENT_3D);
-  core.defaultShader3d.set_uniform("projection", &&matrix::perspective{float}(70 * math::PI / 180, (float)core.render.x / (float)core.render.y, 0.1, 100).transpose());
-  debug::info("3D shader: ", core.defaultShader3d.id);
+  core.defaultShader3d.set_uniform("projection", &&matrix::perspective{float}(70 * (math::PI / 180), (float)core.render.x / (float)core.render.y, 0.1, 100).transpose());
   core.quad = mesh::new(PLANE);
   core.quadMat = {shader::compile(shader::FB_VERTEX, shader::FB_FRAGMENT), {}};
   core.quadMat.shader.set_uniform("screenTexture", &&0);
