@@ -6,7 +6,7 @@ import opengl::gl;
 //* -- Functions -- *//
 fn void draw_start() @export("bythos_drawstart") {
   //gl::bindFramebuffer(gl::GL_FRAMEBUFFER, core.framebuffer);
-  gl::enable(gl::GL_DEPTH_TEST);
+  //gl::enable(gl::GL_DEPTH_TEST);
   gl::viewport(0,0, core.render.x, core.render.y);
 
   gl::clearColor(0.5,0.5,0.5,1);

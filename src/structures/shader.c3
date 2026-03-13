@@ -75,6 +75,10 @@ fn void Shader.clean(&self) @export("shader_clean") {
   self.id = 0;
 }
 
+fn void Shader.set_matrix(&self, String key, Matrix4f matrix) @export("shader_setmatrix") {
+  uint loc = gl::getUniformLocation(self.id, key);
+  gl::uniformMatrix4fv(loc, 1, gl::GL_FALSE, (float*)&matrix);
+}
 fn void Shader.set_uniform(&self, String key, any v) @export("shader_setuniform") {
   uint loc;
   if (self.locs.has_key(key)) {
@@ -83,7 +87,6 @@ fn void Shader.set_uniform(&self, String key, any v) @export("shader_setuniform"
     loc = gl::getUniformLocation(self.id, key);
     self.locs.set(key, loc);
   }
-  //debug::info("", key, loc);
 
   gl::useProgram(self.id);
   switch (v.type) {
@@ -101,13 +104,14 @@ fn void Shader.set_uniform(&self, String key, any v) @export("shader_setuniform"
       Vec4f v2 = *(Vec4f*)v;
       gl::uniform4f(loc, v2.x, v2.y, v2.z, v2.w);
     case Matrix4f:
-      gl::uniformMatrix4fv(loc, 1, gl::GL_FALSE, (float*)v);
+      Matrix4f mat = *(Matrix4f*)v;
+      gl::uniformMatrix4fv(loc, 1, gl::GL_FALSE, (float*)&mat);
     //case Texture:
     //  gl::uniform1i(loc, ((Texture*)v).id);
     default:
       debug::error("Attempted to set uniform with unimplemented type.", v.type, key);
   }
-  gl::useProgram(0);
+  //gl::useProgram(0);
 }
 
 const char[] DEFAULT_VERTEX_3D = 

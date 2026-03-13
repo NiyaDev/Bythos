@@ -97,14 +97,11 @@ fn void Mesh.delete(&self) {
   gl::deleteBuffers(1, &self.ebo);
 }
 
-/*
-fn void Mesh.draw(&self, Material mat = bythos::core.defaultMaterial, Vec3f position = {}, Vec3f scale = {1,1,1}, Vec3f rotation = {0,0,0}) @export("mesh_draw") {
+fn void Mesh.draw(&self = &bythos::core.defaultMesh, Material mat = bythos::core.defaultMaterial, Vec3f position = {}, Vec3f scale = {1,1,1}, Vec3f rotation = {0,0,0}) @export("mesh_draw") {
   if (mat.shader.id != 0) {
     gl::useProgram(mat.shader.id);
     //gl::bindTexture(gl::GL_TEXTURE_2D, mat.maps[material::DIFFUSE].texture.id);
 
-    // Set uniforms
-    mat.shader.set_uniform("projection", &&matrix::perspective{float}(70 * (math::PI / 180), 1.777, 0.1, 100).transpose());
     mat.shader.set_uniform("view", &&matrix::look_at{float}({0,5,5}, {0,0,0}, {0,1,0}).transpose());
     mat.shader.set_uniform("model",&&MATRIX4F_IDENTITY.translate(position).rotate_z(rotation.z).rotate_y(rotation.y).rotate_x(rotation.x).scale(scale).transpose());
   }
@@ -117,16 +114,7 @@ fn void Mesh.draw(&self, Material mat = bythos::core.defaultMaterial, Vec3f posi
     gl::bindBuffer(gl::GL_ELEMENT_ARRAY_BUFFER, self.ebo);
     gl::drawElements(gl::GL_TRIANGLES, self.indices.len * 3, gl::GL_UNSIGNED_INT, null);
   }
-  //gl::bindVertexArray(0);
-}
-*/
-fn void Mesh.draw(&self, Material mat = bythos::core.defaultMaterial, Vec3f position = {}, Vec3f scale = {1,1,1}, Vec3f rotation = {0,0,0}) @export("mesh_draw") {
-  gl::useProgram(mat.shader.id);
-  gl::uniformMatrix4fv(gl::getUniformLocation(mat.shader.id, "view"),  1, gl::GL_FALSE, (float*)&&matrix::look_at{float}({0,5,5}, {0,0,0}, {0,1,0}).transpose());
-  gl::uniformMatrix4fv(gl::getUniformLocation(mat.shader.id, "model"), 1, gl::GL_FALSE, (float*)&&MATRIX4F_IDENTITY.translate(position).rotate_z(rotation.z).rotate_y(rotation.y).rotate_x(rotation.x).scale(rotation).transpose());
-
-  gl::bindVertexArray(self.vao);
-  gl::drawArrays(gl::GL_TRIANGLES, 0, mesh::BASIC_CUBE.len);
+  gl::bindVertexArray(0);
 }
 fn void Mesh.draw_instanced(&self, Matrix4f[] mats, Material mat = bythos::core.defaultMaterial) {
   gl::useProgram(mat.shader.id);

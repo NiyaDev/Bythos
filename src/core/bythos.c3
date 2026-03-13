@@ -45,10 +45,10 @@ fn void init() @export("bythos_init") {
   debug::info("Initializing Bythos version", VERSION);
 
   //* -- Loading Options -- *//
-  //core.screen = {720,720};
-  //core.render = {720,720};
-  core.screen = {1280,720};
-  core.render = {1280,720};
+  core.screen = {720,720};
+  core.render = {720,720};
+  //core.screen = {1280,720};
+  //core.render = {1280,720};
   core.time.targetFrametime = 1000 / 60;
 
   //* -- SDL3 -- *//

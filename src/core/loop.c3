@@ -217,18 +217,18 @@ fn void frame_delay() @export("bythos_framedelay") {
 macro void @loop(; @body()) {
   while (true) {
     //* -- Timing -- *//
-    run_timer();
+    bythos::run_timer();
 
   	//* -- Events -- *//
-  	if (parse_events()) break;
+  	if (bythos::parse_events()) break;
 
   	//* -- Body -- *//
-  	draw_start();
+  	bythos::draw_start();
     @body();
-  	draw_end();
+  	bythos::draw_end();
 
   	//* -- Frame delay -- *//
-  	frame_delay();
+  	bythos::frame_delay();
   }
 }
 
