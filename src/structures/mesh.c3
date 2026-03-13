@@ -98,13 +98,10 @@ fn void Mesh.delete(&self) {
 }
 
 fn void Mesh.draw(&self = &bythos::core.defaultMesh, Material mat = bythos::core.defaultMaterial, Vec3f position = {}, Vec3f scale = {1,1,1}, Vec3f rotation = {0,0,0}) @export("mesh_draw") {
-  if (mat.shader.id != 0) {
-    gl::useProgram(mat.shader.id);
-    //gl::bindTexture(gl::GL_TEXTURE_2D, mat.maps[material::DIFFUSE].texture.id);
-
-    mat.shader.set_uniform("view", &&matrix::look_at{float}({0,5,5}, {0,0,0}, {0,1,0}).transpose());
-    mat.shader.set_uniform("model",&&MATRIX4F_IDENTITY.translate(position).rotate_z(rotation.z).rotate_y(rotation.y).rotate_x(rotation.x).scale(scale).transpose());
-  }
+  gl::useProgram(mat.shader.id);
+  //gl::bindTexture(gl::GL_TEXTURE_2D, mat.maps[material::DIFFUSE].texture.id);
+  mat.shader.set_matrix("view",  matrix::look_at{float}({0,5,5}, {0,0,0}, {0,1,0}).transpose());
+  mat.shader.set_matrix("model", MATRIX4F_IDENTITY.translate(position).rotate_z(rotation.z).rotate_y(rotation.y).rotate_x(rotation.x).scale(scale).transpose());
 
   //* -- Draw -- *//
   gl::bindVertexArray(self.vao);

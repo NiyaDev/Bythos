@@ -75,8 +75,24 @@ fn void Shader.clean(&self) @export("shader_clean") {
   self.id = 0;
 }
 
+fn void Shader.set_int(&self, String key, int v) @export("shader_setint") {
+  uint loc;
+  if (self.locs.has_key(key)) {
+    loc = self.locs.get(key)!!;
+  } else {
+    loc = gl::getUniformLocation(self.id, key);
+    self.locs.set(key, loc);
+  }
+  gl::uniform1i(loc, 1, gl::GL_FALSE, v);
+}
 fn void Shader.set_matrix(&self, String key, Matrix4f matrix) @export("shader_setmatrix") {
-  uint loc = gl::getUniformLocation(self.id, key);
+  uint loc;
+  if (self.locs.has_key(key)) {
+    loc = self.locs.get(key)!!;
+  } else {
+    loc = gl::getUniformLocation(self.id, key);
+    self.locs.set(key, loc);
+  }
   gl::uniformMatrix4fv(loc, 1, gl::GL_FALSE, (float*)&matrix);
 }
 fn void Shader.set_uniform(&self, String key, any v) @export("shader_setuniform") {
@@ -90,8 +106,6 @@ fn void Shader.set_uniform(&self, String key, any v) @export("shader_setuniform"
 
   gl::useProgram(self.id);
   switch (v.type) {
-    case int:
-      gl::uniform1i(loc, *(int*)v);
     case float:
       gl::uniform1f(loc, *(float*)v);
     case Vec2f:
@@ -103,9 +117,6 @@ fn void Shader.set_uniform(&self, String key, any v) @export("shader_setuniform"
     case Vec4f:
       Vec4f v2 = *(Vec4f*)v;
       gl::uniform4f(loc, v2.x, v2.y, v2.z, v2.w);
-    case Matrix4f:
-      Matrix4f mat = *(Matrix4f*)v;
-      gl::uniformMatrix4fv(loc, 1, gl::GL_FALSE, (float*)&mat);
     //case Texture:
     //  gl::uniform1i(loc, ((Texture*)v).id);
     default:
