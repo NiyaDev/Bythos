@@ -1,8 +1,36 @@
 
 module bythos;
+import sdl3;
 
 //* -- Bythos -- *//
+struct Bythos {
+  Window* window;
+  GLContext* context;
+  Renderer* renderer;
+
+  Vec2i display, screen, render;
+
+  uint framebuffer, renderbuffer;
+  Mesh quad;
+  Material quadMat;
+
+  Shader defaultShader2d, defaultShader3d;
+  //Texture defaultTexture;
+  Mesh defaultMesh, textureMesh;
+  Material defaultMaterial;
+
+  struct time {
+    double deltaTime, lastFrame;
+    double targetFrametime;
+  }
+  struct gpu {
+    String vendor, renderer, version, glsl;
+    int shaderBinaries;
+  }
+}
+
 extern const String VERSION @extern("version");
+extern Bythos core @extern("core") @private;
 
 extern fn void run_timer()    @extern("bythos_runtimer")    @private;
 extern fn bool parse_events() @extern("bythos_parseevents") @private;
@@ -30,9 +58,4 @@ macro void @loop(; @body()) {
   	frame_delay();
   }
 }
-
-//* -- Mesh -- *//
-extern fn Mesh new(MeshType type) @extern("mesh_new");
-extern fn void Mesh.clean(&self)  @extern("mesh_cleanmesh");
-extern fn void Mesh.draw(&self, Vec3f position = {}, Vec3f scale = {1,1,1}, Vec3f rotation = {0,0,0}) @extern("mesh_draw");
 

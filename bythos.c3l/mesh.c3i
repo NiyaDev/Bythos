@@ -1,0 +1,34 @@
+
+module bythos;
+
+//* -- Structures -- *//
+struct Mesh {
+  Vertex[]  vertices;
+  Indices[] indices;
+
+  uint vao, vbo, ebo;
+}
+struct Vertex {
+  Vec3f position;
+  Vec3f normal;
+  Vec2f texCoord;
+  Vec4f color;
+}
+alias Indices = uint[<3>];
+
+
+module bythos::mesh;
+import std::math;
+
+//* -- Enums -- *//
+enum MeshType {
+  TRI,
+  PLANE,
+  CUBE,
+}
+
+//* -- Functions -- *//
+extern fn Mesh new(MeshType type) @extern("mesh_new");
+extern fn void Mesh.clean(&self)  @extern("mesh_cleanmesh");
+extern fn void Mesh.draw(&self = null, Material mat = bythos::core.defaultMaterial, Vec3f position = {}, Vec3f scale = {1,1,1}, Vec3f rotation = {0,0,0}) @extern("mesh_draw");
+extern fn void Mesh.draw_instanced(&self, Matrix4f[] mats, Material mat = null) @extern("mesh_drawinstanced");

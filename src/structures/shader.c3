@@ -5,7 +5,6 @@ import std::collections;
 //* -- Structures -- *//
 struct Shader {
   uint id;
-  //List{uint} locs;
   HashMap{String, uint} locs;
 }
 
@@ -83,7 +82,47 @@ fn void Shader.set_int(&self, String key, int v) @export("shader_setint") {
     loc = gl::getUniformLocation(self.id, key);
     self.locs.set(key, loc);
   }
-  gl::uniform1i(loc, 1, gl::GL_FALSE, v);
+  gl::uniform1i(loc, v);
+}
+fn void Shader.set_float(&self, String key, float v) @export("shader_setfloat") {
+  uint loc;
+  if (self.locs.has_key(key)) {
+    loc = self.locs.get(key)!!;
+  } else {
+    loc = gl::getUniformLocation(self.id, key);
+    self.locs.set(key, loc);
+  }
+  gl::uniform1f(loc, v);
+}
+fn void Shader.set_vec2(&self, String key, Vec2f v) @export("shader_setvec2") {
+  uint loc;
+  if (self.locs.has_key(key)) {
+    loc = self.locs.get(key)!!;
+  } else {
+    loc = gl::getUniformLocation(self.id, key);
+    self.locs.set(key, loc);
+  }
+  gl::uniform2f(loc, v.x, v.y);
+}
+fn void Shader.set_vec3(&self, String key, Vec3f v) @export("shader_setvec3") {
+  uint loc;
+  if (self.locs.has_key(key)) {
+    loc = self.locs.get(key)!!;
+  } else {
+    loc = gl::getUniformLocation(self.id, key);
+    self.locs.set(key, loc);
+  }
+  gl::uniform3f(loc, v.x, v.y, v.z);
+}
+fn void Shader.set_vec4(&self, String key, Vec4f v) @export("shader_setvec3") {
+  uint loc;
+  if (self.locs.has_key(key)) {
+    loc = self.locs.get(key)!!;
+  } else {
+    loc = gl::getUniformLocation(self.id, key);
+    self.locs.set(key, loc);
+  }
+  gl::uniform4f(loc, v.x, v.y, v.z, v.w);
 }
 fn void Shader.set_matrix(&self, String key, Matrix4f matrix) @export("shader_setmatrix") {
   uint loc;
@@ -93,8 +132,18 @@ fn void Shader.set_matrix(&self, String key, Matrix4f matrix) @export("shader_se
     loc = gl::getUniformLocation(self.id, key);
     self.locs.set(key, loc);
   }
-  gl::uniformMatrix4fv(loc, 1, gl::GL_FALSE, (float*)&matrix);
+  gl::uniformMatrix4fv(loc, 1, gl::GL_FALSE, (float*)&&matrix);
 }
+/*fn void Shader.set_texture(&self, String key, Texture v) @export("shader_settexture") {
+  uint loc;
+  if (self.locs.has_key(key)) {
+    loc = self.locs.get(key)!!;
+  } else {
+    loc = gl::getUniformLocation(self.id, key);
+    self.locs.set(key, loc);
+  }
+  gl::uniform1i(loc, 1, gl::GL_FALSE, v.id);
+}*/
 fn void Shader.set_uniform(&self, String key, any v) @export("shader_setuniform") {
   uint loc;
   if (self.locs.has_key(key)) {
@@ -104,8 +153,9 @@ fn void Shader.set_uniform(&self, String key, any v) @export("shader_setuniform"
     self.locs.set(key, loc);
   }
 
-  gl::useProgram(self.id);
   switch (v.type) {
+    case int:
+      gl::uniform1i(loc, *(int*)v);
     case float:
       gl::uniform1f(loc, *(float*)v);
     case Vec2f:
@@ -117,12 +167,12 @@ fn void Shader.set_uniform(&self, String key, any v) @export("shader_setuniform"
     case Vec4f:
       Vec4f v2 = *(Vec4f*)v;
       gl::uniform4f(loc, v2.x, v2.y, v2.z, v2.w);
-    //case Texture:
-    //  gl::uniform1i(loc, ((Texture*)v).id);
+    case Matrix4f:
+      Matrix4f mat = *(Matrix4f*)v;
+      gl::uniformMatrix4fv(loc, 1, gl::GL_FALSE, (float*)&mat);
     default:
-      debug::error("Attempted to set uniform with unimplemented type.", v.type, key);
+      debug::error("Attempted to set uniform with unimplemented type.", v.type);
   }
-  //gl::useProgram(0);
 }
 
 const char[] DEFAULT_VERTEX_3D = 

@@ -113,15 +113,15 @@ fn void Mesh.draw(&self = &bythos::core.defaultMesh, Material mat = bythos::core
   }
   gl::bindVertexArray(0);
 }
-fn void Mesh.draw_instanced(&self, Matrix4f[] mats, Material mat = bythos::core.defaultMaterial) {
+fn void Mesh.draw_instanced(&self, Matrix4f[] mats, Material mat = bythos::core.defaultMaterial) @export("mesh_drawinstanced") {
   gl::useProgram(mat.shader.id);
   //gl::bindTexture(gl::GL_TEXTURE_2D, mat.maps[material::DIFFUSE].texture.id);
-  mat.shader.set_uniform("view", &&camera::get_matrix());
+  mat.shader.set_matrix("view", camera::get_matrix());
 
   //* -- Draw -- *//
   gl::bindVertexArray(self.vao);
   for (int i; i < mats.len; i++) {
-    mat.shader.set_uniform("model", &mats[i]);
+    mat.shader.set_matrix("model", mats[i]);
     gl::drawArrays(gl::GL_TRIANGLES, 0, self.vertices.len);
   }
   gl::bindVertexArray(0);
