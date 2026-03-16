@@ -30,5 +30,7 @@ enum MeshType {
 //* -- Functions -- *//
 extern fn Mesh new(MeshType type) @extern("mesh_new");
 extern fn void Mesh.clean(&self)  @extern("mesh_cleanmesh");
-extern fn void Mesh.draw(&self = null, Material mat = bythos::core.defaultMaterial, Vec3f position = {}, Vec3f scale = {1,1,1}, Vec3f rotation = {0,0,0}) @extern("mesh_draw");
-extern fn void Mesh.draw_instanced(&self, Matrix4f[] mats, Material mat = null) @extern("mesh_drawinstanced");
+extern fn void Mesh.draw(&self = &&bythos::get_default_mesh(), Material mat = bythos::get_default_material(), Vec3f position = {}, Vec3f scale = {1,1,1}, Vec3f rotation = {0,0,0}) @extern("mesh_draw");
+extern fn void Mesh.draw_instanced(&self = &&bythos::get_default_mesh(), Matrix4f[] mats, Material mat = bythos::get_default_material()) @extern("mesh_drawinstanced");
+extern fn void Mesh.is_valid(&self) @export("mesh_valid");
+

@@ -1,0 +1,17 @@
+
+module bythos;
+
+
+//* -- Functions -- *//
+fn Mesh get_default_mesh() @export("default_getmesh") => core.defaultMesh;
+//fn Texture get_default_texture() @export("default_gettexture") => core.defaultTexture;
+fn Material get_default_material() @export("default_getmaterial") => core.defaultMaterial;
+fn Shader get_default_2dShader() @export("default_get2dshader") => core.defaultShader2d;
+fn Shader get_default_3dShader() @export("default_get3dshader") => core.defaultShader3d;
+
+fn void set_default_mesh(Mesh m) @export("default_setmesh") => core.defaultMesh = m;
+//fn void set_default_texture(Texture t) @export("default_settexture") => core.defaultMesh = m;
+fn void set_default_material(Material m) @export("default_setmaterial") => core.defaultMaterial = m;
+fn void set_default_2dShader(Shader s) @export("default_set2dshader") => core.defaultShader2d = s;
+fn void set_default_3dShader(Shader s) @export("default_set3dshader") => core.defaultShader3d = s;
+

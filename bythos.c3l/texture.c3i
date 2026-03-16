@@ -1,0 +1,27 @@
+
+module bythos;
+
+//* -- Structures -- *//
+struct Texture {
+  uint id;
+  uint w, h;
+}
+
+//* -- Enums -- *//
+enum TilingLayout {
+  THREE_THREE,
+  ONE_THREE,
+  THREE_ONE,
+}
+
+
+module bythos::texture;
+
+//* -- Functions -- *//
+extern fn Texture load(String filename) @extern("texture_load");
+extern fn Texture load_from_mem(char[] data) @extern("texture_loadfrommem");
+extern fn Texture new(int width, int height) @extern("texture_new");
+extern fn void Texture.clean(&self) @extern("texture_clean");
+
+//extern fn void Texture.draw(&self = &&bythos::defaultTexture(), )
+

@@ -1,0 +1,185 @@
+
+module bythos;
+
+//* -- Structures -- *//
+struct Texture {
+  uint id;
+  uint w, h;
+}
+
+//* -- Enums -- *//
+enum TilingLayout {
+  THREE_THREE,
+  ONE_THREE,
+  THREE_ONE,
+}
+
+
+module bythos::texture;
+import std::collections, std::io;
+import opengl::gl;
+import spng;
+import bythos;
+
+//* -- Globals -- *//
+char[] def = $embed("../../resources/texture.ppm");
+
+//* -- Functions -- *//
+fn Texture load(String filename) @export("texture_load") {
+  File? file = file::open(filename, "rb");
+  if (catch file) { debug::error("TEXTURE: Failed to open file", filename); return {}; }
+
+  char[] data = mem::new_array(char, file::get_size(filename)!!);
+  file.read(data)!!;
+
+  Texture output = load_from_memory(data, );
+  free(data);
+
+  return output;
+}
+fn Texture load_from_memory(char[] data, String type = "png") @export("texture_loadfromme") {
+  Texture output;
+  int result;
+  char[] img;
+
+  switch (type) {
+    case "png":
+    case "PNG":
+      //* -- Create context and get decoded size -- *//
+      Ctx* ctx = spng::ctx_new(0);
+      defer spng::ctx_free(ctx);
+      usz imgSize;
+
+      result = spng::set_png_buffer(ctx, data, data.len);
+      if (result != 0) { debug::error("Failed to set png buffer.", spng::strerror(result)); return {}; }
+      result = spng::decoded_image_size(ctx, (int)Format.RGBA8, &imgSize);
+      if (result != 0) { debug::error("Failed to get decoded size."); return {}; }
+
+      //* -- Copy width and height -- *//
+      Ihdr ihdr;
+      result = spng::get_ihdr(ctx, &ihdr);
+      if (result != 0)
+        { debug::error("Get ihdr failed.", spng::strerror(result)); return {}; }
+      output.w = ihdr.width;
+      output.h = ihdr.height;
+
+      //* -- Decode image data and reverse -- *//
+      img = mem::new_array(char, imgSize);
+
+      result = spng::decode_image(ctx, (void*)img, imgSize, (int)Format.RGBA8, 0);
+      if (result != 0) { debug::error("Failed to decode image.", spng::strerror(result)); free(img); return {}; }
+
+      img.reverse(output.w, output.h, 4);
+
+    case "ppm":
+    case "PPM":
+      usz p;
+
+      //* -- Read magic numbers -- *//
+      if (data[0:3] != "P6\n") { debug::error("PPM has invalid data.", spng::strerror(result)); return {}; }
+      p += 3;
+
+      List{char} builder;
+      String out;
+
+      //* -- Read Width & Height -- *//
+      for (int i = (int)p; data[i] != ' '; i++)
+        { builder.push(data[i]); p++; }
+      out = (String)builder.to_tarray();
+      output.w = out.to_int()!!;
+      builder.clear();
+      p++;
+      for (int i = (int)p; data[i] != '\n'; i++)
+        { builder.push(data[i]); p++; }
+      out = (String)builder.to_tarray();
+      output.h = out.to_int()!!;
+      builder.clear();
+      p++;
+
+      //* -- Read value scale -- *//
+      for (int i = (int)p; data[i] != '\n'; i++)
+        { builder.push(data[i]); p++; }
+      out = (String)builder.to_tarray();
+      builder.clear();
+      p++;
+
+      //* -- Read data -- *//
+      img = data[p..].expand(0xff, 4);
+
+    default:
+      debug::error("Invalid filetype.");
+      return {};
+  }
+
+  //* -- Gen OpenGL texture -- *//
+  gl::genTextures(1, &output.id);
+  gl::bindTexture(gl::GL_TEXTURE_2D, output.id);
+  gl::texParameteri(gl::GL_TEXTURE_2D, gl::GL_TEXTURE_MIN_FILTER, gl::GL_NEAREST);
+  gl::texParameteri(gl::GL_TEXTURE_2D, gl::GL_TEXTURE_MAG_FILTER, gl::GL_NEAREST);
+
+  gl::texImage2D(
+    gl::GL_TEXTURE_2D, 0, gl::GL_RGBA,
+    output.w, output.h, 0,
+    gl::GL_RGBA, gl::GL_UNSIGNED_BYTE, img);
+  gl::generateMipmap(gl::GL_TEXTURE_2D);
+
+  free(img);
+  if (output.id == 0) { debug::error("Failed to upload image to OpenGL."); return {}; }
+
+  debug::info(string::tformat("TEXTURE: [ID %d] Texture loaded successfully (%dx%d)", output.id, output.w, output.h));
+
+  return output;
+} 
+fn Texture new(int width, int height) @export("texture_new") {
+  uint id;
+  gl::genTextures(1, &id);
+  gl::bindTexture(gl::GL_TEXTURE_2D, id);
+  gl::texParameteri(gl::GL_TEXTURE_2D, gl::GL_TEXTURE_MIN_FILTER, gl::GL_NEAREST);
+  gl::texParameteri(gl::GL_TEXTURE_2D, gl::GL_TEXTURE_MAG_FILTER, gl::GL_NEAREST);
+
+  gl::texImage2D(
+    gl::GL_TEXTURE_2D, 0, gl::GL_RGBA,
+    width, height, 0,
+    gl::GL_RGBA, gl::GL_UNSIGNED_BYTE, null);
+  gl::generateMipmap(gl::GL_TEXTURE_2D);
+
+  debug::info(string::tformat("TEXTURE: [ID %d] Texture loaded successfully (%dx%d)", id, width, height));
+
+  return {id, width, height};
+}
+fn void Texture.clean(&self) @export("texture_clean") {
+  debug::info(string::tformat("TEXTURE: [ID %d] Cleaned up", self.id));
+
+  gl::deleteTextures(1, &self.id);
+  self = {};
+}
+fn bool Texture.is_valid(&self) @export("texture_valid")
+  => self.id != 0 && self.w != 0 && self.h != 0;
+
+fn char[] char[].expand(self, char value, usz offset) {
+  char[] output = mem::new_array(char, self.len + (self.len / offset) + 1);
+  int count = 1;
+  int target = 0;
+  for (int i; i < output.len; i++) {
+    if (count == offset)
+      { output[i] = value; count = 1; }
+    else
+      { output[i] = self[target++]; count++; }
+  }
+  output[output.len-1] = value;
+  return output;
+}
+fn void char[].reverse(self, usz width, usz height, int bytesPerPixel) {
+  usz stride = width * bytesPerPixel;
+  char[] row = mem::new_array(char, stride);
+  for (int y; y < height / 2; y++) {
+    char* top = (char*)self + y * stride;
+    char* bot = (char*)self + (height - y - 1) * stride;
+
+    mem::copy(row, top, stride);
+    mem::copy(top, bot, stride);
+    mem::copy(bot, row, stride);
+  }
+  free(row);
+}
+

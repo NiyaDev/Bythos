@@ -7,7 +7,7 @@ struct Material {
   MaterialMap[12] maps;
 }
 struct MaterialMap {
-  //Texture texture;
+  Texture texture;
   Vec3f value;
 }
 
@@ -32,14 +32,16 @@ const usz BRDF       = 10;
 fn Material new() @export("material_new") {
   Material output;
   output.shader = bythos::core.defaultShader3d;
-  //output.maps[DIFFUSE].texture = bythos::core.defaultTexture;
+  output.maps[DIFFUSE].texture = bythos::core.defaultTexture;
   return output;
 }
 fn void Material.clean(&self) @export("material_clean") {
   if (self.shader.id > 4) self.shader.clean();
 
   for (int i; i < self.maps.len; i++) {
-    //if (self.maps[i].texture.id > 1) self.maps[i].texture.clean();
+    if (self.maps[i].texture.id > 1) self.maps[i].texture.clean();
   }
 }
+fn bool Material.is_valid(&self) @export("material_valid")
+  => self.shader.id != 0;
 

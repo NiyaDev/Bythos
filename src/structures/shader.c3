@@ -58,7 +58,7 @@ fn Shader compile(char[] v, char[] f) @export("shader_compile") {
     debug::error("SHADER: Failed to link shader\n", log);
     free(log);
   }
-  debug::info(string::tformat("SHADER: [ID %d] Shader loaded successfully", program));
+  debug::info(string::tformat("SHADER: [ID %d] Shader compiled successfully", program));
 
   //* -- Cleanup -- *//
   gl::deleteShader(vertexShader);
@@ -73,8 +73,11 @@ fn void Shader.clean(&self) @export("shader_clean") {
   debug::info(string::tformat("SHADER: [ID %d] Cleaned up", self.id));
   self.id = 0;
 }
+fn bool Shader.is_valid(&self) @export("shader_valid")
+  => self.id != 0;
 
 fn void Shader.set_int(&self, String key, int v) @export("shader_setint") {
+  gl::useProgram(self.id);
   uint loc;
   if (self.locs.has_key(key)) {
     loc = self.locs.get(key)!!;
@@ -85,6 +88,7 @@ fn void Shader.set_int(&self, String key, int v) @export("shader_setint") {
   gl::uniform1i(loc, v);
 }
 fn void Shader.set_float(&self, String key, float v) @export("shader_setfloat") {
+  gl::useProgram(self.id);
   uint loc;
   if (self.locs.has_key(key)) {
     loc = self.locs.get(key)!!;
@@ -95,6 +99,7 @@ fn void Shader.set_float(&self, String key, float v) @export("shader_setfloat") 
   gl::uniform1f(loc, v);
 }
 fn void Shader.set_vec2(&self, String key, Vec2f v) @export("shader_setvec2") {
+  gl::useProgram(self.id);
   uint loc;
   if (self.locs.has_key(key)) {
     loc = self.locs.get(key)!!;
@@ -105,6 +110,7 @@ fn void Shader.set_vec2(&self, String key, Vec2f v) @export("shader_setvec2") {
   gl::uniform2f(loc, v.x, v.y);
 }
 fn void Shader.set_vec3(&self, String key, Vec3f v) @export("shader_setvec3") {
+  gl::useProgram(self.id);
   uint loc;
   if (self.locs.has_key(key)) {
     loc = self.locs.get(key)!!;
@@ -115,6 +121,7 @@ fn void Shader.set_vec3(&self, String key, Vec3f v) @export("shader_setvec3") {
   gl::uniform3f(loc, v.x, v.y, v.z);
 }
 fn void Shader.set_vec4(&self, String key, Vec4f v) @export("shader_setvec3") {
+  gl::useProgram(self.id);
   uint loc;
   if (self.locs.has_key(key)) {
     loc = self.locs.get(key)!!;
@@ -125,6 +132,7 @@ fn void Shader.set_vec4(&self, String key, Vec4f v) @export("shader_setvec3") {
   gl::uniform4f(loc, v.x, v.y, v.z, v.w);
 }
 fn void Shader.set_matrix(&self, String key, Matrix4f matrix) @export("shader_setmatrix") {
+  gl::useProgram(self.id);
   uint loc;
   if (self.locs.has_key(key)) {
     loc = self.locs.get(key)!!;
@@ -144,36 +152,6 @@ fn void Shader.set_matrix(&self, String key, Matrix4f matrix) @export("shader_se
   }
   gl::uniform1i(loc, 1, gl::GL_FALSE, v.id);
 }*/
-fn void Shader.set_uniform(&self, String key, any v) @export("shader_setuniform") {
-  uint loc;
-  if (self.locs.has_key(key)) {
-    loc = self.locs.get(key)!!;
-  } else {
-    loc = gl::getUniformLocation(self.id, key);
-    self.locs.set(key, loc);
-  }
-
-  switch (v.type) {
-    case int:
-      gl::uniform1i(loc, *(int*)v);
-    case float:
-      gl::uniform1f(loc, *(float*)v);
-    case Vec2f:
-      Vec2f v2 = *(Vec2f*)v;
-      gl::uniform2f(loc, v2.x, v2.y);
-    case Vec3f:
-      Vec3f v2 = *(Vec3f*)v;
-      gl::uniform3f(loc, v2.x, v2.y, v2.z);
-    case Vec4f:
-      Vec4f v2 = *(Vec4f*)v;
-      gl::uniform4f(loc, v2.x, v2.y, v2.z, v2.w);
-    case Matrix4f:
-      Matrix4f mat = *(Matrix4f*)v;
-      gl::uniformMatrix4fv(loc, 1, gl::GL_FALSE, (float*)&mat);
-    default:
-      debug::error("Attempted to set uniform with unimplemented type.", v.type);
-  }
-}
 
 const char[] DEFAULT_VERTEX_3D = 
   "#version 330 core\n"

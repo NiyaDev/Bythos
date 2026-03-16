@@ -64,6 +64,8 @@ fn void Mesh.clean(&self) @export("mesh_cleanmesh") {
     { free(self.indices); }
   self.delete();
 }
+fn bool Mesh.is_valid(&self) @export("mesh_valid")
+  => self.vao != 0;
 
 fn void Mesh.upload(&self) {
   gl::genVertexArrays(1, &self.vao);
@@ -97,7 +99,7 @@ fn void Mesh.delete(&self) {
   gl::deleteBuffers(1, &self.ebo);
 }
 
-fn void Mesh.draw(&self = &bythos::core.defaultMesh, Material mat = bythos::core.defaultMaterial, Vec3f position = {}, Vec3f scale = {1,1,1}, Vec3f rotation = {0,0,0}) @export("mesh_draw") {
+fn void Mesh.draw(&self = &&bythos::get_default_mesh(), Material mat = bythos::get_default_material(), Vec3f position = {}, Vec3f scale = {1,1,1}, Vec3f rotation = {0,0,0}) @export("mesh_draw") {
   gl::useProgram(mat.shader.id);
   //gl::bindTexture(gl::GL_TEXTURE_2D, mat.maps[material::DIFFUSE].texture.id);
   mat.shader.set_matrix("view",  matrix::look_at{float}({0,5,5}, {0,0,0}, {0,1,0}).transpose());
@@ -113,7 +115,7 @@ fn void Mesh.draw(&self = &bythos::core.defaultMesh, Material mat = bythos::core
   }
   gl::bindVertexArray(0);
 }
-fn void Mesh.draw_instanced(&self, Matrix4f[] mats, Material mat = bythos::core.defaultMaterial) @export("mesh_drawinstanced") {
+fn void Mesh.draw_instanced(&self = &&bythos::get_default_mesh(), Matrix4f[] mats, Material mat = bythos::get_default_material()) @export("mesh_drawinstanced") {
   gl::useProgram(mat.shader.id);
   //gl::bindTexture(gl::GL_TEXTURE_2D, mat.maps[material::DIFFUSE].texture.id);
   mat.shader.set_matrix("view", camera::get_matrix());

@@ -26,7 +26,7 @@ struct Bythos {
   Material quadMat;
 
   Shader defaultShader2d, defaultShader3d;
-  //Texture defaultTexture;
+  Texture defaultTexture;
   Mesh defaultMesh, textureMesh;
   Material defaultMaterial;
 
@@ -95,15 +95,16 @@ fn void init() @export("bythos_init") {
 
   //* -- Defualts -- *//
   core.defaultShader2d = shader::compile(shader::DEFAULT_VERTEX_2D, shader::DEFAULT_FRAGMENT_2D);
-  core.defaultShader2d.set_uniform("screensize", &&(Vec2f){(float)core.render.x, (float)core.render.y});
+  core.defaultShader2d.set_vec2("screensize", (Vec2f){(float)core.render.x, (float)core.render.y});
   core.defaultShader3d = shader::compile(shader::DEFAULT_VERTEX_3D, shader::DEFAULT_FRAGMENT_3D);
-  core.defaultShader3d.set_uniform("projection", &&matrix::perspective{float}(70 * (math::PI / 180), (float)core.render.x / (float)core.render.y, 0.1, 100).transpose());
+  core.defaultShader3d.set_matrix("projection", matrix::perspective{float}(70 * (math::PI / 180), (float)core.render.x / (float)core.render.y, 0.1, 100).transpose());
   core.quad = mesh::new(PLANE);
   core.quadMat = {shader::compile(shader::FB_VERTEX, shader::FB_FRAGMENT), {}};
-  core.quadMat.shader.set_uniform("screenTexture", &&0);
+  core.quadMat.shader.set_int("screenTexture", 0);
   core.defaultMesh = mesh::new(CUBE);
   core.textureMesh = mesh::new(PLANE);
   core.defaultMaterial = {core.defaultShader3d, {}};
+  core.defaultTexture = texture::load_from_memory(texture::def, "ppm");
 }
 fn void clean() @export("bythos_clean") {
   //* -- Freeing defaults -- *//
@@ -114,6 +115,7 @@ fn void clean() @export("bythos_clean") {
   core.defaultMesh.clean();
   core.textureMesh.clean();
   core.defaultMaterial.clean();
+  core.defaultTexture.clean();
 
   //* -- SDL3 and OpenGL -- *//
   sdlgl::destroyContext(core.context);

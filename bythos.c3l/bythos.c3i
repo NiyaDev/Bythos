@@ -3,40 +3,13 @@ module bythos;
 import sdl3;
 
 //* -- Bythos -- *//
-struct Bythos {
-  Window* window;
-  GLContext* context;
-  Renderer* renderer;
-
-  Vec2i display, screen, render;
-
-  uint framebuffer, renderbuffer;
-  Mesh quad;
-  Material quadMat;
-
-  Shader defaultShader2d, defaultShader3d;
-  //Texture defaultTexture;
-  Mesh defaultMesh, textureMesh;
-  Material defaultMaterial;
-
-  struct time {
-    double deltaTime, lastFrame;
-    double targetFrametime;
-  }
-  struct gpu {
-    String vendor, renderer, version, glsl;
-    int shaderBinaries;
-  }
-}
-
 extern const String VERSION @extern("version");
-extern Bythos core @extern("core") @private;
 
-extern fn void run_timer()    @extern("bythos_runtimer")    @private;
-extern fn bool parse_events() @extern("bythos_parseevents") @private;
-extern fn void frame_delay()  @extern("bythos_framedelay")  @private;
-extern fn void draw_start()   @extern("bythos_drawstart")   @private;
-extern fn void draw_end()     @extern("bythos_drawend")     @private;
+extern fn void run_timer()    @extern("bythos_runtimer");
+extern fn bool parse_events() @extern("bythos_parseevents");
+extern fn void frame_delay()  @extern("bythos_framedelay");
+extern fn void draw_start()   @extern("bythos_drawstart");
+extern fn void draw_end()     @extern("bythos_drawend");
 
 extern fn void init()  @extern("bythos_init");
 extern fn void clean() @extern("bythos_clean");

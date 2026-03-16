@@ -28,5 +28,7 @@ const usz PREFILTER  = 9;
 const usz BRDF       = 10;
 
 //* -- Functions -- *//
-fn Material new() @extern("material_new");
-fn void Material.clean(&self) @extern("material_clean");
+extern fn Material new() @extern("material_new");
+extern fn void Material.clean(&self) @extern("material_clean");
+extern fn bool Material.is_valid(&self) @extern("material_valid")
+

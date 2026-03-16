@@ -1,0 +1,14 @@
+
+module bythos;
+
+extern fn Mesh get_default_mesh() @extern("default_getmesh");
+//extern fn Texture get_default_texture() @extern("default_gettexture");
+extern fn Material get_default_material() @extern("default_getmaterial");
+extern fn Shader get_default_2dShader() @extern("default_get2dshader");
+extern fn Shader get_default_3dShader() @extern("default_get3dshader");
+
+extern fn void set_default_mesh(Mesh m) @extern("default_setmesh");
+//extern fn void set_default_texture(Texture t) @extern("default_settexture");
+extern fn void set_default_material(Material m) @extern("default_setmaterial");
+extern fn void set_default_2dShader(Shader s) @extern("default_set2dshader");
+extern fn void set_default_3dShader(Shader s) @extern("default_set3dshader");
