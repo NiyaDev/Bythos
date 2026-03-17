@@ -22,12 +22,6 @@ import std::math, std::io;
 import opengl::gl;
 import bythos;
 
-//* -- Constants -- *//
-const void* VERTEX_POSITION = null;
-const void* VERTEX_NORMAL   = (void*)(Vec3f.sizeof);
-const void* VERTEX_TEXCOORD = (void*)((long)VERTEX_NORMAL * 2);
-const void* VERTEX_COLOR    = (void*)((long)VERTEX_TEXCOORD + Vec2f.sizeof);
-
 //* -- Enums -- *//
 enum MeshType {
   TRI,
@@ -101,7 +95,7 @@ fn void Mesh.delete(&self) {
 
 fn void Mesh.draw(&self = &&bythos::get_default_mesh(), Material mat = bythos::get_default_material(), Vec3f position = {}, Vec3f scale = {1,1,1}, Vec3f rotation = {0,0,0}) @export("mesh_draw") {
   gl::useProgram(mat.shader.id);
-  //gl::bindTexture(gl::GL_TEXTURE_2D, mat.maps[material::DIFFUSE].texture.id);
+  gl::bindTexture(gl::GL_TEXTURE_2D, mat.maps[material::DIFFUSE].texture.id);
   mat.shader.set_matrix("view",  matrix::look_at{float}({0,5,5}, {0,0,0}, {0,1,0}).transpose());
   mat.shader.set_matrix("model", MATRIX4F_IDENTITY.translate(position).rotate_z(rotation.z).rotate_y(rotation.y).rotate_x(rotation.x).scale(scale).transpose());
 
@@ -117,7 +111,7 @@ fn void Mesh.draw(&self = &&bythos::get_default_mesh(), Material mat = bythos::g
 }
 fn void Mesh.draw_instanced(&self = &&bythos::get_default_mesh(), Matrix4f[] mats, Material mat = bythos::get_default_material()) @export("mesh_drawinstanced") {
   gl::useProgram(mat.shader.id);
-  //gl::bindTexture(gl::GL_TEXTURE_2D, mat.maps[material::DIFFUSE].texture.id);
+  gl::bindTexture(gl::GL_TEXTURE_2D, mat.maps[material::DIFFUSE].texture.id);
   mat.shader.set_matrix("view", camera::get_matrix());
 
   //* -- Draw -- *//
@@ -129,8 +123,12 @@ fn void Mesh.draw_instanced(&self = &&bythos::get_default_mesh(), Matrix4f[] mat
   gl::bindVertexArray(0);
 }
 
+//* -- Constants -- *//
+const void* VERTEX_POSITION = null;
+const void* VERTEX_NORMAL   = (void*)(Vec3f.sizeof);
+const void* VERTEX_TEXCOORD = (void*)((long)VERTEX_NORMAL * 2);
+const void* VERTEX_COLOR    = (void*)((long)VERTEX_TEXCOORD + Vec2f.sizeof);
 
-//* -- Meshes -- *//
 const Vertex[] BASIC_TRI = {
   {{ 0.0,  0.5, 0.0}, {0,0,1}, {1,1}, {0,0,0,1}},
   {{-0.5, -0.5, 0.0}, {0,0,1}, {1,0}, {0,0,0,1}},

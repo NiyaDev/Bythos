@@ -142,7 +142,7 @@ fn void Shader.set_matrix(&self, String key, Matrix4f matrix) @export("shader_se
   }
   gl::uniformMatrix4fv(loc, 1, gl::GL_FALSE, (float*)&&matrix);
 }
-/*fn void Shader.set_texture(&self, String key, Texture v) @export("shader_settexture") {
+fn void Shader.set_texture(&self, String key, Texture v) @export("shader_settexture") {
   uint loc;
   if (self.locs.has_key(key)) {
     loc = self.locs.get(key)!!;
@@ -150,8 +150,8 @@ fn void Shader.set_matrix(&self, String key, Matrix4f matrix) @export("shader_se
     loc = gl::getUniformLocation(self.id, key);
     self.locs.set(key, loc);
   }
-  gl::uniform1i(loc, 1, gl::GL_FALSE, v.id);
-}*/
+  gl::uniform1i(loc, v.id);
+}
 
 const char[] DEFAULT_VERTEX_3D = 
   "#version 330 core\n"

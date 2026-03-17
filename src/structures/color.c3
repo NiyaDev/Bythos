@@ -71,7 +71,7 @@ fn Color Color.alpha(self, float alpha) @export("color_alpha")
 	=> {self.r, self.g, self.b, (char)(255 * alpha)};
 
 
-// Constants
+//* -- Constants -- *//
 module bythos::color;
 
 const Color LIGHTGRAY		= {200, 200, 200, 255};

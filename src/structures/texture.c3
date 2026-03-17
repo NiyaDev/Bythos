@@ -32,7 +32,7 @@ fn Texture load(String filename) @export("texture_load") {
   char[] data = mem::new_array(char, file::get_size(filename)!!);
   file.read(data)!!;
 
-  Texture output = load_from_memory(data, );
+  Texture output = load_from_memory(data, filename.to_tpath().extension()!!);
   free(data);
 
   return output;
@@ -151,7 +151,7 @@ fn void Texture.clean(&self) @export("texture_clean") {
   debug::info(string::tformat("TEXTURE: [ID %d] Cleaned up", self.id));
 
   gl::deleteTextures(1, &self.id);
-  self = {};
+  *self = {0,0,0};
 }
 fn bool Texture.is_valid(&self) @export("texture_valid")
   => self.id != 0 && self.w != 0 && self.h != 0;

@@ -103,8 +103,25 @@ fn void init() @export("bythos_init") {
   core.quadMat.shader.set_int("screenTexture", 0);
   core.defaultMesh = mesh::new(CUBE);
   core.textureMesh = mesh::new(PLANE);
-  core.defaultMaterial = {core.defaultShader3d, {}};
   core.defaultTexture = texture::load_from_memory(texture::def, "ppm");
+  core.defaultMaterial = {core.defaultShader3d, {}};
+  core.defaultMaterial.maps[material::DIFFUSE].texture = core.defaultTexture;
+
+  //* -- Framebuffer -- *//
+  gl::genFramebuffers(1, &core.framebuffer);
+  gl::bindFramebuffer(gl::GL_FRAMEBUFFER, core.framebuffer);
+  core.quadMat.maps[material::DIFFUSE].texture = texture::new(core.render.x, core.render.y);
+  gl::framebufferTexture2D(gl::GL_FRAMEBUFFER, gl::GL_COLOR_ATTACHMENT0, gl::GL_TEXTURE_2D,
+                           core.quadMat.maps[material::DIFFUSE].texture.id, 0);
+  gl::genRenderbuffers(1, &core.renderbuffer);
+  gl::bindRenderbuffer(gl::GL_RENDERBUFFER, core.renderbuffer);
+  gl::renderbufferStorage(gl::GL_RENDERBUFFER, gl::GL_DEPTH24_STENCIL8,
+                          core.render.x, core.render.y);
+  gl::framebufferRenderbuffer(gl::GL_FRAMEBUFFER,  gl::GL_DEPTH_STENCIL_ATTACHMENT,
+                              gl::GL_RENDERBUFFER, core.renderbuffer);
+  if (gl::checkFramebufferStatus(gl::GL_FRAMEBUFFER) != gl::GL_FRAMEBUFFER_COMPLETE)
+    { debug::fatal("Failed to initialize framebuffer"); }
+  gl::bindFramebuffer(gl::GL_FRAMEBUFFER, 0);
 }
 fn void clean() @export("bythos_clean") {
   //* -- Freeing defaults -- *//
@@ -116,6 +133,7 @@ fn void clean() @export("bythos_clean") {
   core.textureMesh.clean();
   core.defaultMaterial.clean();
   core.defaultTexture.clean();
+  core.quadMat.clean();
 
   //* -- SDL3 and OpenGL -- *//
   sdlgl::destroyContext(core.context);
