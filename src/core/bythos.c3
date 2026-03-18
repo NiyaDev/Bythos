@@ -45,11 +45,15 @@ fn void init() @export("bythos_init") {
   debug::info("Initializing Bythos version", VERSION);
 
   //* -- Loading Options -- *//
-  core.screen = {720,720};
-  core.render = {720,720};
-  //core.screen = {1280,720};
-  //core.render = {1280,720};
-  core.time.targetFrametime = 1000 / 60;
+  OptionsList options = options::load_all("resources/options.toml");
+  core.screen = {
+    options.has_key("screen_width")  ? (int)options["screen_width"]!!.i  : 1280,
+    options.has_key("screen_height") ? (int)options["screen_height"]!!.i :  720,
+  };
+  if (options.has_key("render_resolution"))
+    { core.render = (Vec2i)((Vec2f)core.screen * (float)options["render_resolution"]!!.f); }
+  else { core.render = core.screen; }
+  core.time.targetFrametime = 1000 / (double)(options.has_key("framespersecond") ? options["framespersecond"]!!.i : 60);
 
   //* -- SDL3 -- *//
   if (!sdl3::init({.video = true, .audio = true})) 
