@@ -6,6 +6,7 @@ import sdl3;
 extern const String VERSION @extern("version");
 
 extern fn void run_timer()    @extern("bythos_runtimer");
+extern fn void handle_keys()  @extern("bythos_handlekeys");
 extern fn bool parse_events() @extern("bythos_parseevents");
 extern fn void frame_delay()  @extern("bythos_framedelay");
 extern fn void draw_start()   @extern("bythos_drawstart");
@@ -18,6 +19,9 @@ macro void @loop(; @body()) {
   while (true) {
     //* -- Timing -- *//
     run_timer();
+
+    //* -- Handle Keys -- *//
+    bythos::handle_keys();
 
   	//* -- Events -- *//
   	if (parse_events()) break;

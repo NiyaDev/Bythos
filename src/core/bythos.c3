@@ -15,9 +15,8 @@ Bythos core @export("core");
 
 //* -- Structs -- *//
 struct Bythos {
-  Window* window;
-  GLContext* context;
-  Renderer* renderer;
+  SdlWindow* window;
+  SdlGLContext context;
 
   Vec2i display, screen, render;
 
@@ -38,6 +37,32 @@ struct Bythos {
     String vendor, renderer, version, glsl;
     int shaderBinaries;
   }
+  struct input {
+    struct keyboard {
+      Keybind exitKey;
+
+      bool[MAX_KEYBOARD_KEYS] currentKeyState;
+      bool[MAX_KEYBOARD_KEYS] previousKeyState;
+      bool[MAX_KEYBOARD_KEYS] repeatKeyState;
+
+      int[MAX_KEY_QUEUE] keyPressedQueue;
+      int[MAX_KEY_QUEUE] charPressedQueue;
+    }
+    struct mouse {
+      Vec2f currentPosition, previousPosition;
+      Vec2f delta;
+      float currentWheel, previousWheel;
+      bool[MAX_MOUSE_BUTTONS] currentState;
+      bool[MAX_MOUSE_BUTTONS] previousState;
+
+      bool isHidden;
+      bool isLocked;
+      bool isOnscreen;
+    }
+    //struct touch {}
+    //struct gamepad {}
+  }
+  //struct storage {}
 }
 
 //* -- Functions -- *//
@@ -58,12 +83,12 @@ fn void init() @export("bythos_init") {
   //* -- SDL3 -- *//
   if (!sdl3::init({.video = true, .audio = true})) 
     { debug::fatal("Failed to initialize SDL3", sdl3::getError()); }
-  sdlgl::setAttribute(GLAttr.CONTEXT_MAJOR_VERSION, 3);
-  sdlgl::setAttribute(GLAttr.CONTEXT_MINOR_VERSION, 3);
-  sdlgl::setAttribute(GLAttr.CONTEXT_PROFILE_MASK, sdlgl::CONTEXT_PROFILE_CORE);
+  sdlgl::setAttribute(CONTEXT_MAJOR_VERSION, 3);
+  sdlgl::setAttribute(CONTEXT_MINOR_VERSION, 3);
+  sdlgl::setAttribute(CONTEXT_PROFILE_MASK, (int)sdlgl::CONTEXT_PROFILE_CORE);
   core.window = sdl3::createWindow("BYTHOS", core.screen.x, core.screen.y, {.opengl = true});
   if (!core.window) debug::fatal("Failed to create SDL3 window", sdl3::getError());
-  Rect r;
+  SdlRect r;
   sdl3::getDisplayBounds(sdl3::getDisplayForWindow(core.window), &r);
   core.display = {r.w, r.h};
 
@@ -110,6 +135,7 @@ fn void init() @export("bythos_init") {
   core.defaultTexture = texture::load_from_memory(texture::def, "ppm");
   core.defaultMaterial = {core.defaultShader3d, {}};
   core.defaultMaterial.maps[material::DIFFUSE].texture = core.defaultTexture;
+  core.input.keyboard.exitKey = {ESCAPE, UNKNOWN};
 
   //* -- Framebuffer -- *//
   gl::genFramebuffers(1, &core.framebuffer);

@@ -9,8 +9,26 @@ fn void run_timer() @export("bythos_runtimer") {
   core.time.deltaTime = currentFrame - core.time.lastFrame;
   core.time.lastFrame = currentFrame;
 }
+fn void handle_keys() @export("bythos_handlekeys") {
+  for (int i; i < core.input.keyboard.currentKeyState.len; i++)
+    { core.input.keyboard.previousKeyState[i] = core.input.keyboard.currentKeyState[i]; }
+	core.input.keyboard.keyPressedQueue = {};
+  core.input.keyboard.charPressedQueue = {};
+
+ 	core.input.mouse.previousWheel = core.input.mouse.currentWheel;
+  core.input.mouse.currentWheel = 0;
+
+  core.input.mouse.previousPosition = core.input.mouse.currentPosition;
+
+  for (int i; i < core.input.keyboard.currentKeyState.len; i++) {
+    if (core.input.keyboard.currentKeyState[i] == true
+      && core.input.keyboard.previousKeyState[i] == true)
+        { core.input.keyboard.repeatKeyState[i] = true; }
+  }
+  core.input.mouse.delta = core.input.mouse.previousPosition - core.input.mouse.currentPosition;
+}
 fn bool parse_events() @export("bythos_parseevents") {
-  Event event;
+  SdlEvent event;
   while (sdl3::pollEvent(&event)) {
     switch (event.type) {
       case QUIT:
@@ -69,9 +87,8 @@ fn bool parse_events() @export("bythos_parseevents") {
   	    break;
 
   	  // Keyboard
-  	  /*
   	  case KEY_DOWN:
-  	    Scancode key = event.key.scancode;
+  	    SdlScancode key = event.key.scancode;
   	    if (key != UNKNOWN) {
   	      // Check if key was up before
   	      if (core.input.keyboard.currentKeyState[(int)key] == false)
@@ -79,17 +96,15 @@ fn bool parse_events() @export("bythos_parseevents") {
   	      if (core.input.keyboard.currentKeyState[(int)key] == core.input.keyboard.previousKeyState[(int)key])
   	        { core.input.keyboard.repeatKeyState[(int)key] = true; }
 
-  	      if (core.input.keyboard.currentKeyState[core.input.keyboard.exitKey] == true)
-  	        { return false; }
+          if (key == core.input.keyboard.exitKey.key)
+  	        { return true; }
   	    }
   	  case KEY_UP:
-  	    Scancode key = event.key.scancode;
+  	    SdlScancode key = event.key.scancode;
   	    if (key != UNKNOWN) {
   	      core.input.keyboard.currentKeyState[(int)key] = false;
   	      core.input.keyboard.repeatKeyState[(int)key] = false;
   	    }
-  	    //keybinds::add_queue(event.key);
-  	    */
 
   	  case TEXT_EDITING:
   	  case TEXT_INPUT:
@@ -104,7 +119,6 @@ fn bool parse_events() @export("bythos_parseevents") {
   	    break;
 
   	  // Mouse
-  	  /*
   	  case MOUSE_MOTION:
   	    if (!core.input.mouse.isLocked) {
   	      core.input.mouse.currentPosition = {event.motion.x, event.motion.y};
@@ -118,7 +132,6 @@ fn bool parse_events() @export("bythos_parseevents") {
  	    case MOUSE_ADDED:
 	    case MOUSE_REMOVED:
  	      break;
- 	    */
 
   	  // Joystick
   	  case JOYSTICK_AXIS_MOTION:
@@ -202,9 +215,10 @@ fn bool parse_events() @export("bythos_parseevents") {
   	  case RENDER_DEVICE_LOST:
   	    break;
 
-  	  default: //debug::info("Unhandled event.", event.type);
+  	  default: debug::info("Unhandled event.", event.type);
   	}
   }
+
   return false;
 }
 fn void frame_delay() @export("bythos_framedelay") {
@@ -218,6 +232,9 @@ macro void @loop(; @body()) {
   while (true) {
     //* -- Timing -- *//
     bythos::run_timer();
+
+    //* -- Handle Keys -- *//
+    bythos::handle_keys();
 
   	//* -- Events -- *//
   	if (bythos::parse_events()) break;
