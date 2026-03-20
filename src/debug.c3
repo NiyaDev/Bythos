@@ -37,7 +37,7 @@ fn void error(String err, args...) @export("debug_error") {
   else              { io::printfn("[%s] - %s",    "ERROR".color(color::RED), err); }
   printing = false;
 
-  //recentText = err;
+  recentText = err;
   timer = 100;
 }
 fn void warning(String err, args...) @export("debug_warning") {
@@ -49,7 +49,7 @@ fn void warning(String err, args...) @export("debug_warning") {
   else              { io::printfn("[%s]  - %s",    "WARN".color(color::ORANGE), err); }
   printing = false;
 
-  //recentText = err;
+  recentText = err;
   timer = 100;
 }
 fn void info(String err, args...) @export("debug_info") {

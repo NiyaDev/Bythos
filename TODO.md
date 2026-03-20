@@ -5,7 +5,6 @@
     - Size
     - Fullscreen / Borderless / Windowed
     - etc
-- Figure out what the fuck is going on with rendering
 
 ### Structures
 - Material
