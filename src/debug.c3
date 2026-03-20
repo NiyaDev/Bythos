@@ -69,8 +69,14 @@ fn void set_log_level(LogLevel level) @export("debug_setloglevel")
 
 //* -- Macros -- *//
 macro void @benchmark(#b; @body()) {
-  time::Time start = time::now();
+  Time start = time::now();
   @body();
-  io::printfn("[%s]  - %s: %s - %sus", "INFO".color(color::GRAY), "BENCHMARK".color(color::DARKGREEN), #b, time::now().diff_us(start));
+  Time end = time::now();
+  Duration timePassed = end.diff_us(start);
+  io::printf("[%s]  - %s: %s - ", "INFO".color(color::GRAY), "BENCHMARK".color(color::DARKGREEN), #b);
+  if (timePassed > (Duration)100000) 
+    { io::printf("%fs", (double)timePassed / 1000000); }
+  else { io::printf("%sus", timePassed); }
+  io::printn("");
 }
 

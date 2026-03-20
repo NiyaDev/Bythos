@@ -9,4 +9,5 @@ fn void loading() @test {
   assert(opts["screen_width"]!!.i == 1280, "Width missing");
   assert(opts["screen_height"]!!.i == 720, "Height missing");
   assert(opts["render_resolution"]!!.f == 1.0, "Render resolution missing");
+  opts.clean();
 }

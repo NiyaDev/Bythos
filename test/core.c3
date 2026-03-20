@@ -9,10 +9,11 @@ import opengl::gl;
 fn void window() @test {
   debug::@benchmark("Initialization") { bythos::init(); };
 
-  float rotation;
+  //float rotation;
   bythos::@loop() {
-    rotation += 0.01;
-    Mesh.draw(rotation:{0,rotation,0});
+    //rotation += 0.01;
+    if (keybinds::is_down("test")) Camera.rotate(target:1);
+    Mesh.draw();
   };
 
   bythos::clean();

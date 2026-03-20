@@ -37,6 +37,12 @@ fn OptionsList load_all(String filename) @export("options_loadall") {
   cfg.free();
   return output;
 }
+fn void OptionsList.clean(&self) @export("options_clean") {
+  self.@each(; String key, Option val)
+    { if (val.type == void*) free(val.other); };
+  self.free();
+}
+
 fn void iterate(Object* data, String name, OptionsList* map) {
   Option opt;
 

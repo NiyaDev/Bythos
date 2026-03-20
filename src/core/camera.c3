@@ -22,29 +22,29 @@ Camera main @export("camera_main") = {
 };
 
 //* -- Functions -- *//
-fn void update(Camera* cam = &main) @export("camer_update") {
-  if ((cam.rotation.close(cam.rotTarget, 5))) {
+fn void Camera.update(&self = &main) @export("camera_update") {
+  if ((self.rotation.close(self.rotTarget, 1))) {
     float dir;
-    if ((cam.rotTarget - cam.rotation) > 0) dir = +1;
-    if ((cam.rotTarget - cam.rotation) < 0) dir = -1;
-    cam.rotation += dir * (500 * (float)bythos::core.time.deltaTime);
+    if ((self.rotTarget - self.rotation) > 0) dir = +0.5;
+    if ((self.rotTarget - self.rotation) < 0) dir = -0.5;
+    self.rotation += dir * (500 * (float)bythos::core.time.deltaTime);
   } else {
-    cam.rotation = cam.rotTarget;
+    self.rotation = self.rotTarget;
 
-    if (cam.rotation < 0) {
-      cam.rotation += 360;
-      cam.rotTarget += 360;
+    if (self.rotation < 0) {
+      self.rotation += 360;
+      self.rotTarget += 360;
     }
-    if (cam.rotation > 360) {
-      cam.rotation -= 360;
-      cam.rotTarget -= 360;
+    if (self.rotation > 360) {
+      self.rotation -= 360;
+      self.rotTarget -= 360;
     }
   }
 }
-fn Matrix4f get_matrix(Camera* cam = &main) @export("camera_getmatrix")
-  => matrix::look_at{float}(cam.target.rotate(cam.distance, cam.rotation), cam.target, cam.up).transpose();
-fn void rotate(float target, Camera* cam = &main) @export("camera_rotate")
-  => cam.rotTarget += target;
-fn bool is_rotating(Camera* cam = &main) @export("camera_isrotating")
-  => cam.rotation != cam.rotTarget;
+fn Matrix4f Camera.get_matrix(&self = &main) @export("camera_getmatrix")
+  => matrix::look_at{float}(self.target.rotate(self.distance, self.rotation), self.target, self.up).transpose();
+fn void Camera.rotate(&self = &main, float target) @export("camera_rotate")
+  => self.rotTarget += target;
+fn bool Camera.is_rotating(&self = &main) @export("camera_isrotating")
+  => self.rotation != self.rotTarget;
 

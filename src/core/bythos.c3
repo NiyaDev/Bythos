@@ -122,7 +122,7 @@ fn void init() @export("bythos_init") {
   debug::info(string::tformat("  > GLSL:      %s", core.gpu.glsl));
   if (core.gpu.shaderBinaries) { debug::info("  > Compiled Shader binaries supported"); }
 
-  //* -- Defualts -- *//
+  //* -- Defaults -- *//
   core.defaultShader2d = shader::compile(shader::DEFAULT_VERTEX_2D, shader::DEFAULT_FRAGMENT_2D);
   core.defaultShader2d.set_vec2("screensize", (Vec2f){(float)core.render.x, (float)core.render.y});
   core.defaultShader3d = shader::compile(shader::DEFAULT_VERTEX_3D, shader::DEFAULT_FRAGMENT_3D);
@@ -136,6 +136,8 @@ fn void init() @export("bythos_init") {
   core.defaultMaterial = {core.defaultShader3d, {}};
   core.defaultMaterial.maps[material::DIFFUSE].texture = core.defaultTexture;
   core.input.keyboard.exitKey = {ESCAPE, UNKNOWN};
+  keybinds = mem::new(HashMap{String, Keybind});
+  keybinds.set("test", {K, UNKNOWN});
 
   //* -- Framebuffer -- *//
   gl::genFramebuffers(1, &core.framebuffer);
@@ -164,6 +166,7 @@ fn void clean() @export("bythos_clean") {
   core.defaultMaterial.clean();
   core.defaultTexture.clean();
   core.quadMat.clean();
+  free(keybinds);
 
   //* -- SDL3 and OpenGL -- *//
   sdlgl::destroyContext(core.context);

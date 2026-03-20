@@ -96,7 +96,7 @@ fn void Mesh.delete(&self) {
 fn void Mesh.draw(&self = &&bythos::get_default_mesh(), Material mat = bythos::get_default_material(), Vec3f position = {}, Vec3f scale = {1,1,1}, Vec3f rotation = {0,0,0}) @export("mesh_draw") {
   gl::useProgram(mat.shader.id);
   gl::bindTexture(gl::GL_TEXTURE_2D, mat.maps[material::DIFFUSE].texture.id);
-  mat.shader.set_matrix("view",  matrix::look_at{float}({0,5,5}, {0,0,0}, {0,1,0}).transpose());
+  mat.shader.set_matrix("view",  Camera.get_matrix());
   mat.shader.set_matrix("model", MATRIX4F_IDENTITY.translate(position).rotate_z(rotation.z).rotate_y(rotation.y).rotate_x(rotation.x).scale(scale).transpose());
 
   //* -- Draw -- *//
@@ -112,7 +112,7 @@ fn void Mesh.draw(&self = &&bythos::get_default_mesh(), Material mat = bythos::g
 fn void Mesh.draw_instanced(&self = &&bythos::get_default_mesh(), Matrix4f[] mats, Material mat = bythos::get_default_material()) @export("mesh_drawinstanced") {
   gl::useProgram(mat.shader.id);
   gl::bindTexture(gl::GL_TEXTURE_2D, mat.maps[material::DIFFUSE].texture.id);
-  mat.shader.set_matrix("view", camera::get_matrix());
+  mat.shader.set_matrix("view", Camera.get_matrix());
 
   //* -- Draw -- *//
   gl::bindVertexArray(self.vao);

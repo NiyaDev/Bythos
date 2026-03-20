@@ -236,6 +236,9 @@ macro void @loop(; @body()) {
     //* -- Handle Keys -- *//
     bythos::handle_keys();
 
+    //* -- Main Camera -- *//
+    Camera.update();
+
   	//* -- Events -- *//
   	if (bythos::parse_events()) break;
 
