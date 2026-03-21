@@ -66,6 +66,3 @@
 - Packing
 - Compression
 
-### Bugs
-- Camera rotation isn't working.
-
