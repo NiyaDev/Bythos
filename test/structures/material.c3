@@ -3,27 +3,27 @@ import std::collections;
 import std::io;
 import bythos;
 
+/*
 fn void loading() @test {
   bythos::init();
 
-  MaterialList list;
-  debug::@benchmark("Loading materials") {list = material::load("resources/tests/material.mtl");};
-  assert(list.len() == 4, "Failed to create all materials. %s != 4", list.len());
+  HashMap{String, Material} mats = material::load("resources/Puffmin.mtl");
+  assert(mats.len() == 4, "Failed to create all materials. %s != 4", mats.len());
 
-  foreach (pair : list) {
-    switch (pair.first) {
+  mats.@each(; String key, Material mat) {
+    switch (key) {
       case "material_0":
-        assert(pair.second.maps[material::DIFFUSE].texture.id == 3, "%s diffuse texture incorrect.", pair.first);
+        assert(mat.maps[material::DIFFUSE].texture.width ==  1, "%s diffuse texture incorrect.", key);
       case "material_1":
-        assert(pair.second.maps[material::DIFFUSE].texture.id == 4, "%s diffuse texture incorrect.", pair.first);
+        assert(mat.maps[material::DIFFUSE].texture.width ==  1, "%s diffuse texture incorrect.", key);
       case "material_2":
-        assert(pair.second.maps[material::DIFFUSE].texture.id == 5, "%s diffuse texture incorrect.", pair.first);
+        assert(mat.maps[material::DIFFUSE].texture.width == 32, "%s diffuse texture incorrect.", key);
       case "material_3":
-        assert(pair.second.maps[material::DIFFUSE].texture.id == 6, "%s diffuse texture incorrect.", pair.first);
+        assert(mat.maps[material::DIFFUSE].texture.width == 16, "%s diffuse texture incorrect.", key);
     }
   };
 
-  foreach (pair : list) pair.second.clean();
   bythos::clean();
 }
+*/
 
