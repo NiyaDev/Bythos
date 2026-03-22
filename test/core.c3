@@ -12,8 +12,10 @@ fn void window() @test {
   //float rotation;
   bythos::@loop() {
     //rotation += 0.01;
-    if (keybinds::is_down("test")) Camera.rotate(target:1);
+    //if (keybinds::is_down("test")) Camera.rotate(target:1);
     Mesh.draw();
+    if (keybinds::is_pressed("test")) debug::@benchmark("Screenshot png") {bythos::screenshot("screenshot.png");};
+    if (keybinds::is_pressed("test")) debug::@benchmark("Screenshot ppm") {bythos::screenshot("screenshot.ppm");};
   };
 
   bythos::clean();

@@ -156,6 +156,59 @@ fn void Texture.clean(&self) @export("texture_clean") {
 fn bool Texture.is_valid(&self) @export("texture_valid")
   => self.id != 0 && self.w != 0 && self.h != 0;
 
+fn char[] Texture.get_raw(&self) @export("texture_getraw") {
+  char[] data = mem::new_array(char, 4 * ((usz)self.w * (usz)self.h));
+  gl::readPixels(0, 0, self.w, self.h, gl::GL_RGBA, gl::GL_UNSIGNED_BYTE, data);
+
+  return data;
+}
+fn void Texture.save(&self, String filename = "texture.ppm") @export("texture_save") {
+  char[] data = self.get_raw();
+  data.reverse(self.w, self.h, 4);
+  defer free(data);
+
+  int result;
+
+  switch (filename.to_tpath().extension()!!) {
+    case "png":
+      Ctx* enc = spng::ctx_new((int)CTXFlags.ENCODER);
+      defer spng::ctx_free(enc);
+
+      result = spng::set_option(enc, spng::Option.ENCODE_TO_BUFFER, 1);
+      if (result != 0) { debug::error("set_options() error:", spng::strerror(result)); return; }
+
+      Ihdr ihdr = {
+        self.w, self.h,
+        8, (char)ColorType.TRUECOLOR_ALPHA,
+        0, 0, 0,
+      };
+      result = spng::set_ihdr(enc, &ihdr);
+      if (result != 0) { debug::error("set_ihdr() error:", spng::strerror(result)); return; }
+
+      result = spng::encode_image(enc, data, data.len, (int)Format.PNG, (int)EncodeFlags.FINALIZE);
+      if (result != 0) { debug::error("encode_image() error:", spng::strerror(result)); return; }
+
+      usz pngSize;
+      void* png = spng::get_png_buffer(enc, &pngSize, &result);
+      if (result != 0) { debug::error("get_png_buffer() error:", spng::strerror(result)); return; }
+
+      file::save(filename, ((char*)png)[:pngSize])!!;
+    case "ppm":
+      File? f = file::open(filename, "wb");
+      if (catch f) { debug::warning("Failed to open file", filename); return; }
+      
+      f.write(string::tformat("P6\n%d %d\n255\n", self.w, self.h))!!;
+      usz index;
+      for (int i; i < data.len; i++) {
+        if (index == 3) { index = 0; continue; }
+        else { index++; }
+        f.write_byte(data[i])!!;
+      }
+      //f.write(data)!!;
+    default: debug::warning("Attempted to save texture as invalid file type");
+  }
+}
+
 fn char[] char[].expand(self, char value, usz offset) {
   char[] output = mem::new_array(char, self.len + (self.len / offset) + 1);
   int count = 1;

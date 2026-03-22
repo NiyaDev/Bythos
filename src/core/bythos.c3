@@ -176,6 +176,9 @@ fn void clean() @export("bythos_clean") {
   sdl3::quit();
 }
 
+fn void screenshot(String filename = "screenshot.ppm") @export("bythos_screenshot")
+  => core.quadMat.maps[material::DIFFUSE].texture.save(filename);
+
 //* -- Benchmarks -- *//
 fn void initialization() @benchmark {
   debug::set_log_level(NONE);

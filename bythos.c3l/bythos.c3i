@@ -14,6 +14,7 @@ extern fn void draw_end()     @extern("bythos_drawend");
 
 extern fn void init()  @extern("bythos_init");
 extern fn void clean() @extern("bythos_clean");
+extern fn void screenshot(String filename = "screenshot.ppm") @extern("bythos_screenshot");
 
 macro void @loop(; @body()) {
   while (true) {
