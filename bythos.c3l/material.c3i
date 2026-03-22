@@ -1,5 +1,9 @@
 
 module bythos;
+import std::collections;
+
+//* -- Types -- *//
+alias MaterialList = List{Pair{String, Material}};
 
 //* -- Structures -- *//
 struct Material {
@@ -7,7 +11,7 @@ struct Material {
   MaterialMap[12] maps;
 }
 struct MaterialMap {
-  //Texture texture;
+  Texture texture;
   Vec3f value;
 }
 
@@ -28,7 +32,11 @@ const usz PREFILTER  = 9;
 const usz BRDF       = 10;
 
 //* -- Functions -- *//
+extern fn MaterialList load(String filename) @extern("material_load");
+extern fn MaterialList load_from_memory(String data, String path = "") @extern("material_loadfrommemory");
 extern fn Material new() @extern("material_new");
 extern fn void Material.clean(&self) @extern("material_clean");
-extern fn bool Material.is_valid(&self) @extern("material_valid")
+extern fn bool Material.is_valid(&self) @extern("material_valid");
+
+extern fn void MaterialList.clean(&self) @extern("material_listclean");
 

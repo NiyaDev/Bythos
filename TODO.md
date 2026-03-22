@@ -7,10 +7,6 @@
     - etc
 
 ### Structures
-- Material
-  - All functions
-  - Unit Tests
-  - Bindings
 - Shader
   - All functions
   - Unit Tests

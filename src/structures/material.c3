@@ -39,7 +39,7 @@ fn MaterialList load_from_memory(String data, String path = "") @export("materia
   usz lineNum;
 
   String name;
-  Material mat;
+  Material mat = {bythos::get_default_3dshader(), {}};
   while (lineNum < lines.len) {
     String[] line = lines[lineNum].tsplit(" ");
     switch (line[0]) {
@@ -82,14 +82,21 @@ fn Material new() @export("material_new") {
   return output;
 }
 fn void Material.clean(&self) @export("material_clean") {
-  if (self.shader.id > 4) self.shader.clean();
+  if (self.shader.id > 7) { self.shader.clean(); }
+  else { self.shader = {0,{}}; }
 
   for (int i; i < self.maps.len; i++) {
-    if (self.maps[i].texture.id > 2) self.maps[i].texture.clean();
+    if (self.maps[i].texture.id > 2) { self.maps[i].texture.clean(); }
+    else { self.maps[i].texture = {0,0,0}; }
   }
 }
 fn bool Material.is_valid(&self) @export("material_valid")
   => self.shader.id != 0;
+
+fn void MaterialList.clean(&self) @export("material_listclean") {
+  foreach (pair : self) pair.second.clean();
+  self.free();
+}
 
 //* -- Constants -- *//
 const usz DIFFUSE    = 0;
