@@ -16,10 +16,14 @@ import bythos;
 
 //* -- Functions -- *//
 fn Shader load(String v, String f) @export("shader_load") {
-  char[] vs = file::exists(v) ? file::load_temp(v)!! : {};
-  char[] fs = file::exists(f) ? file::load_temp(f)!! : {};
+  char[] vs = file::exists(v) ? file::load(mem, v)!! : FB_VERTEX;
+  char[] fs = file::exists(f) ? file::load(mem, f)!! : FB_FRAGMENT;
 
-  return compile(vs, fs);
+  Shader output = compile(vs, fs);
+  //if (vs != FB_VERTEX)   free(vs);
+  //if (fs != FB_FRAGMENT) free(fs);
+
+  return output;
 }
 fn Shader compile(char[] v, char[] f) @export("shader_compile") {
   int result;
@@ -31,10 +35,12 @@ fn Shader compile(char[] v, char[] f) @export("shader_compile") {
   gl::compileShader(vertexShader);
   gl::getShaderiv(vertexShader, gl::GL_COMPILE_STATUS, &result);
   if (!result) {
-    char[] log = mem::new_array(char, 512);
-    gl::getShaderInfoLog(vertexShader, 512, null, (char*)log);
-    debug::error("SHADER: Failed to compile vertex shader\n", log);
+    int size; gl::getShaderiv(vertexShader, gl::GL_INFO_LOG_LENGTH, &size);
+    char[] log = mem::new_array(char, size);
+    gl::getShaderInfoLog(vertexShader, size, null, (char*)log);
+    debug::error("SHADER: Failed to compile vertex shader\n  ", (String)(log[:size-2]));
     free(log);
+    return {};
   } else { gl::attachShader(program, vertexShader); }
 
   //* -- Fragment -- *//
@@ -43,20 +49,24 @@ fn Shader compile(char[] v, char[] f) @export("shader_compile") {
   gl::compileShader(fragmentShader);
   gl::getShaderiv(fragmentShader, gl::GL_COMPILE_STATUS, &result);
   if (!result) {
-    char[] log = mem::new_array(char, 512);
-    gl::getShaderInfoLog(fragmentShader, 512, null, (char*)log);
-    debug::error("SHADER: Failed to compile fragment shader\n", log);
+    int size; gl::getShaderiv(fragmentShader, gl::GL_INFO_LOG_LENGTH, &size);
+    char[] log = mem::new_array(char, size);
+    gl::getShaderInfoLog(fragmentShader, size, null, (char*)log);
+    debug::error("SHADER: Failed to compile fragment shader\n", (String)(log[:size-2]));
     free(log);
+    return {};
   } else { gl::attachShader(program, fragmentShader); }
 
   //* -- Program -- *//
   gl::linkProgram(program);
   gl::getProgramiv(program, gl::GL_LINK_STATUS, &result);
   if (!result) {
-    char[] log = mem::new_array(char, 512);
-    gl::getProgramInfoLog(program, 512, null, (char*)log);
-    debug::error("SHADER: Failed to link shader\n", log);
+    int size; gl::getProgramiv(program, gl::GL_INFO_LOG_LENGTH, &size);
+    char[] log = mem::new_array(char, size);
+    gl::getProgramInfoLog(program, size, null, (char*)log);
+    debug::error("SHADER: Failed to link shader\n", (String)(log[:size-2]));
     free(log);
+    return {};
   }
   debug::info(string::tformat("SHADER: [ID %d] Shader compiled successfully", program));
 
@@ -120,7 +130,7 @@ fn void Shader.set_vec3(&self, String key, Vec3f v) @export("shader_setvec3") {
   }
   gl::uniform3f(loc, v.x, v.y, v.z);
 }
-fn void Shader.set_vec4(&self, String key, Vec4f v) @export("shader_setvec3") {
+fn void Shader.set_vec4(&self, String key, Vec4f v) @export("shader_setvec4") {
   gl::useProgram(self.id);
   uint loc;
   if (self.locs.has_key(key)) {
