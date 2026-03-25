@@ -41,7 +41,8 @@ jobs:
             libxkbcommon-dev \
             wayland-protocols \
             libxss-dev \
-            libxtst-dev
+            libxtst-dev \
+            xvfb
 
       - name: Build SDL3
         run: |
