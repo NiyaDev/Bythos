@@ -39,7 +39,8 @@ jobs:
             libxi-dev \
             libwayland-dev \
             libxkbcommon-dev \
-            wayland-protocols
+            wayland-protocols \
+            libxss-dev
 
       - name: Build SDL3
         run: |
