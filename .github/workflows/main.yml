@@ -29,8 +29,17 @@ jobs:
           sudo apt-get update
           sudo apt-get install -y\
             libgl1-mesa-dev \
-            libspng-dev \
-            libsdl3-dev
+            libspng-dev
+
+      - name: Build SDL3
+        run: |
+          git clone https://github.com/libsdl-org/SDL.git
+          cd SDL
+          mkdir build && cd build
+          cmake ..
+          make -j$(nproc)
+          sudo make install
+          sudo ldconfig
 
       - name: Setup C3
         shell: bash
