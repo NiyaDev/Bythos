@@ -17,6 +17,7 @@ Bythos core @export("core");
 struct Bythos {
   SdlWindow* window;
   SdlGLContext context;
+  bool shouldClose;
 
   Vec2i display, screen, render;
 
@@ -84,12 +85,12 @@ fn void init() @export("bythos_init") {
 
   //* -- SDL3 -- *//
   if (!sdl3::init({.video = true, .audio = true})) 
-    { debug::fatal("Failed to initialize SDL3", sdl3::getError()); }
+    { debug::fatal("Failed to initialize SDL3", ((ZString)sdl3::getError()).str_view()); }
   sdlgl::setAttribute(CONTEXT_MAJOR_VERSION, 3);
   sdlgl::setAttribute(CONTEXT_MINOR_VERSION, 3);
   sdlgl::setAttribute(CONTEXT_PROFILE_MASK, (int)sdlgl::CONTEXT_PROFILE_CORE);
   core.window = sdl3::createWindow("BYTHOS", core.screen.x, core.screen.y, {.opengl = true});
-  if (!core.window) debug::fatal("Failed to create SDL3 window", sdl3::getError());
+  if (!core.window) debug::fatal("Failed to create SDL3 window", ((ZString)sdl3::getError()).str_view());
   SdlRect r;
   sdl3::getDisplayBounds(sdl3::getDisplayForWindow(core.window), &r);
   core.display = {r.w, r.h};
@@ -97,7 +98,7 @@ fn void init() @export("bythos_init") {
   //* -- OpenGL -- *//
   core.context = sdlgl::createContext(core.window);
   if (!core.context) debug::fatal("Failed to create OpenGL context", sdl3::getError());
-  if (!sdlgl::makeCurrent(core.window, core.context)) debug::fatal("Failed to make GLContext current", sdl3::getError());
+  if (!sdlgl::makeCurrent(core.window, core.context)) debug::fatal("Failed to make GLContext current", ((ZString)sdl3::getError()).str_view());
   int? result = opengl::init((gl::GLLoadFn)&sdlgl::getProcAddress);
   if (catch result) debug::fatal("Failed to load OpenGL functions");
   gl::enable((GLenum)gl::GL_DEPTH_TEST);
@@ -171,6 +172,8 @@ fn void clean() @export("bythos_clean") {
   core.defaultMaterial.clean();
   free(keybinds);
 
+  core.shouldClose = false;
+
   //* -- SDL3 and OpenGL -- *//
   sdlgl::destroyContext(core.context);
   core.context = null;
@@ -181,6 +184,9 @@ fn void clean() @export("bythos_clean") {
 
 fn void screenshot(String filename = "screenshot.ppm") @export("bythos_screenshot")
   => core.frameTexture.save(filename);
+
+fn void quit(int errCode) @export("bythos_quit")
+  => core.shouldClose = true;
 
 //* -- Benchmarks -- *//
 fn void initialization() @benchmark {

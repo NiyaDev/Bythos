@@ -16,6 +16,7 @@ fn void render() @test {
   bythos::@loop() {
     sh.set_float("u_time", time);
     time += 0.01;
+    bythos::quit(0);
   };
 
   bythos::clean();

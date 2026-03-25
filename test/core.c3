@@ -16,6 +16,7 @@ fn void window() @test {
     Mesh.draw();
     if (keybinds::is_pressed("test")) debug::@benchmark("Screenshot png") {bythos::screenshot("screenshot.png");};
     if (keybinds::is_pressed("test")) debug::@benchmark("Screenshot ppm") {bythos::screenshot("screenshot.ppm");};
+    bythos::quit(0);
   };
 
   bythos::clean();

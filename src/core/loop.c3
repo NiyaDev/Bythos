@@ -229,7 +229,7 @@ fn void frame_delay() @export("bythos_framedelay") {
 
 //* -- Macros -- *//
 macro void @loop(; @body()) {
-  while (true) {
+  while (!core.shouldClose) {
     //* -- Timing -- *//
     bythos::run_timer();
 
