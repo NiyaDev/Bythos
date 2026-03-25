@@ -5,8 +5,10 @@ layout (location = 1) in vec3 normals;
 layout (location = 2) in vec2 aTexCoords;
 
 out vec2 fragCoord;
+out vec2 uv;
 
 void main() {
+  uv = aTexCoords;
   fragCoord = vec2(aTexCoords.x, aTexCoords.y);
   gl_Position = vec4(aPos.x, aPos.y, 0.0, 1.0);
 }

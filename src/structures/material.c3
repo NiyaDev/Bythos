@@ -82,8 +82,8 @@ fn Material new() @export("material_new") {
   return output;
 }
 fn void Material.clean(&self) @export("material_clean") {
-  if (self.shader.id > 7) { self.shader.clean(); }
-  else { self.shader = {0,{}}; }
+  if (self.shader.id > 4) { self.shader.clean(); }
+  else { self.shader = {0,null}; }
 
   for (int i; i < self.maps.len; i++) {
     if (self.maps[i].texture.id > 2) { self.maps[i].texture.clean(); }

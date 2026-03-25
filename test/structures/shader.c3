@@ -7,26 +7,15 @@ fn void render() @test {
 
   Shader sh = shader::load("","resources/tests/shader_test.vs");
   Texture texture = texture::load("resources/tests/shader.png");
-  sh.set_vec3("iResolution", {1280,720,0});
-  sh.set_float("iTime", 0);
-  sh.set_float("iTimeDelta", 0);
-  sh.set_float("iFrameRate", 60);
-  sh.set_int("iFrame", 0);
-  sh.set_float("iChannelTime", 0);
-  sh.set_vec3("iChannelResolution", {0,0,0});
-  sh.set_vec4("iMouse", {0,0,0,0});
-  sh.set_texture("iChannel0", texture);
-  sh.set_vec4("iDate", {0,0,0,0});
-  sh.set_float("iSampleRate", 0);
-  bythos::core.quadMat.shader = sh;
-  bythos::core.quadMat.maps[material::DIFFUSE].texture = texture;
+  sh.set_vec2("u_resolution", {1280,720});
+  sh.set_vec4("u_mouse", {640,360,0,0});
+  bythos::set_framebuffer_shader(sh);
 
   float time;
 
   bythos::@loop() {
-    sh.set_float("iTime", time);
-    sh.set_float("iTimeDelta", time);
-    time++;
+    sh.set_float("u_time", time);
+    time += 0.01;
   };
 
   bythos::clean();

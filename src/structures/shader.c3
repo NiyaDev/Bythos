@@ -5,12 +5,12 @@ import std::collections;
 //* -- Structures -- *//
 struct Shader {
   uint id;
-  HashMap{String, uint} locs;
+  HashMap{String, uint}* locs;
 }
 
 
 module bythos::shader;
-import std::io, std::math;
+import std::io, std::math, std::collections;
 import opengl::gl;
 import bythos;
 
@@ -74,11 +74,15 @@ fn Shader compile(char[] v, char[] f) @export("shader_compile") {
   gl::deleteShader(vertexShader);
   gl::deleteShader(fragmentShader);
 
-  return {program, {}};
+  return {program, mem::new(HashMap{String, uint})};
 }
 fn void Shader.clean(&self) @export("shader_clean") {
   gl::deleteProgram(self.id);
-  self.locs.free();
+  if (self.locs != null) {
+    self.locs.clear();
+    free(self.locs);
+    self.locs = null;
+  }
 
   debug::info(string::tformat("SHADER: [ID %d] Cleaned up", self.id));
   self.id = 0;

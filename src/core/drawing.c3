@@ -21,7 +21,12 @@ fn void draw_end() @export("bythos_drawend") {
   gl::clear(gl::GL_COLOR_BUFFER_BIT);
   gl::viewport(0, 0, core.screen.x, core.screen.y);
   
-  core.quad.draw(core.quadMat);
+  gl::useProgram(core.frameShader.id);
+  gl::bindTexture(gl::GL_TEXTURE_2D, core.frameTexture.id);
+  gl::bindVertexArray(core.quad.vao);
+  gl::drawArrays(gl::GL_TRIANGLES, 0, core.quad.vertices.len);
+  gl::bindVertexArray(0);
+  //core.quad.draw(core.quadMat);
   sdlgl::swapWindow(core.window);
 }
 

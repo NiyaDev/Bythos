@@ -20,9 +20,11 @@ struct Bythos {
 
   Vec2i display, screen, render;
 
+  //* -- Framebuffer -- *//
   uint framebuffer, renderbuffer;
   Mesh quad;
-  Material quadMat;
+  Texture frameTexture;
+  Shader frameShader;
 
   Shader defaultShader2d, defaultShader3d;
   Texture defaultTexture;
@@ -127,9 +129,6 @@ fn void init() @export("bythos_init") {
   core.defaultShader2d.set_vec2("screensize", (Vec2f){(float)core.render.x, (float)core.render.y});
   core.defaultShader3d = shader::compile(shader::DEFAULT_VERTEX_3D, shader::DEFAULT_FRAGMENT_3D);
   core.defaultShader3d.set_matrix("projection", matrix::perspective{float}(70 * (math::PI / 180), (float)core.render.x / (float)core.render.y, 0.1, 100).transpose());
-  core.quad = mesh::new(PLANE);
-  core.quadMat = {shader::compile(shader::FB_VERTEX, shader::FB_FRAGMENT), {}};
-  core.quadMat.shader.set_int("screenTexture", 0);
   core.defaultMesh = mesh::new(CUBE);
   core.textureMesh = mesh::new(PLANE);
   core.defaultTexture = texture::load_from_memory(texture::def, "ppm");
@@ -140,11 +139,15 @@ fn void init() @export("bythos_init") {
   keybinds.set("test", {K, UNKNOWN});
 
   //* -- Framebuffer -- *//
+  core.quad = mesh::new(PLANE);
+  core.frameShader = shader::compile(shader::FB_VERTEX, shader::FB_FRAGMENT);
+  core.frameShader.set_int("screenTexture", 0);
+  core.frameTexture = texture::new(core.render.x, core.render.y);
+
   gl::genFramebuffers(1, &core.framebuffer);
   gl::bindFramebuffer(gl::GL_FRAMEBUFFER, core.framebuffer);
-  core.quadMat.maps[material::DIFFUSE].texture = texture::new(core.render.x, core.render.y);
   gl::framebufferTexture2D(gl::GL_FRAMEBUFFER, gl::GL_COLOR_ATTACHMENT0, gl::GL_TEXTURE_2D,
-                           core.quadMat.maps[material::DIFFUSE].texture.id, 0);
+                           core.frameTexture.id, 0);
   gl::genRenderbuffers(1, &core.renderbuffer);
   gl::bindRenderbuffer(gl::GL_RENDERBUFFER, core.renderbuffer);
   gl::renderbufferStorage(gl::GL_RENDERBUFFER, gl::GL_DEPTH24_STENCIL8,
@@ -159,13 +162,18 @@ fn void clean() @export("bythos_clean") {
   //* -- Freeing defaults -- *//
   core.defaultShader2d.clean();
   core.defaultShader3d.clean();
+  debug::info("test");
+  core.frameShader.clean();
+  debug::info("test");
   core.quad.clean();
-  core.quadMat.clean();
+  core.frameTexture.clean();
+  debug::info("test");
   core.defaultMesh.clean();
   core.textureMesh.clean();
-  core.defaultMaterial.clean();
+  debug::info("test");
   core.defaultTexture.clean();
-  core.quadMat.clean();
+  core.defaultMaterial.clean();
+  debug::info("test");
   free(keybinds);
 
   //* -- SDL3 and OpenGL -- *//
@@ -177,7 +185,7 @@ fn void clean() @export("bythos_clean") {
 }
 
 fn void screenshot(String filename = "screenshot.ppm") @export("bythos_screenshot")
-  => core.quadMat.maps[material::DIFFUSE].texture.save(filename);
+  => core.frameTexture.save(filename);
 
 //* -- Benchmarks -- *//
 fn void initialization() @benchmark {
