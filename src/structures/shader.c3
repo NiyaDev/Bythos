@@ -20,8 +20,8 @@ fn Shader load(String v, String f) @export("shader_load") {
   char[] fs = file::exists(f) ? file::load(mem, f)!! : FB_FRAGMENT;
 
   Shader output = compile(vs, fs);
-  //if (vs != FB_VERTEX)   free(vs);
-  //if (fs != FB_FRAGMENT) free(fs);
+  if (vs != FB_VERTEX)   free(vs);
+  if (fs != FB_FRAGMENT) free(fs);
 
   return output;
 }
