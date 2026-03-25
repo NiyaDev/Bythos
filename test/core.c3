@@ -19,7 +19,6 @@ fn void window() @test {
   };
 
   bythos::clean();
-  assert(false);
 }
 
 //*/

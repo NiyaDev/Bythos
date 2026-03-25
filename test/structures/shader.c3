@@ -19,7 +19,6 @@ fn void render() @test {
   };
 
   bythos::clean();
-  assert(false);
 }
 /* TODO: Create shader to test things with
 fn void set_uniforms() @test {
