@@ -30,12 +30,12 @@ fn Shader compile(char[] v, char[] f) @export("shader_compile") {
   uint program = gl::createProgram();
 
   //* -- Vertex -- *//
-  uint vertexShader = gl::createShader(gl::GL_VERTEX_SHADER);
+  uint vertexShader = gl::createShader((GLenum)gl::GL_VERTEX_SHADER);
   gl::shaderSource(vertexShader, 1, &&((char*)v), null);
   gl::compileShader(vertexShader);
-  gl::getShaderiv(vertexShader, gl::GL_COMPILE_STATUS, &result);
+  gl::getShaderiv(vertexShader, (GLenum)gl::GL_COMPILE_STATUS, &result);
   if (!result) {
-    int size; gl::getShaderiv(vertexShader, gl::GL_INFO_LOG_LENGTH, &size);
+    int size; gl::getShaderiv(vertexShader, (GLenum)gl::GL_INFO_LOG_LENGTH, &size);
     char[] log = mem::new_array(char, size);
     gl::getShaderInfoLog(vertexShader, size, null, (char*)log);
     debug::error("SHADER: Failed to compile vertex shader\n  ", (String)(log[:size-2]));
@@ -44,12 +44,12 @@ fn Shader compile(char[] v, char[] f) @export("shader_compile") {
   } else { gl::attachShader(program, vertexShader); }
 
   //* -- Fragment -- *//
-  uint fragmentShader = gl::createShader(gl::GL_FRAGMENT_SHADER);
+  uint fragmentShader = gl::createShader((GLenum)gl::GL_FRAGMENT_SHADER);
   gl::shaderSource(fragmentShader, 1, &&((char*)f), null);
   gl::compileShader(fragmentShader);
-  gl::getShaderiv(fragmentShader, gl::GL_COMPILE_STATUS, &result);
+  gl::getShaderiv(fragmentShader, (GLenum)gl::GL_COMPILE_STATUS, &result);
   if (!result) {
-    int size; gl::getShaderiv(fragmentShader, gl::GL_INFO_LOG_LENGTH, &size);
+    int size; gl::getShaderiv(fragmentShader, (GLenum)gl::GL_INFO_LOG_LENGTH, &size);
     char[] log = mem::new_array(char, size);
     gl::getShaderInfoLog(fragmentShader, size, null, (char*)log);
     debug::error("SHADER: Failed to compile fragment shader\n", (String)(log[:size-2]));
@@ -59,9 +59,9 @@ fn Shader compile(char[] v, char[] f) @export("shader_compile") {
 
   //* -- Program -- *//
   gl::linkProgram(program);
-  gl::getProgramiv(program, gl::GL_LINK_STATUS, &result);
+  gl::getProgramiv(program, (GLenum)gl::GL_LINK_STATUS, &result);
   if (!result) {
-    int size; gl::getProgramiv(program, gl::GL_INFO_LOG_LENGTH, &size);
+    int size; gl::getProgramiv(program, (GLenum)gl::GL_INFO_LOG_LENGTH, &size);
     char[] log = mem::new_array(char, size);
     gl::getProgramInfoLog(program, size, null, (char*)log);
     debug::error("SHADER: Failed to link shader\n", (String)(log[:size-2]));

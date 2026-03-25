@@ -113,15 +113,15 @@ fn Texture load_from_memory(char[] data, String type = "png") @export("texture_l
 
   //* -- Gen OpenGL texture -- *//
   gl::genTextures(1, &output.id);
-  gl::bindTexture(gl::GL_TEXTURE_2D, output.id);
-  gl::texParameteri(gl::GL_TEXTURE_2D, gl::GL_TEXTURE_MIN_FILTER, gl::GL_NEAREST);
-  gl::texParameteri(gl::GL_TEXTURE_2D, gl::GL_TEXTURE_MAG_FILTER, gl::GL_NEAREST);
+  gl::bindTexture((GLenum)gl::GL_TEXTURE_2D, output.id);
+  gl::texParameteri((GLenum)gl::GL_TEXTURE_2D, (GLenum)gl::GL_TEXTURE_MIN_FILTER, gl::GL_NEAREST);
+  gl::texParameteri((GLenum)gl::GL_TEXTURE_2D, (GLenum)gl::GL_TEXTURE_MAG_FILTER, gl::GL_NEAREST);
 
   gl::texImage2D(
-    gl::GL_TEXTURE_2D, 0, gl::GL_RGBA,
+    (GLenum)gl::GL_TEXTURE_2D, 0, gl::GL_RGBA,
     output.w, output.h, 0,
-    gl::GL_RGBA, gl::GL_UNSIGNED_BYTE, img);
-  gl::generateMipmap(gl::GL_TEXTURE_2D);
+    (GLenum)gl::GL_RGBA, (GLenum)gl::GL_UNSIGNED_BYTE, img);
+  gl::generateMipmap((GLenum)gl::GL_TEXTURE_2D);
 
   free(img);
   if (output.id == 0) { debug::error("Failed to upload image to OpenGL."); return {}; }
@@ -133,15 +133,15 @@ fn Texture load_from_memory(char[] data, String type = "png") @export("texture_l
 fn Texture new(int width, int height) @export("texture_new") {
   uint id;
   gl::genTextures(1, &id);
-  gl::bindTexture(gl::GL_TEXTURE_2D, id);
-  gl::texParameteri(gl::GL_TEXTURE_2D, gl::GL_TEXTURE_MIN_FILTER, gl::GL_NEAREST);
-  gl::texParameteri(gl::GL_TEXTURE_2D, gl::GL_TEXTURE_MAG_FILTER, gl::GL_NEAREST);
+  gl::bindTexture((GLenum)gl::GL_TEXTURE_2D, id);
+  gl::texParameteri((GLenum)gl::GL_TEXTURE_2D, (GLenum)gl::GL_TEXTURE_MIN_FILTER, gl::GL_NEAREST);
+  gl::texParameteri((GLenum)gl::GL_TEXTURE_2D, (GLenum)gl::GL_TEXTURE_MAG_FILTER, gl::GL_NEAREST);
 
   gl::texImage2D(
-    gl::GL_TEXTURE_2D, 0, gl::GL_RGBA,
+    (GLenum)gl::GL_TEXTURE_2D, 0, gl::GL_RGBA,
     width, height, 0,
-    gl::GL_RGBA, gl::GL_UNSIGNED_BYTE, null);
-  gl::generateMipmap(gl::GL_TEXTURE_2D);
+    (GLenum)gl::GL_RGBA, (GLenum)gl::GL_UNSIGNED_BYTE, null);
+  gl::generateMipmap((GLenum)gl::GL_TEXTURE_2D);
 
   debug::info(string::tformat("TEXTURE: [ID %d] Texture loaded successfully (%dx%d)", id, width, height));
 
@@ -158,7 +158,7 @@ fn bool Texture.is_valid(&self) @export("texture_valid")
 
 fn char[] Texture.get_raw(&self) @export("texture_getraw") {
   char[] data = mem::new_array(char, 4 * ((usz)self.w * (usz)self.h));
-  gl::readPixels(0, 0, self.w, self.h, gl::GL_RGBA, gl::GL_UNSIGNED_BYTE, data);
+  gl::readPixels(0, 0, self.w, self.h, (GLenum)gl::GL_RGBA, (GLenum)gl::GL_UNSIGNED_BYTE, data);
 
   return data;
 }

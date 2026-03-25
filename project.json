@@ -1,7 +1,7 @@
 {
   "langrev": "1",
   "warnings":  [ "no-unused" ],
-  "dependency-search-paths":  [ "/lib/", "../" ],
+  "dependency-search-paths":  [ "lib" ],
   "dependencies":  [ "spng", "sdl3", "toml", "opengl" ],
   "linked-libraries":  [ "GL", "SDL3" ],
   "authors":  [ "NiyaDev" ],

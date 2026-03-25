@@ -100,9 +100,9 @@ fn void init() @export("bythos_init") {
   if (!sdlgl::makeCurrent(core.window, core.context)) debug::fatal("Failed to make GLContext current", sdl3::getError());
   int? result = opengl::init((gl::GLLoadFn)&sdlgl::getProcAddress);
   if (catch result) debug::fatal("Failed to load OpenGL functions");
-  gl::enable(gl::GL_DEPTH_TEST);
-  gl::enable(gl::GL_BLEND);
-  gl::blendFunc(gl::GL_SRC_ALPHA, gl::GL_ONE_MINUS_SRC_ALPHA);
+  gl::enable((GLenum)gl::GL_DEPTH_TEST);
+  gl::enable((GLenum)gl::GL_BLEND);
+  gl::blendFunc((GLenum)gl::GL_SRC_ALPHA, (GLenum)gl::GL_ONE_MINUS_SRC_ALPHA);
 
   //* -- Screen Info -- *//
   debug::info("Display device initialized successfully");
@@ -111,11 +111,11 @@ fn void init() @export("bythos_init") {
   debug::info(string::tformat("  > Render resolution:  %d x %d", core.render.x, core.render.y));
 
   //* -- Display Driver Info -- *//
-  core.gpu.vendor   = ((ZString)gl::getString(gl::GL_VENDOR)).str_view();
-  core.gpu.renderer = ((ZString)gl::getString(gl::GL_RENDERER)).str_view();
-  core.gpu.version  = ((ZString)gl::getString(gl::GL_VERSION)).str_view();
-  core.gpu.glsl     = ((ZString)gl::getString(gl::GL_SHADING_LANGUAGE_VERSION)).str_view();
-  gl::getIntegerv(gl::GL_NUM_PROGRAM_BINARY_FORMATS, &core.gpu.shaderBinaries);
+  core.gpu.vendor   = ((ZString)gl::getString((GLenum)gl::GL_VENDOR)).str_view();
+  core.gpu.renderer = ((ZString)gl::getString((GLenum)gl::GL_RENDERER)).str_view();
+  core.gpu.version  = ((ZString)gl::getString((GLenum)gl::GL_VERSION)).str_view();
+  core.gpu.glsl     = ((ZString)gl::getString((GLenum)gl::GL_SHADING_LANGUAGE_VERSION)).str_view();
+  gl::getIntegerv((GLenum)gl::GL_NUM_PROGRAM_BINARY_FORMATS, &core.gpu.shaderBinaries);
 
   debug::info("OpenGL device information");
   debug::info(string::tformat("  > Vendor:    %s", core.gpu.vendor));
@@ -145,35 +145,30 @@ fn void init() @export("bythos_init") {
   core.frameTexture = texture::new(core.render.x, core.render.y);
 
   gl::genFramebuffers(1, &core.framebuffer);
-  gl::bindFramebuffer(gl::GL_FRAMEBUFFER, core.framebuffer);
-  gl::framebufferTexture2D(gl::GL_FRAMEBUFFER, gl::GL_COLOR_ATTACHMENT0, gl::GL_TEXTURE_2D,
+  gl::bindFramebuffer((GLenum)gl::GL_FRAMEBUFFER, core.framebuffer);
+  gl::framebufferTexture2D((GLenum)gl::GL_FRAMEBUFFER, (GLenum)gl::GL_COLOR_ATTACHMENT0, (GLenum)gl::GL_TEXTURE_2D,
                            core.frameTexture.id, 0);
   gl::genRenderbuffers(1, &core.renderbuffer);
-  gl::bindRenderbuffer(gl::GL_RENDERBUFFER, core.renderbuffer);
-  gl::renderbufferStorage(gl::GL_RENDERBUFFER, gl::GL_DEPTH24_STENCIL8,
+  gl::bindRenderbuffer((GLenum)gl::GL_RENDERBUFFER, core.renderbuffer);
+  gl::renderbufferStorage((GLenum)gl::GL_RENDERBUFFER, (GLenum)gl::GL_DEPTH24_STENCIL8,
                           core.render.x, core.render.y);
-  gl::framebufferRenderbuffer(gl::GL_FRAMEBUFFER,  gl::GL_DEPTH_STENCIL_ATTACHMENT,
-                              gl::GL_RENDERBUFFER, core.renderbuffer);
-  if (gl::checkFramebufferStatus(gl::GL_FRAMEBUFFER) != gl::GL_FRAMEBUFFER_COMPLETE)
+  gl::framebufferRenderbuffer((GLenum)gl::GL_FRAMEBUFFER,  (GLenum)gl::GL_DEPTH_STENCIL_ATTACHMENT,
+                              (GLenum)gl::GL_RENDERBUFFER, core.renderbuffer);
+  if (gl::checkFramebufferStatus((GLenum)gl::GL_FRAMEBUFFER) != (GLenum)gl::GL_FRAMEBUFFER_COMPLETE)
     { debug::fatal("Failed to initialize framebuffer"); }
-  gl::bindFramebuffer(gl::GL_FRAMEBUFFER, 0);
+  gl::bindFramebuffer((GLenum)gl::GL_FRAMEBUFFER, 0);
 }
 fn void clean() @export("bythos_clean") {
   //* -- Freeing defaults -- *//
   core.defaultShader2d.clean();
   core.defaultShader3d.clean();
-  debug::info("test");
   core.frameShader.clean();
-  debug::info("test");
   core.quad.clean();
   core.frameTexture.clean();
-  debug::info("test");
   core.defaultMesh.clean();
   core.textureMesh.clean();
-  debug::info("test");
   core.defaultTexture.clean();
   core.defaultMaterial.clean();
-  debug::info("test");
   free(keybinds);
 
   //* -- SDL3 and OpenGL -- *//

@@ -1,0 +1,6 @@
+[submodule "lib/toml.c3l"]
+	path = lib/toml.c3l
+	url = http://github.com/konimarti/toml.c3l
+[submodule "lib/spng.c3l"]
+	path = lib/spng.c3l
+	url = https://github.com/NiyaDev/spng.c3l

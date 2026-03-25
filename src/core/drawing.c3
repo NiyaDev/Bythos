@@ -5,28 +5,26 @@ import opengl::gl;
 
 //* -- Functions -- *//
 fn void draw_start() @export("bythos_drawstart") {
-  gl::bindFramebuffer(gl::GL_FRAMEBUFFER, core.framebuffer);
-  gl::enable(gl::GL_DEPTH_TEST);
+  gl::bindFramebuffer((GLenum)gl::GL_FRAMEBUFFER, core.framebuffer);
+  gl::enable((GLenum)gl::GL_DEPTH_TEST);
   gl::viewport(0,0, core.render.x, core.render.y);
 
   gl::clearColor(0.5,0.5,0.5,1);
-  gl::clear(gl::GL_COLOR_BUFFER_BIT | gl::GL_DEPTH_BUFFER_BIT);
-
-  //gl::polygonMode(gl::GL_FRONT_AND_BACK, gl::GL_LINE);
+  gl::clear((GLbitfield)gl::GL_COLOR_BUFFER_BIT | (GLbitfield)gl::GL_DEPTH_BUFFER_BIT);
 }
 fn void draw_end() @export("bythos_drawend") {
-  gl::bindFramebuffer(gl::GL_FRAMEBUFFER, 0);
-  gl::disable(gl::GL_DEPTH_TEST);
+  gl::bindFramebuffer((GLenum)gl::GL_FRAMEBUFFER, 0);
+  gl::disable((GLenum)gl::GL_DEPTH_TEST);
   gl::clearColor(0,0.5,0,1);
-  gl::clear(gl::GL_COLOR_BUFFER_BIT);
+  gl::clear((GLbitfield)gl::GL_COLOR_BUFFER_BIT);
   gl::viewport(0, 0, core.screen.x, core.screen.y);
   
   gl::useProgram(core.frameShader.id);
-  gl::bindTexture(gl::GL_TEXTURE_2D, core.frameTexture.id);
+  gl::bindTexture((GLenum)gl::GL_TEXTURE_2D, core.frameTexture.id);
   gl::bindVertexArray(core.quad.vao);
-  gl::drawArrays(gl::GL_TRIANGLES, 0, core.quad.vertices.len);
+  gl::drawArrays((GLenum)gl::GL_TRIANGLES, 0, core.quad.vertices.len);
   gl::bindVertexArray(0);
-  //core.quad.draw(core.quadMat);
+
   sdlgl::swapWindow(core.window);
 }
 
