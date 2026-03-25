@@ -24,6 +24,14 @@ jobs:
         with:
           submodules: recursive
 
+      - name: Install dependencies
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y\
+            libgl1-mesa-dev \
+            libspng-dev \
+            libsdl3-dev
+
       - name: Setup C3
         shell: bash
         run: |
