@@ -40,7 +40,8 @@ jobs:
             libwayland-dev \
             libxkbcommon-dev \
             wayland-protocols \
-            libxss-dev
+            libxss-dev \
+            libxtst-dev
 
       - name: Build SDL3
         run: |
