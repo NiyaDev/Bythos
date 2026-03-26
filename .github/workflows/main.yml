@@ -66,5 +66,6 @@ jobs:
       - name: Run unit tests
         run: |
           export SDL_VIDEODRIVER=dummy
+          export SDL_AUDIODRIVER=dummy
           c3c test
 
