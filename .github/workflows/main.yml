@@ -49,7 +49,11 @@ jobs:
           git clone https://github.com/libsdl-org/SDL.git
           cd SDL
           mkdir build && cd build
-          cmake ..
+          cmake .. \
+            -DSDL_VIDEO=ON \
+            -DSDL_X11=ON \
+            -DSDL_WAYLAND=OFF \
+            -DSDL_OPENGL=ON
           make -j$(nproc)
           sudo make install
           sudo ldconfig
@@ -65,7 +69,8 @@ jobs:
 
       - name: Run unit tests
         run: |
-          export SDL_VIDEODRIVER=dummy
-          export SDL_AUDIODRIVER=dummy
+          export SDL_VIDEODRIVER=x11
+          export LIBGL_ALWAYS_SOFTWARE=1
+          xvfb-run --auto-servernum --server-args="-screen 0 1024x768x24"
           c3c test
 
