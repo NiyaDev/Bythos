@@ -1,0 +1,42 @@
+
+module bythos;
+import std::collections;
+
+//* -- Types -- *//
+alias OptionsList = HashMap{String, Option};
+
+//* -- Structures -- *//
+struct Option {
+  typeid type;
+  union {
+    bool b;
+    uint128 i;
+    double f;
+    String s;
+    void* other;
+  }
+}
+
+
+module bythos::options;
+import std::collections;
+
+//* -- Functions -- *//
+extern fn OptionsList load_all(String filename) @extern("options_loadall");
+extern fn void OptionsList.clean(&self) @extern("options_clean");
+
+extern fn void iterate(Object* data, String name, OptionsList* map);
+
+extern fn char HashMap{String,Option}.as_char(self, String key) @extern("options_char");
+extern fn ushort HashMap{String,Option}.as_ushort(self, String key) @extern("options_ushort");
+extern fn uint HashMap{String,Option}.as_uint(self, String key) @extern("options_uint");
+extern fn ulong HashMap{String,Option}.as_ulong(self, String key) @extern("options_ulong");
+extern fn ichar HashMap{String,Option}.as_ichar(self, String key) @extern("options_ichar");
+extern fn short HashMap{String,Option}.as_short(self, String key) @extern("options_short");
+extern fn int HashMap{String,Option}.as_int(self, String key) @extern("options_int");
+extern fn long HashMap{String,Option}.as_long(self, String key) @extern("options_long");
+extern fn float HashMap{String,Option}.as_float(self, String key) @extern("options_float");
+extern fn double HashMap{String,Option}.as_double(self, String key) @extern("options_double");
+extern fn bool HashMap{String,Option}.as_bool(self, String key) @extern("options_bool");
+extern fn String HashMap{String,Option}.as_string(self, String key) @extern("options_string");
+

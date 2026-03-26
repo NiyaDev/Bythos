@@ -1,0 +1,23 @@
+
+module bythos;
+
+//* -- Structures -- *//
+struct Camera {
+  Vec3f target, distance, up;
+  float fov, rotation, rotTarget;
+}
+
+
+module bythos::camera;
+import std::math;
+import bythos;
+
+//* -- Globals -- *//
+extern Camera main @extern("camera_main");
+
+//* -- Functions -- *//
+extern fn void Camera.update(&self = &main) @extern("camera_update");
+extern fn Matrix4f Camera.get_matrix(&self = &main) @extern("camera_getmatrix");
+extern fn void Camera.rotate(&self = &main, float target) @extern("camera_rotate");
+extern fn bool Camera.is_rotating(&self = &main) @extern("camera_isrotating");
+

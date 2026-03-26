@@ -69,28 +69,28 @@ fn void iterate(Object* data, String name, OptionsList* map) {
   map.set(name, opt);
 }
 
-fn char HashMap{String,Option}.as_char(self, String key)
+fn char HashMap{String,Option}.as_char(self, String key) @export("options_char")
   => (char)self[key]!!.i;
-fn ushort HashMap{String,Option}.as_ushort(self, String key)
+fn ushort HashMap{String,Option}.as_ushort(self, String key) @export("options_ushort")
   => (ushort)self[key]!!.i;
-fn uint HashMap{String,Option}.as_uint(self, String key)
+fn uint HashMap{String,Option}.as_uint(self, String key) @export("options_uint")
   => (uint)self[key]!!.i;
-fn ulong HashMap{String,Option}.as_ulong(self, String key)
+fn ulong HashMap{String,Option}.as_ulong(self, String key) @export("options_ulong")
   => (ulong)self[key]!!.i;
-fn ichar HashMap{String,Option}.as_ichar(self, String key)
+fn ichar HashMap{String,Option}.as_ichar(self, String key) @export("options_ichar")
   => (ichar)self[key]!!.i;
-fn short HashMap{String,Option}.as_short(self, String key)
+fn short HashMap{String,Option}.as_short(self, String key) @export("options_short")
   => (short)self[key]!!.i;
-fn int HashMap{String,Option}.as_int(self, String key)
+fn int HashMap{String,Option}.as_int(self, String key) @export("options_int")
   => (int)self[key]!!.i;
-fn long HashMap{String,Option}.as_long(self, String key)
+fn long HashMap{String,Option}.as_long(self, String key) @export("options_long")
   => (long)self[key]!!.i;
-fn float HashMap{String,Option}.as_float(self, String key)
+fn float HashMap{String,Option}.as_float(self, String key) @export("options_float")
   => (float)self[key]!!.f;
-fn double HashMap{String,Option}.as_double(self, String key)
+fn double HashMap{String,Option}.as_double(self, String key) @export("options_double")
   => self[key]!!.f;
-fn bool HashMap{String,Option}.as_bool(self, String key)
+fn bool HashMap{String,Option}.as_bool(self, String key) @export("options_bool")
   => self[key]!!.b;
-fn String HashMap{String,Option}.as_string(self, String key)
+fn String HashMap{String,Option}.as_string(self, String key) @export("options_string")
   => self[key]!!.s;
 

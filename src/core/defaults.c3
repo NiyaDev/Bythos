@@ -35,13 +35,9 @@ fn void set_default_3dshader(Shader s) @export("default_set3dshader") {
 fn void set_framebuffer_shader(Shader s) @export("default_framebuffershader") {
   core.frameShader.clean();
   core.frameShader = s;
-  //core.quadMat.shader.clean();
-  //core.quadMat.shader = s;
 }
 fn void set_framebuffer_texture(Texture t) @export("defualt_framebuffertexture") {
   core.frameTexture.clean();
   core.frameTexture = t;
-  //core.quadMat.maps[material::DIFFUSE].texture.clean();
-  //core.quadMat.maps[material::DIFFUSE].texture = t;
 }
 

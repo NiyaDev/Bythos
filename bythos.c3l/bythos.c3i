@@ -15,11 +15,12 @@ extern fn void draw_end()     @extern("bythos_drawend");
 extern fn void init()  @extern("bythos_init");
 extern fn void clean() @extern("bythos_clean");
 extern fn void screenshot(String filename = "screenshot.ppm") @extern("bythos_screenshot");
+extern fn void quit(int errCode) @extern("bythos_quit");
 
 macro void @loop(; @body()) {
   while (true) {
     //* -- Timing -- *//
-    run_timer();
+    bythos::run_timer();
 
     //* -- Handle Keys -- *//
     bythos::handle_keys();
@@ -28,15 +29,15 @@ macro void @loop(; @body()) {
     Camera.update();
 
   	//* -- Events -- *//
-  	if (parse_events()) break;
+  	if (bythos::parse_events()) break;
 
   	//* -- Body -- *//
-  	draw_start();
+  	bythos::draw_start();
     @body();
-  	draw_end();
+  	bythos::draw_end();
 
   	//* -- Frame delay -- *//
-  	frame_delay();
+  	bythos::frame_delay();
   }
 }
 

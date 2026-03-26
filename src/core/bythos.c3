@@ -11,7 +11,7 @@ const usz MAX_KEYBOARD_KEYS = 512;
 const usz MAX_KEY_QUEUE     =  16;
 
 //* -- Globals -- *//
-Bythos core @export("core");
+Bythos core;
 
 //* -- Structs -- *//
 struct Bythos {

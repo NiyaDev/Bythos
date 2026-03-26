@@ -20,6 +20,19 @@ module bythos::material;
 import std::io, std::collections;
 import bythos;
 
+//* -- Constants -- *//
+const usz DIFFUSE    = 0;
+const usz METALNESS  = 1;
+const usz NORMAL     = 2;
+const usz ROUGHNESS  = 3;
+const usz OCCLUSION  = 4;
+const usz EMISSION   = 5;
+const usz HEIGHT     = 6;
+const usz CUBEMAP    = 7;
+const usz IRRADIANCE = 8;
+const usz PREFILTER  = 9;
+const usz BRDF       = 10;
+
 //* -- Functions -- *//
 fn MaterialList load(String filename) @export("material_load") {
   File? f = file::open(filename, "rb");
@@ -98,16 +111,4 @@ fn void MaterialList.clean(&self) @export("material_listclean") {
   self.free();
 }
 
-//* -- Constants -- *//
-const usz DIFFUSE    = 0;
-const usz METALNESS  = 1;
-const usz NORMAL     = 2;
-const usz ROUGHNESS  = 3;
-const usz OCCLUSION  = 4;
-const usz EMISSION   = 5;
-const usz HEIGHT     = 6;
-const usz CUBEMAP    = 7;
-const usz IRRADIANCE = 8;
-const usz PREFILTER  = 9;
-const usz BRDF       = 10;
 
