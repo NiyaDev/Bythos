@@ -71,6 +71,5 @@ jobs:
         run: |
           export SDL_VIDEODRIVER=x11
           export LIBGL_ALWAYS_SOFTWARE=1
-          xvfb-run --auto-servernum --server-args="-screen 0 1024x768x24"
-          c3c test
+          xvfb-run --auto-servernum --server-args="-screen 0 1024x768x24" c3c test
 
