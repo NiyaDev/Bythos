@@ -16,7 +16,7 @@ enum TilingLayout {
 
 
 module bythos::texture;
-import std::collections, std::io;
+import std::collections, std::io, std::math;
 import opengl::gl;
 import spng;
 import bythos;
@@ -155,6 +155,70 @@ fn void Texture.clean(&self) @export("texture_clean") {
 }
 fn bool Texture.is_valid(&self) @export("texture_valid")
   => self.id != 0 && self.w != 0 && self.h != 0;
+
+fn void Texture.draw(&self = &&bythos::get_default_texture(), Rectangle dst = {}, Rectangle src = {}, Color tint = color::WHITE) @export("texture_draw") {
+  //* -- Calculating size on screen -- *//
+  Vec2f newSize = {
+    dst.w == 0 ? self.w : dst.w,
+    dst.h == 0 ? self.h : dst.h,
+  };
+  Vec4f newSrc = {
+    src.x, src.y,
+    src.w == 0 ? self.w : src.w,
+    src.h == 0 ? self.h : src.h,
+  };
+
+  //* -- Draw -- *//
+  gl::useProgram(bythos::core.defaultShader2d.id);
+  gl::bindTexture((GLenum)gl::GL_TEXTURE_2D, self.id);
+  bythos::core.defaultShader2d.set_vec2("position", {
+    -(float)bythos::core.render.x + (dst.x * 2) + newSize.x,
+    -(float)bythos::core.render.y + (dst.y * 2) + newSize.y,
+  });
+  bythos::core.defaultShader2d.set_vec2("scale", newSize);
+  bythos::core.defaultShader2d.set_vec2("texOffset", {newSrc.x, (1-newSrc.w) - newSrc.y});
+  bythos::core.defaultShader2d.set_vec2("texScale", newSrc.zw / 2);
+  bythos::core.defaultShader2d.set_vec4("texColor", tint.normalize());
+  gl::disable((GLenum)gl::GL_DEPTH_TEST);
+  gl::bindVertexArray(bythos::core.textureMesh.vao);
+  gl::drawArrays((GLenum)gl::GL_TRIANGLES, 0, bythos::core.textureMesh.vertices.len);
+  gl::enable((GLenum)gl::GL_DEPTH_TEST);
+  gl::bindVertexArray(0);
+}
+fn void Texture.draw_instanced(&self = &&bythos::get_default_texture(), Rectangle[] dst, Rectangle[] src, Color[] tint) @export("texture_drawinstanced") {
+  gl::disable((GLenum)gl::GL_DEPTH_TEST);
+  gl::bindVertexArray(bythos::core.textureMesh.vao);
+  gl::bindTexture((GLenum)gl::GL_TEXTURE_2D, self.id);
+  gl::useProgram(bythos::core.defaultShader2d.id);
+
+  for (int i; i < dst.len; i++) {
+    Vec2f newSize = {
+      dst[i].w == 0 ? self.w : dst[i].w,
+      dst[i].h == 0 ? self.h : dst[i].h,
+    };
+    Vec4f texCoords = {
+      src[i].x, src[i].y,
+      src[i].w == 0 ? self.w : src[i].w,
+      src[i].h == 0 ? self.h : src[i].h,
+    };
+
+    bythos::core.defaultShader2d.set_vec2("position", {
+      -(float)bythos::core.render.x + (dst[i].x * 2) + newSize.x,
+      -(float)bythos::core.render.y + (dst[i].y * 2) + newSize.y,
+    });
+    bythos::core.defaultShader2d.set_vec2("scale", newSize);
+    bythos::core.defaultShader2d.set_vec4("texColor", tint[i].normalize());
+    bythos::core.defaultShader2d.set_vec2("texOffset", {texCoords.x, (1-texCoords.w) - texCoords.y});
+    bythos::core.defaultShader2d.set_vec2("texScale", texCoords.zw / 2);
+
+    gl::drawArrays((GLenum)gl::GL_TRIANGLES, 0, bythos::core.textureMesh.vertices.len);
+  }
+
+  gl::bindVertexArray(0);
+  gl::enable((GLenum)gl::GL_DEPTH_TEST);
+}
+fn void Texture.draw_billboard(&self, Rectangle src = {}, Vec3f position = {}, Vec3f scale = {1,1,1}, Vec3f rotation = {}) @export("texture_drawbillboard") {}
+fn void Texture.draw_billboard_instanced(&self, Rectangle[] src, Matrix4f[] mats) @export("texture_drawbillboardinstanced") {}
 
 fn char[] Texture.get_raw(&self) @export("texture_getraw") {
   char[] data = mem::new_array(char, 4 * ((usz)self.w * (usz)self.h));

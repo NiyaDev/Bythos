@@ -209,6 +209,7 @@ const char[] DEFAULT_VERTEX_2D =
   "  ndc.y = -ndc.y;\n"
   "  gl_Position = vec4(ndc, 0.0, 1.0);\n"
   "  fragUV = (aTexCoord * texScale) + texOffset;\n"
+  //"  fragUV = aTexCoord;\n"
   "  Color = texColor;\n"
   "}\n";
 const char[] DEFAULT_FRAGMENT_2D = 

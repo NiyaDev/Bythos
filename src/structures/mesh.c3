@@ -93,6 +93,31 @@ fn void Mesh.delete(&self) {
   gl::deleteBuffers(1, &self.ebo);
 }
 
+fn void Mesh.update_positions(&self, Vec3f[] newPositions) @export("mesh_updatepositions") {
+  for (int i; i < newPositions.len; i++) self.vertices[i].position = newPositions[i];
+
+  self.delete();
+  self.upload();
+}
+fn void Mesh.update_normals(&self, Vec3f[] newNormals) @export("mesh_updatenormals") {
+  for (int i; i < newNormals.len; i++) self.vertices[i].normal = newNormals[i];
+
+  self.delete();
+  self.upload();
+}
+fn void Mesh.update_texcoords(&self, Vec2f[] newTexCoords) @export("mesh_updatetexcoords") {
+  for (int i; i < newTexCoords.len; i++) self.vertices[i].texCoord = newTexCoords[i];
+
+  self.delete();
+  self.upload();
+}
+fn void Mesh.update_colors(&self, Vec4f[] newColors) @export("mesh_updatecolors") {
+  for (int i; i < newColors.len; i++) self.vertices[i].color = newColors[i];
+
+  self.delete();
+  self.upload();
+}
+
 fn void Mesh.draw(&self = &&bythos::get_default_mesh(), Material mat = bythos::get_default_material(), Vec3f position = {}, Vec3f scale = {1,1,1}, Vec3f rotation = {0,0,0}) @export("mesh_draw") {
   gl::useProgram(mat.shader.id);
   gl::bindTexture((GLenum)gl::GL_TEXTURE_2D, mat.maps[material::DIFFUSE].texture.id);
