@@ -47,4 +47,17 @@ fn void Camera.rotate(&self = &main, float target) @export("camera_rotate")
   => self.rotTarget += target;
 fn bool Camera.is_rotating(&self = &main) @export("camera_isrotating")
   => self.rotation != self.rotTarget;
+fn Vec3f Camera.position(&self = &main) @export("camera_position") {
+  float c = math::cos(self.rotation * (float)(math::PI/180));
+  float s = math::sin(self.rotation * (float)(math::PI/180));
+
+  Vec3f p = self.distance - self.target;
+  Vec3f rotated = {
+     p.x * c + p.z * s,
+     p.y,
+    -p.x * s + p.z * c,
+  };
+
+  return self.target + rotated;
+}
 

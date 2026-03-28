@@ -4,6 +4,7 @@ module bythos;
 
 //* -- Getting -- *//
 fn Mesh get_default_mesh() @export("default_getmesh") => core.defaultMesh;
+fn Mesh get_default_texturemesh() @export("default_gettexturemesh") => core.textureMesh;
 fn Texture get_default_texture() @export("default_gettexture") => core.defaultTexture;
 fn Material get_default_material() @export("default_getmaterial") => core.defaultMaterial;
 fn Shader get_default_2dshader() @export("default_get2dshader") => core.defaultShader2d;

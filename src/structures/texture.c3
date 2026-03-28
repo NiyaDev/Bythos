@@ -217,8 +217,57 @@ fn void Texture.draw_instanced(&self = &&bythos::get_default_texture(), Rectangl
   gl::bindVertexArray(0);
   gl::enable((GLenum)gl::GL_DEPTH_TEST);
 }
-fn void Texture.draw_billboard(&self, Rectangle src = {}, Vec3f position = {}, Vec3f scale = {1,1,1}, Vec3f rotation = {}) @export("texture_drawbillboard") {}
-fn void Texture.draw_billboard_instanced(&self, Rectangle[] src, Matrix4f[] mats) @export("texture_drawbillboardinstanced") {}
+fn void Texture.draw_billboard(&self = &&bythos::get_default_texture(), Rectangle src = {}, Vec3f position = {}, Vec3f scale = {1,1,1}) @export("texture_drawbillboard") {
+  gl::disable((GLenum)gl::GL_DEPTH_TEST);
+  Shader sh = bythos::get_default_3dshader();
+  gl::useProgram(sh.id);
+  gl::bindTexture((GLenum)gl::GL_TEXTURE_2D, self.id);
+  Matrix4f view = Camera.get_matrix();
+  sh.set_matrix("view", view);
+  Vec3f r = (Vec3f){view.m00, view.m10, view.m20} * scale.x;
+  Vec3f u = (Vec3f){view.m01, view.m11, view.m21} * scale.y;
+  Vec3f f = (Vec3f){view.m02, view.m12, view.m22} * scale.z;
+  sh.set_matrix("model", {
+    r.x, r.y, r.z, 0,
+    u.x, u.y, u.z, 0,
+    f.x, f.y, f.z, 0,
+    position.x, position.y, position.z, 1,
+  });
+
+  //* -- Draw -- *//
+  Mesh m = bythos::get_default_texturemesh();
+  gl::bindVertexArray(m.vao);
+  gl::drawArrays((GLenum)gl::GL_TRIANGLES, 0, m.vertices.len);
+  gl::bindVertexArray(0);
+  gl::enable((GLenum)gl::GL_DEPTH_TEST);
+}
+fn void Texture.draw_billboard_instanced(&self = &&bythos::get_default_texture(), Rectangle[] src, Vec3f[] position, Vec3f[] scale) @export("texture_drawbillboardinstanced") {
+  gl::disable((GLenum)gl::GL_DEPTH_TEST);
+  Shader sh = bythos::get_default_3dshader();
+  gl::useProgram(sh.id);
+  gl::bindTexture((GLenum)gl::GL_TEXTURE_2D, self.id);
+
+  Matrix4f view = Camera.get_matrix();
+  sh.set_matrix("view", view);
+  Mesh m = bythos::get_default_texturemesh();
+  for (int i; i < src.len; i++) {
+    Vec3f r = (Vec3f){view.m00, view.m10, view.m20} * scale[i].x;
+    Vec3f u = (Vec3f){view.m01, view.m11, view.m21} * scale[i].y;
+    Vec3f f = (Vec3f){view.m02, view.m12, view.m22} * scale[i].z;
+    sh.set_matrix("model", {
+      r.x, r.y, r.z, 0,
+      u.x, u.y, u.z, 0,
+      f.x, f.y, f.z, 0,
+      position[i].x, position[i].y, position[i].z, 1,
+    });
+
+    //* -- Draw -- *//
+    gl::bindVertexArray(m.vao);
+    gl::drawArrays((GLenum)gl::GL_TRIANGLES, 0, m.vertices.len);
+  }
+  gl::bindVertexArray(0);
+  gl::enable((GLenum)gl::GL_DEPTH_TEST);
+}
 
 fn char[] Texture.get_raw(&self) @export("texture_getraw") {
   char[] data = mem::new_array(char, 4 * ((usz)self.w * (usz)self.h));
