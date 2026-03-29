@@ -24,8 +24,11 @@ extern fn Texture new(int width, int height) @extern("texture_new");
 extern fn void Texture.clean(&self) @extern("texture_clean");
 extern fn bool Texture.is_valid(&self) @extern("texture_isvalid");
 
+extern fn void Texture.draw(&self = &&bythos::get_default_texture(), Rectangle dst = {}, Rectangle src = {}, Color tint = color::WHITE) @extern("texture_draw");
+extern fn void Texture.draw_instanced(&self = &&bythos::get_default_texture(), Rectangle[] dst, Rectangle[] src, Color[] tint) @extern("texture_drawinstanced");
+extern fn void Texture.draw_billboard(&self = &&bythos::get_default_texture(), Rectangle src = {}, Vec3f position = {}, Vec3f scale = {1,1,1}) @extern("texture_drawbillboard");
+extern fn void Texture.draw_billboard_instanced(&self = &&bythos::get_default_texture(), Rectangle[] src, Vec3f[] position, Vec3f[] scale) @export("texture_drawbillboardinstanced");
+
 extern fn char[] Texture.get_raw(&self) @extern("texture_getraw");
 extern fn void Texture.save(&self, String filename = "texture.ppm") @extern("texture_save");
-
-//extern fn void Texture.draw(&self = &&bythos::defaultTexture(), )
 

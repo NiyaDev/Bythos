@@ -34,6 +34,28 @@ fn void loading() @test {
 
   bythos::clean();
 }
+
+fn void drawing() @test {
+  bythos::init();
+
+  uint frame;
+  bythos::@loop() {
+    switch (frame) {
+      case 0: // Draw
+        Texture.draw(dst:{32,32,32,32});
+        //bythos::screenshot();
+        
+      case 1: // Draw instanced
+      case 2: // Billboard
+      case 3: // Billboard instanced
+      default: bythos::quit(0);
+    }
+    frame++;
+  };
+
+  bythos::clean();
+}
+
 /*
 fn void drawing() @test {
   bythos::init();

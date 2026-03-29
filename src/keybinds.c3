@@ -17,6 +17,8 @@ module bythos::keybinds;
 import bythos;
 
 //* -- Functions -- *//
+fn void set_keybind(String key, Keybind keybind) @export("keybinds_setkeybind")
+  => bythos::keybinds.set(key, keybind);
 fn bool is_pressed(String key) @export("keybinds_keypressed") {
   Keybind? bind = bythos::keybinds.get(key);
   if (catch bind) {

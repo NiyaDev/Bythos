@@ -32,6 +32,11 @@ extern fn Mesh new(MeshType type) @extern("mesh_new");
 extern fn void Mesh.clean(&self)  @extern("mesh_cleanmesh");
 extern fn void Mesh.is_valid(&self) @export("mesh_valid");
 
+extern fn void Mesh.update_positions(&self, Vec3f[] newPositions) @extern("mesh_updatepositions");
+extern fn void Mesh.update_normals(&self, Vec3f[] newNormals) @extern("mesh_updatenormals");
+extern fn void Mesh.update_texcoords(&self, Vec2f[] newTexCoords) @extern("mesh_updatetexcoords");
+extern fn void Mesh.update_colors(&self, Vec4f[] newColors) @extern("mesh_updatecolors");
+
 extern fn void Mesh.draw(&self = &&bythos::get_default_mesh(), Material mat = bythos::get_default_material(), Vec3f position = {}, Vec3f scale = {1,1,1}, Vec3f rotation = {0,0,0}) @extern("mesh_draw");
 extern fn void Mesh.draw_instanced(&self = &&bythos::get_default_mesh(), Matrix4f[] mats, Material mat = bythos::get_default_material()) @extern("mesh_drawinstanced");
 

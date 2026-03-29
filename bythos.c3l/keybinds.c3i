@@ -12,6 +12,7 @@ struct Keybind {
 module bythos::keybinds;
 
 //* -- Functions -- *//
+extern fn void set_keybind(String key, Keybind keybind) @extern("keybinds_setkeybind");
 extern fn bool is_pressed(String key) @extern("keybinds_keypressed");
 extern fn bool is_down(String key) @extern("keybinds_keydown");
 extern fn bool is_up(String key) @extern("keybinds_keyup");

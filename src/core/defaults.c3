@@ -14,7 +14,11 @@ fn Shader get_default_3dshader() @export("default_get3dshader") => core.defaultS
 fn void set_default_mesh(Mesh m) @export("default_setmesh") {
   core.defaultMesh.clean();
   core.defaultMesh = m;
-} 
+}
+fn void set_default_texturemesh(Mesh m) @export("default_settexturemesh") {
+  core.textureMesh.clean();
+  core.textureMesh = m;
+}
 fn void set_default_texture(Texture t) @export("default_settexture") {
   core.defaultTexture.clean();
   core.defaultTexture = t;

@@ -12,17 +12,16 @@ fn void window() @test {
   //float rotation;
   bythos::@loop() {
     //rotation += 0.01;
-    if (keybinds::is_down("test")) Camera.rotate(target:1);
+    //if (keybinds::is_down("test")) Camera.rotate(target:1);
 
-    Mesh.draw(position:{0,-1,0});
-    io::printfn("%s",Camera.position());
+    //Mesh.draw(position:{0,-1,0});
     //Mesh.draw_instanced(mats:{
     //  MATRIX4F_IDENTITY.translate({0,0,0}).rotate_z(0).rotate_y(0).rotate_x(0).scale({1,1,1}).transpose(),
     //  MATRIX4F_IDENTITY.translate({1,0,0}).rotate_z(0).rotate_y(0).rotate_x(0).scale({1,1,1}).transpose(),
     //  MATRIX4F_IDENTITY.translate({0,0,-1}).rotate_z(0).rotate_y(0).rotate_x(0).scale({1,1,1}).transpose(),
     //  MATRIX4F_IDENTITY.translate({0,1,0}).rotate_z(0).rotate_y(0).rotate_x(0).scale({1,1,1}).transpose(),
     //});
-    //Texture.draw(dst:{32,32,32,32});
+    Texture.draw(dst:{32,32,32,32});
     //Texture.draw_instanced(
     //  dst:{
     //    {0,0,32,32},
@@ -33,8 +32,8 @@ fn void window() @test {
     //  tint:{color::WHITE,color::WHITE,color::WHITE},
     //);
     //Texture.draw_billboard(position:{-5,0,0}, scale:{0.5,0.5,0.5});
-    Texture.draw_billboard_instanced(src:{{},{}}, position:{{-5,0,0},{1,2,0}}, scale:{{0.5,0.5,0.5},{1,1,1}});
-    //if (keybinds::is_pressed("test")) debug::@benchmark("Screenshot png") {bythos::screenshot("screenshot.png");};
+    //Texture.draw_billboard_instanced(src:{{},{}}, position:{{-5,0,0},{1,2,0}}, scale:{{0.5,0.5,0.5},{1,1,1}});
+    if (keybinds::is_pressed("test")) debug::@benchmark("Screenshot png") {bythos::screenshot("screenshot.png");};
     //if (keybinds::is_pressed("test")) debug::@benchmark("Screenshot ppm") {bythos::screenshot("screenshot.ppm");};
     bythos::quit(0);
   };
