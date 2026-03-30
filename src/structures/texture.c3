@@ -218,7 +218,6 @@ fn void Texture.draw_instanced(&self = &&bythos::get_default_texture(), Rectangl
   gl::enable((GLenum)gl::GL_DEPTH_TEST);
 }
 fn void Texture.draw_billboard(&self = &&bythos::get_default_texture(), Rectangle src = {}, Vec3f position = {}, Vec3f scale = {1,1,1}) @export("texture_drawbillboard") {
-  gl::disable((GLenum)gl::GL_DEPTH_TEST);
   Shader sh = bythos::get_default_3dshader();
   gl::useProgram(sh.id);
   gl::bindTexture((GLenum)gl::GL_TEXTURE_2D, self.id);
@@ -239,10 +238,8 @@ fn void Texture.draw_billboard(&self = &&bythos::get_default_texture(), Rectangl
   gl::bindVertexArray(m.vao);
   gl::drawArrays((GLenum)gl::GL_TRIANGLES, 0, m.vertices.len);
   gl::bindVertexArray(0);
-  gl::enable((GLenum)gl::GL_DEPTH_TEST);
 }
 fn void Texture.draw_billboard_instanced(&self = &&bythos::get_default_texture(), Rectangle[] src, Vec3f[] position, Vec3f[] scale) @export("texture_drawbillboardinstanced") {
-  gl::disable((GLenum)gl::GL_DEPTH_TEST);
   Shader sh = bythos::get_default_3dshader();
   gl::useProgram(sh.id);
   gl::bindTexture((GLenum)gl::GL_TEXTURE_2D, self.id);
@@ -266,7 +263,6 @@ fn void Texture.draw_billboard_instanced(&self = &&bythos::get_default_texture()
     gl::drawArrays((GLenum)gl::GL_TRIANGLES, 0, m.vertices.len);
   }
   gl::bindVertexArray(0);
-  gl::enable((GLenum)gl::GL_DEPTH_TEST);
 }
 
 fn char[] Texture.get_raw(&self) @export("texture_getraw") {
