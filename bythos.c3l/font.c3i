@@ -1,0 +1,24 @@
+
+module bythos;
+
+//* -- Structures -- *//
+struct Font {
+  Texture atlas;
+  Vec2f dimensions;
+  Rectangle[font::PRINTABLE_COUNT] rects;
+}
+
+
+module bythos::font;
+
+//* -- Constants -- *//
+const usz PRINTABLE_START =  32;
+const usz PRINTABLE_END   = 127;
+const usz PRINTABLE_COUNT = PRINTABLE_END - PRINTABLE_START;
+
+//* -- Functions -- *//
+extern fn Font load_from_texture(String filename, Vec2f dimensions) @extern("font_loadtexture");
+extern fn Font load_from_texturememory(char[] data, Vec2f dimensions) @extern("font_loadtexture");
+extern fn void Font.clean(&self) @extern("font_clean");
+extern fn void Font.draw(&self = &&bythos::get_default_font(), String text, Vec2f position = {}, Vec2f scale = {1,1}, Vec2f spacing = {}) @extern("font_draw");
+ 

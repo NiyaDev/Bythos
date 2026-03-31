@@ -6,6 +6,7 @@ module bythos;
 fn Mesh get_default_mesh() @export("default_getmesh") => core.defaultMesh;
 fn Mesh get_default_texturemesh() @export("default_gettexturemesh") => core.textureMesh;
 fn Texture get_default_texture() @export("default_gettexture") => core.defaultTexture;
+fn Font get_default_font() @export("default_getfont") => core.defaultFont;
 fn Material get_default_material() @export("default_getmaterial") => core.defaultMaterial;
 fn Shader get_default_2dshader() @export("default_get2dshader") => core.defaultShader2d;
 fn Shader get_default_3dshader() @export("default_get3dshader") => core.defaultShader3d;
@@ -22,6 +23,10 @@ fn void set_default_texturemesh(Mesh m) @export("default_settexturemesh") {
 fn void set_default_texture(Texture t) @export("default_settexture") {
   core.defaultTexture.clean();
   core.defaultTexture = t;
+}
+fn void set_default_font(Font f) @export("default_setfont") {
+  core.defaultFont.clean();
+  core.defaultFont = f;
 }
 fn void set_default_material(Material m) @export("default_setmaterial") {
   core.defaultMaterial.clean();

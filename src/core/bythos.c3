@@ -29,6 +29,7 @@ struct Bythos {
 
   Shader defaultShader2d, defaultShader3d;
   Texture defaultTexture;
+  Font defaultFont;
   Mesh defaultMesh, textureMesh;
   Material defaultMaterial;
 
@@ -133,6 +134,7 @@ fn void init() @export("bythos_init") {
   core.defaultMesh = mesh::new(CUBE);
   core.textureMesh = mesh::new(PLANE);
   core.defaultTexture = texture::load_from_memory(texture::def, "ppm");
+  core.defaultFont = font::load_from_texturememory(font::def, {24,24});
   core.defaultMaterial = {core.defaultShader3d, {}};
   core.defaultMaterial.maps[material::DIFFUSE].texture = core.defaultTexture;
   core.input.keyboard.exitKey = {ESCAPE, UNKNOWN};
