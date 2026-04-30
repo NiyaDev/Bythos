@@ -276,4 +276,19 @@ fn void vec4f() @test {
   }
 }
 
+fn void close() @test {
+  float f1 = 10;
+  float f2 = 20;
+  float f3 = 21;
+
+  assert(!f1.close(f2,1), "Close {float} is saying things that are not close are");
+  assert(f2.close(f3,1),  "Close {float} is saying things that are close aren't");
+
+  Vec3f v1 = {0,10,0};
+  Vec3f v2 = {0,20,0};
+  Vec3f v3 = {0,21,0};
+
+  assert(!v1.close(v2,1), "Close {float} is saying things that are not close are");
+  assert(v2.close(v3,1),  "Close {float} is saying things that are close aren't");
+}
 

@@ -158,7 +158,7 @@ fn Vec3f Vec3f.max(self, Vec3f max) @export("vector3_max")
 fn Vec3f Vec3f.invert(self) @export("vector3_invert")
   => 1 / self;
 fn bool float.close(self, float f2, float amount) @export("float_close")
-  => self + amount > f2 && self - amount < f2;
+  => self - f2 >= -amount && f2 - self <= amount;
 fn bool Vec3f.close(self, Vec3f v2, float amount) @export("vector_close")
   => self.x.close(v2.x, amount) && self.y.close(v2.y, amount) && self.z.close(v2.z, amount);
 
