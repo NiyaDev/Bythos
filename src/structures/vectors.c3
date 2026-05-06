@@ -103,13 +103,6 @@ fn float Vec3f.angle_rad(self, Vec3f v2) @export("vector3_angle_rad")
   => math::atan2(self.cross(v2).length(), self.dot(v2));
 fn float Vec3f.angle_deg(self, Vec3f v2) @export("vector3_angle_deg")
   => math::atan2(self.cross(v2).length(), self.dot(v2)) * (180 / math::PI);
-fn Vec3f Vec3f.project(self, Vec3f v2) @export("vector3_project") {
-  float v1dv2 = (self * v2).sum();
-  float v2dv2 = v2.length().pow(2);
-  float mag = v1dv2 / v2dv2;
-
-  return v2 * mag;
-}
 fn Vec3f Vec3f.reject(self, Vec3f v2) @export("vector3_reject") {
   float v1dv2 = (self * v2).sum();
   float v2dv2 = v2.length().pow(2);
