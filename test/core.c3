@@ -37,7 +37,7 @@ fn void window() @test {
     //Texture.draw_billboard(position:{-5,0,0}, scale:{0.5,0.5,0.5});
     //Texture.draw_billboard_instanced(src:{{},{}}, position:{{-5,0,0},{1,2,0}}, scale:{{0.5,0.5,0.5},{1,1,1}});
     //Font.draw(text:"TEST", position:{100,100});
-    if (keybinds::is_pressed("test")) debug::@benchmark("Screenshot png") {bythos::screenshot("screenshot.png");};
+    if (keybindings::is_pressed("test")) debug::@benchmark("Screenshot png") {bythos::screenshot("screenshot.png");};
     //if (keybinds::is_pressed("test")) debug::@benchmark("Screenshot ppm") {bythos::screenshot("screenshot.ppm");};
     bythos::quit(0);
   };

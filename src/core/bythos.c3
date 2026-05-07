@@ -139,8 +139,9 @@ fn void init() @export("bythos_init") {
   core.defaultMaterial = {core.defaultShader3d, {}};
   core.defaultMaterial.maps[material::DIFFUSE].texture = core.defaultTexture;
   core.input.keyboard.exitKey = {ESCAPE, UNKNOWN};
-  keybinds = mem::new(HashMap{String, Keybind});
-  keybinds.set("test", {K, UNKNOWN});
+
+  debug::info("Initializing Keybinds system");
+  keybindings::init_defaults();
 
   //* -- Framebuffer -- *//
   core.quad = mesh::new(PLANE);
@@ -173,7 +174,7 @@ fn void clean() @export("bythos_clean") {
   core.textureMesh.clean();
   core.defaultTexture.clean();
   core.defaultMaterial.clean();
-  free(keybinds);
+  keybindings::clean();
 
   core.shouldClose = false;
 
