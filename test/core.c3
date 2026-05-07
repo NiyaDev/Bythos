@@ -39,7 +39,7 @@ fn void window() @test {
     //Font.draw(text:"TEST", position:{100,100});
     if (keybinds::is_pressed("test")) debug::@benchmark("Screenshot png") {bythos::screenshot("screenshot.png");};
     //if (keybinds::is_pressed("test")) debug::@benchmark("Screenshot ppm") {bythos::screenshot("screenshot.ppm");};
-    //bythos::quit(0);
+    bythos::quit(0);
   };
 
   bythos::clean();
