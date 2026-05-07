@@ -128,21 +128,6 @@ fn void init() @export("bythos_init") {
   if (core.gpu.shaderBinaries) { debug::info("  > Compiled Shader binaries supported"); }
 
   //* -- Defaults -- *//
-<<<<<<< HEAD
-  output.defaults.shader2d = shader::compile(shader::DEFAULT_VERTEX_2D, shader::DEFAULT_FRAGMENT_2D);
-  output.defaults.shader2d.set_vec2("screensize", (Vec2f){(float)output.render.x, (float)output.render.y});
-  output.defaults.shader3d = shader::compile(shader::DEFAULT_VERTEX_3D, shader::DEFAULT_FRAGMENT_3D);
-  output.defaults.shader3d.set_matrix("projection", matrix::perspective{float}(70 * (math::PI / 180), (float)core.render.x / (float)core.render.y, 0.1, 100).transpose());
-  output.defaults.mesh = mesh::new(CUBE);
-  output.defaults.textureMesh = mesh::new(PLANE);
-  output.defaults.texture = texture::load_from_memory(texture::def, "ppm");
-  output.defaults.font = font::load_from_texturememory(font::def, {24,24});
-  output.defaults.material = {core.defaultShader3d, {}};
-  output.defaults.material.maps[material::DIFFUSE].texture = core.defaultTexture;
-  output.input.keyboard.exitKey = {ESCAPE, UNKNOWN};
-  output.input.keybinds = mem::new(HashMap{String, Keybind});
-  output.input.keybinds.set("test", {K, UNKNOWN});
-=======
   core.defaultShader2d = shader::compile(shader::DEFAULT_VERTEX_2D, shader::DEFAULT_FRAGMENT_2D);
   core.defaultShader2d.set_vec2("screensize", (Vec2f){(float)core.render.x, (float)core.render.y});
   core.defaultShader3d = shader::compile(shader::DEFAULT_VERTEX_3D, shader::DEFAULT_FRAGMENT_3D);
@@ -156,7 +141,6 @@ fn void init() @export("bythos_init") {
   core.input.keyboard.exitKey = {ESCAPE, UNKNOWN};
   keybinds = mem::new(HashMap{String, Keybind});
   keybinds.set("test", {K, UNKNOWN});
->>>>>>> parent of 01ac670 (Full rework)
 
   //* -- Framebuffer -- *//
   core.quad = mesh::new(PLANE);

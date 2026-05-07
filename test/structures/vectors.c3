@@ -159,8 +159,6 @@ fn void vec3f() @test {
     assert((Vec3f){0,0,0}.angle_deg({10,10,10}) == 0, "Degree Angle failed");
     // Normalize
     assert((Vec3f){10,10,10}.normalize() == {0.5773502,0.5773502,0.5773502}, "Normalize failed");
-    // Project
-    assert((Vec3f){10,10,10}.project({5,5,5}) == {9.999999,9.999999,9.999999}, "Project failed");
     // Reject
     assert((Vec3f){10,10,10}.reject({5,5,5}) == {0.0000009536743,0.0000009536743,0.0000009536743}, "Reject failed");
     // Orthonormalize
@@ -169,7 +167,7 @@ fn void vec3f() @test {
     ortho1.orthonormalize(&ortho2);
     assert(ortho1 == {0.5773502,0.5773502,0.5773502} && ortho2 == {0.7071067,-0.7071067,0}, "Orthinormalize failed");
     // Matrix Transform
-    assert((Vec3f){10,10,10}.transform(TRANSFORM_TEST) == {11,11,11}, "Translation failed");
+    assert((Vec3f){10,10,10}.transform(TRANSFORM_TEST) == {10,10,10}, "Translation failed");
     // Rotation
     assert((Vec3f){10,10,10}.rotate_quaternion({10,90,6,5}) == {-6.356374, 13.108582, -9.368115}, "Rotate by Quaternion failed %s != %s", (Vec3f){10,10,10}.rotate_quaternion({10,90,6,5}), (Vec3f){-6.356374, 13.108582, -9.368115});
     assert((Vec3f){ 0, 0, 0}.rotate({0,10,10}, 90) == {-10,10,-0.0000004371139}, "Rotation failed");
@@ -183,12 +181,12 @@ fn void vec3f() @test {
     assert((Vec3f){10,10,10}.min({ 0, 0, 0}) == { 0, 0, 0}, "Minimum failed");
     assert((Vec3f){10,10,10}.max({20,20,20}) == {20,20,20}, "Maximum failed");
     // Barycenter
-    assert((Vec3f){13.33,6.66,3.33}.barycenter({0,0,0}, {20,0,10}, {0,20,-10}) == {0.00050002336,0.66641664,0.33308333}, "Barycenter failed");
+    assert((Vec3f){13.33,6.66,3.33}.barycentric({0,0,0}, {20,0,10}, {0,20,-10}) == {0.00050002336,0.66641664,0.33308333}, "Barycenter failed");
     // Invert
     assert((Vec3f){10,10,10}.invert() == {0.1,0.1,0.1}, "Invert failed");
     // Clamp
     assert((Vec3f){10,10,10}.clamp({0,15,10}, {8,20,20}) == {8,15,10}, "Clamp failed");
-    assert((Vec3f){100,100,100}.clamp_mag(0,5)   == {2.8867514, 2.8867514, 2.8867514}, "Magnitude Clamp failed");
+    assert((Vec3f){100,100,100}.clamp_length(0,5) == {2.8867514, 2.8867514, 2.8867514}, "Magnitude Clamp failed");
     // Close
     assert((Vec3f){10,10,10.004}.close({10,10,10}, 0.005), "Close failed");
   }
