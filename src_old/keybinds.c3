@@ -4,7 +4,7 @@ import std::collections;
 import sdl3;
 
 //* -- Globals -- *//
-HashMap{String, Keybind}* keybinds;
+//HashMap{String, Keybind}* keybinds;
 
 //* -- Structures -- *//
 struct Keybind {

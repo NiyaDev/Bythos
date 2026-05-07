@@ -22,12 +22,10 @@ Camera main @export("camera_main") = {
 };
 
 //* -- Functions -- *//
-fn void Camera.update(&self = &main) @export("camera_update") {
+fn void Camera.update(&self = &main, double deltaTime) @export("camera_update") {
   if (!self.rotation.close(self.rotTarget, 1)) {
     float dir = self.rotTarget > self.rotation ? 0.5 : -0.5;
-    //if ((self.rotTarget - self.rotation) > 0) dir = +0.5;
-    //if ((self.rotTarget - self.rotation) < 0) dir = -0.5;
-    self.rotation += dir * (50 * (float)bythos::core.time.deltaTime);
+    self.rotation += dir * (50 * (float)deltaTime);
   } else {
     self.rotation = self.rotTarget;
 

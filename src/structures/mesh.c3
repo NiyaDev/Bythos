@@ -122,7 +122,7 @@ fn void Mesh.draw(&self = &&bythos::get_default_mesh(), Material mat = bythos::g
   gl::useProgram(mat.shader.id);
   gl::bindTexture((GLenum)gl::GL_TEXTURE_2D, mat.maps[material::DIFFUSE].texture.id);
   mat.shader.set_matrix("view",  Camera.get_matrix());
-  mat.shader.set_matrix("model", MATRIX4F_IDENTITY.translate(position).rotate_z(rotation.z).rotate_y(rotation.y).rotate_x(rotation.x).scale(scale).transpose());
+  mat.shader.set_matrix("model", matrix::IDENTITY4.translate(position).rotate_z(rotation.z).rotate_y(rotation.y).rotate_x(rotation.x).scale(scale).transpose());
 
   //* -- Draw -- *//
   gl::bindVertexArray(self.vao);

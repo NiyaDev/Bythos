@@ -39,6 +39,7 @@ struct Bythos {
     int shaderBinaries;
   }
   struct input {
+    HashMap{String, Keybind}* keybinds;
     struct keyboard {
       Keybind exitKey;
 
@@ -136,8 +137,8 @@ fn Bythos init() @export("bythos_init") {
   output.defaults.material = {core.defaultShader3d, {}};
   output.defaults.material.maps[material::DIFFUSE].texture = core.defaultTexture;
   output.input.keyboard.exitKey = {ESCAPE, UNKNOWN};
-  keybinds = mem::new(HashMap{String, Keybind});
-  keybinds.set("test", {K, UNKNOWN});
+  output.input.keybinds = mem::new(HashMap{String, Keybind});
+  output.input.keybinds.set("test", {K, UNKNOWN});
 
   //* -- Framebuffer -- *//
   output.quad = mesh::new(PLANE);
