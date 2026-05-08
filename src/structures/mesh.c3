@@ -126,12 +126,12 @@ fn void Mesh.draw(&self = &&bythos::get_default_mesh(), Material mat = bythos::g
 
   //* -- Draw -- *//
   gl::bindVertexArray(self.vao);
-  if (self.indices.len == 0) {
+  //if (self.indices.len == 0) {
     gl::drawArrays((GLenum)gl::GL_TRIANGLES, 0, self.vertices.len);
-  } else {
-    gl::bindBuffer((GLenum)gl::GL_ELEMENT_ARRAY_BUFFER, self.ebo);
-    gl::drawElements((GLenum)gl::GL_TRIANGLES, self.indices.len * 3, (GLenum)gl::GL_UNSIGNED_INT, null);
-  }
+  //} else {
+  //  gl::bindBuffer((GLenum)gl::GL_ELEMENT_ARRAY_BUFFER, self.ebo);
+  //  gl::drawElements((GLenum)gl::GL_TRIANGLES, self.indices.len * 3, (GLenum)gl::GL_UNSIGNED_INT, null);
+  //}
   gl::bindVertexArray(0);
 }
 fn void Mesh.draw_instanced(&self = &&bythos::get_default_mesh(), Matrix4f[] mats, Material mat = bythos::get_default_material()) @export("mesh_drawinstanced") {
@@ -147,6 +147,11 @@ fn void Mesh.draw_instanced(&self = &&bythos::get_default_mesh(), Matrix4f[] mat
   }
   gl::bindVertexArray(0);
 }
+
+fn bool Vertex.equals(&self, Vertex rhs) @operator(==) {
+  return self.position == rhs.position || self.normal == rhs.normal || self.texCoord == rhs.texCoord || self.color == rhs.color;
+}
+
 
 //* -- Constants -- *//
 const void* VERTEX_POSITION = null;

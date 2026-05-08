@@ -21,6 +21,7 @@ fn void init_defaults() {
   keybinds.set("down",  {S, UNKNOWN});
   keybinds.set("left",  {A, UNKNOWN});
   keybinds.set("right", {D, UNKNOWN});
+  keybinds.set("test",  {P, UNKNOWN});
 }
 fn void init_file(String filename) @export("keybinds_initfile") {} // TODO: 
 fn void clean() @export("keybinds_clean") {

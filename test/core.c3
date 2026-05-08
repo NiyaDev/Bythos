@@ -13,18 +13,18 @@ fn void window() @test {
 
   //float rotation;
   bythos::@loop() {
-    tex.draw(dst:{0,0,200,100},src:{0,0,624,96});
+    //tex.draw(dst:{0,0,200,100},src:{0,0,624,96});
     //rotation += 0.01;
     //if (keybinds::is_down("test")) Camera.rotate(target:1);
 
-    //Mesh.draw(position:{0,-1,0});
+    //Mesh.draw(position:{0,0,0});
     //Mesh.draw_instanced(mats:{
-    //  MATRIX4F_IDENTITY.translate({0,0,0}).rotate_z(0).rotate_y(0).rotate_x(0).scale({1,1,1}).transpose(),
-    //  MATRIX4F_IDENTITY.translate({1,0,0}).rotate_z(0).rotate_y(0).rotate_x(0).scale({1,1,1}).transpose(),
-    //  MATRIX4F_IDENTITY.translate({0,0,-1}).rotate_z(0).rotate_y(0).rotate_x(0).scale({1,1,1}).transpose(),
-    //  MATRIX4F_IDENTITY.translate({0,1,0}).rotate_z(0).rotate_y(0).rotate_x(0).scale({1,1,1}).transpose(),
+    //  matrix::IDENTITY4.translate({0,0,0}).rotate_z(0).rotate_y(0).rotate_x(0).scale({1,1,1}).transpose(),
+    //  matrix::IDENTITY4.translate({1,0,0}).rotate_z(0).rotate_y(0).rotate_x(0).scale({1,1,1}).transpose(),
+    //  matrix::IDENTITY4.translate({0,0,-1}).rotate_z(0).rotate_y(0).rotate_x(0).scale({1,1,1}).transpose(),
+    //  matrix::IDENTITY4.translate({0,1,0}).rotate_z(0).rotate_y(0).rotate_x(0).scale({1,1,1}).transpose(),
     //});
-    //Texture.draw(dst:{32,32,32,32});
+    Texture.draw(dst:{32,32,32,32});
     //Texture.draw_instanced(
     //  dst:{
     //    {0,0,32,32},
@@ -37,9 +37,10 @@ fn void window() @test {
     //Texture.draw_billboard(position:{-5,0,0}, scale:{0.5,0.5,0.5});
     //Texture.draw_billboard_instanced(src:{{},{}}, position:{{-5,0,0},{1,2,0}}, scale:{{0.5,0.5,0.5},{1,1,1}});
     //Font.draw(text:"TEST", position:{100,100});
-    if (keybindings::is_pressed("test")) debug::@benchmark("Screenshot png") {bythos::screenshot("screenshot.png");};
+    if (keybindings::is_pressed("test")) bythos::set_resolution(width:1920, height: 1080);
+    //if (keybindings::is_pressed("test")) debug::@benchmark("Screenshot png") {bythos::screenshot("screenshot.png");};
     //if (keybinds::is_pressed("test")) debug::@benchmark("Screenshot ppm") {bythos::screenshot("screenshot.ppm");};
-    bythos::quit(0);
+    //bythos::quit(0);
   };
 
   bythos::clean();

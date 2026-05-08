@@ -28,3 +28,8 @@ fn void draw_end() @export("bythos_drawend") {
   sdlgl::swapWindow(core.window);
 }
 
+fn void reset_framebuffer() {
+  core.frameTexture.clean();
+  core.frameTexture = texture::new(core.render.x, core.render.x);
+}
+
